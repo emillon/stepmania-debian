@@ -2,3 +2,6 @@
 
 %:
 	dh $@  --with autotools-dev
+
+override_dh_clean:
+	dh_clean -X'Themes/_themekit-piu/Scripts/02 ini read.lua.bak'
