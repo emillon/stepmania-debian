@@ -5,6 +5,7 @@ Maintainer: Etienne Millon <etienne.millon@gmail.com>
 Build-Depends:
  autotools-dev,
  debhelper (>= 9),
+ libgl1-mesa-dev | libgl-dev,
  libxrandr-dev,
 Standards-Version: 3.9.3
 Homepage: http://stepmania.com/
