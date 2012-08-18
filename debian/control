@@ -13,6 +13,7 @@ Build-Depends:
  libpng-dev,
  libvorbis-dev,
  libxrandr-dev,
+ pkg-config
 Standards-Version: 3.9.3
 Homepage: http://stepmania.com/
 
