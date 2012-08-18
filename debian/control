@@ -2,15 +2,17 @@ Source: stepmania
 Section: games
 Priority: optional
 Maintainer: Etienne Millon <etienne.millon@gmail.com>
-Build-Depends: debhelper (>= 9), autotools-dev
+Build-Depends:
+ autotools-dev,
+ debhelper (>= 9),
 Standards-Version: 3.9.3
 Homepage: http://stepmania.com/
-#Vcs-Git: git://git.debian.org/collab-maint/stepmania.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/stepmania.git;a=summary
 
 Package: stepmania
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
 Description: rythm and dancing game
  StepMania is a rhythm game for Windows, Mac, and Linux. It features 3D
  graphics, keyboard and "dance pad" support, and an editor for creating your own
