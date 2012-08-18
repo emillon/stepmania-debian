@@ -9,6 +9,7 @@ Build-Depends:
  libgl1-mesa-dev | libgl-dev,
  libglu1-mesa-dev | libglu-dev,
  libjpeg-dev,
+ libmad0-dev,
  libpng-dev,
  libvorbis-dev,
  libxrandr-dev,
