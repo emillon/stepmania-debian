@@ -1589,6 +1589,7 @@ Files: ./src/ActorProxy.h
  ./src/RageTimer.h
  ./src/RageDisplay_Legacy_Helpers.cpp
  ./src/RageDisplay_OGL_Helpers.cpp
+ ./src/RageSurfaceUtils_Zoom.h
 Copyright:
  2001-2011, Glenn Maynard
  2001-2011, Chris Danford
@@ -1605,6 +1606,7 @@ Copyright:
  2001-2004, Chris Gomez
  2001-2011, Colby Klein
  2003-2004, Sean Burke
+            Andreas Schiffler
 License: SM-License
 
 Files: ./src/archutils/Win32/ddk/hidpi.h
@@ -1615,12 +1617,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files: ./src/RageSurfaceUtils_Zoom.h
-Copyright: A. Schiffler, Glenn Maynard
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
 
 Files: ./src/CsvFile.h
 Copyright: 2001-2004, Adam Clauss, Chris Danford
