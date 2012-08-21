@@ -1593,10 +1593,17 @@ Files: ./src/ActorProxy.h
  ./src/CsvFile.h
  ./src/ScreenUnlockStatus.h
  ./src/archutils/Win32/Crash.h
+ ./src/arch/Dialog/Selector_Dialog.h
+ ./src/arch/InputHandler/InputHandler_Win32_MIDI.h
+ ./src/arch/LowLevelWindow/LowLevelWindow_X11.h
+ ./src/archutils/Unix/X11Helper.h
+ ./src/ScreenMessage.cpp
+ ./src/ScreenNetEvaluation.h
+ ./src/ScreenOptionsManageCourses.h
 Copyright:
  2001-2011, Glenn Maynard
  2001-2011, Chris Danford
- 2003-2005, Charles Lohr
+ 2001-2005, Charles Lohr
  2001-2004, Ben Nordstrom
  2009-2011, Jason Felds
  2003,      Kevin Slaughter
@@ -1613,6 +1620,8 @@ Copyright:
  2001-2004, Adam Clauss
  2003,      Andrew Wong
  1998-2001, Avery Lee
+ 2004-2005, Joshua Allen
+ 2005-2006, Ben Anderson
 License: SM-License
 
 Files: ./src/archutils/Win32/ddk/hidpi.h
@@ -1623,46 +1632,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files: ./src/arch/LowLevelWindow/LowLevelWindow_X11.h
-Copyright: 2005, Ben Anderson
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/arch/Dialog/Selector_Dialog.h
-Copyright: 2005, Ben Anderson
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/archutils/Unix/X11Helper.h
-Copyright: 2005-2006, Ben Anderson, Steve Checkoway
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/arch/InputHandler/InputHandler_Win32_MIDI.h
-Copyright: 2002-2005, Charles Lohr, Glenn Maynard
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/ScreenNetEvaluation.h
-Copyright: 2004-2005, Charles Lohr, Joshua Allen
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/ScreenMessage.cpp
-Copyright: 2001-2005, Chris Danford, Glenn Maynard, Charles Lohr
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/ScreenOptionsManageCourses.h
-Copyright: 2003-2006, Chris Danford, Steve Checkoway
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
 
 Files: ./src/ScreenHowToPlay.h
 Copyright: 2001-2004, Chris Danford, Thad Ward
