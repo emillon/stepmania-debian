@@ -1617,6 +1617,9 @@ Files: ./src/ActorProxy.h
  ./src/ScreenNetSelectBase.h
  ./src/ScreenPackagesSSC.cpp
  ./src/ScreenSelectProfile.h
+ ./src/RoomInfoDisplay.h
+ ./src/ScreenMiniMenu.h
+ ./src/ScreenOptionsMasterPrefs.h
 Copyright:
  2001-2011, Glenn Maynard
  2001-2011, Chris Danford
@@ -1637,7 +1640,7 @@ Copyright:
  2001-2004, Adam Clauss
  2003,      Andrew Wong
  1998-2001, Avery Lee
- 2004-2005, Joshua Allen
+ 2004-2006, Joshua Allen
  2002-2006, Ben Anderson
  2004,      Hugo Hromic M. <hhromic@udec.cl>
  2009,      Damien Thebault
@@ -1648,6 +1651,7 @@ Files: ./src/archutils/Win32/ddk/hidpi.h
  ./src/archutils/Win32/ddk/hidsdi.h
  ./src/archutils/Win32/ddk/hidusage.h
  ./src/archutils/Win32/ddk/setupapi.h
+ ./src/archutils/Win32/ddk/dbghelp.h
 Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
@@ -1706,31 +1710,36 @@ License:
        binary releases.
 TODO
 
-Files: ./src/RoomInfoDisplay.h
-Copyright: 2006, Josh Allen
-License: UNKNOWN
- FIXME
-
-Files: ./src/archutils/Win32/ddk/dbghelp.h
-Copyright: Microsoft Corporation.
-License: UNKNOWN
- FIXME
-
 Files: ./src/glext.h
 Copyright: 1991-2004, Silicon Graphics, Inc
-  in any portions created by third parties is as indicated
-License: UNKNOWN
- FIXME
-
-Files: ./src/ScreenMiniMenu.h
-Copyright: choices.push_back;
-License: UNKNOWN
- FIXME
-
-Files: ./src/ScreenOptionsMasterPrefs.h
-Copyright: names.push_back;
-License: UNKNOWN
- FIXME
+License: SGI Free Software License B Version 1.1
+ License Applicability. Except to the extent portions of this file are
+ made subject to an alternative license as permitted in the SGI Free
+ Software License B, Version 1.1 (the "License"), the contents of this
+ file are subject only to the provisions of the License. You may not use
+ this file except in compliance with the License. You may obtain a copy
+ of the License at Silicon Graphics, Inc., attn: Legal Services, 1600
+ Amphitheatre Parkway, Mountain View, CA 94043-1351, or at:
+ .
+ http://oss.sgi.com/projects/FreeB
+ .
+ Note that, as provided in the License, the Software is distributed on an
+ "AS IS" basis, with ALL EXPRESS AND IMPLIED WARRANTIES AND CONDITIONS
+ DISCLAIMED, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES AND
+ CONDITIONS OF MERCHANTABILITY, SATISFACTORY QUALITY, FITNESS FOR A
+ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+ .
+ Original Code. The Original Code is: OpenGL Sample Implementation,
+ Version 1.2.1, released January 26, 2000, developed by Silicon Graphics,
+ Inc. The Original Code is Copyright (c) 1991-2004 Silicon Graphics, Inc.
+ Copyright in any portions created by third parties is as indicated
+ elsewhere herein. All Rights Reserved.
+ .
+ Additional Notice Provisions: This software was created using the
+ OpenGL(R) version 1.2.1 Sample Implementation published by SGI, but has
+ not been independently verified as being compliant with the OpenGL(R)
+ version 1.2.1 Specification.
+TODO
 
 License: SM-License
  All rights reserved.
