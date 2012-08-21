@@ -1563,6 +1563,10 @@ Files: ./src/ActorProxy.h
  ./src/archutils/Darwin/SpecialDirs.h
  ./src/archutils/Unix/SpecialDirs.cpp
  ./src/archutils/Unix/SpecialDirs.h
+ ./src/ActiveAttackList.cpp
+ ./src/MemoryCardDisplay.cpp
+ ./src/SnapDisplay.cpp
+ ./src/StreamDisplay.h
 Copyright:
  2001-2010, Glenn Maynard
  2001-2010, Chris Danford
@@ -1576,17 +1580,6 @@ Copyright:
  2003,      Thad Ward
  2011,      AJ Kelly
 License: SM-License
-
-Files: ./src/ActiveAttackList.cpp
- ./src/MemoryCardDisplay.cpp
- ./src/SnapDisplay.cpp
- ./src/StreamDisplay.h
-Copyright: 2001-2002, Chris Danford
-  2003, Chris Danford
-  2003-2004, Chris Danford
-  2004, Chris Danford
-License: UNKNOWN
- FIXME
 
 Files: ./src/archutils/Win32/ddk/hidpi.h
  ./src/archutils/Win32/ddk/hidsdi.h
