@@ -1573,6 +1573,8 @@ Files: ./src/ActorProxy.h
  ./src/ScoreKeeper.cpp
  ./src/arch/InputHandler/InputHandler_MacOSX_HID.h
  ./src/arch/LowLevelWindow/LowLevelWindow_MacOSX.h
+ ./src/BGAnimationLayer.h
+ ./src/CourseLoaderCRS.h
 Copyright:
  2001-2010, Glenn Maynard
  2001-2010, Chris Danford
@@ -1596,14 +1598,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files:
- ./src/BGAnimationLayer.h
- ./src/CourseLoaderCRS.h
-Copyright: 1997
-  2001-2004
-License: UNKNOWN
- FIXME
 
 Files: ./src/ScreenNetworkOptions.h
  ./src/ScreenSMOnlineLogin.h
