@@ -1585,12 +1585,10 @@ Files: ./src/archutils/Win32/ddk/hidpi.h
  ./src/archutils/Win32/ddk/hidsdi.h
  ./src/archutils/Win32/ddk/hidusage.h
  ./src/archutils/Win32/ddk/setupapi.h
-Copyright: 1995-1999, Microsoft Corporation
-  1996, Microsoft Corporation
-  1996-1997, Microsoft Corporation
-  1996-1998, Microsoft Corporation
+Copyright:
+  1995-1999, Microsoft Corporation
 License: UNKNOWN
- FIXME
+ TODO
 
 Files: ./src/arch/Sound/RageSoundDriver_ALSA9_Software.h
  ./src/arch/Sound/RageSoundDriver_Null.cpp
