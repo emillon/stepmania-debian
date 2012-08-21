@@ -1590,6 +1590,9 @@ Files: ./src/ActorProxy.h
  ./src/RageDisplay_Legacy_Helpers.cpp
  ./src/RageDisplay_OGL_Helpers.cpp
  ./src/RageSurfaceUtils_Zoom.h
+ ./src/CsvFile.h
+ ./src/ScreenUnlockStatus.h
+ ./src/archutils/Win32/Crash.h
 Copyright:
  2001-2011, Glenn Maynard
  2001-2011, Chris Danford
@@ -1607,6 +1610,9 @@ Copyright:
  2001-2011, Colby Klein
  2003-2004, Sean Burke
             Andreas Schiffler
+ 2001-2004, Adam Clauss
+ 2003,      Andrew Wong
+ 1998-2001, Avery Lee
 License: SM-License
 
 Files: ./src/archutils/Win32/ddk/hidpi.h
@@ -1617,25 +1623,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files: ./src/CsvFile.h
-Copyright: 2001-2004, Adam Clauss, Chris Danford
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/ScreenUnlockStatus.h
-Copyright: 2003, Andrew Wong
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/archutils/Win32/Crash.h
-Copyright: 1998-2001, Avery Lee
-  2003-2004, Glenn Maynard
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
 
 Files: ./src/arch/LowLevelWindow/LowLevelWindow_X11.h
 Copyright: 2005, Ben Anderson
