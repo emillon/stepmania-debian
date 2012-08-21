@@ -1616,6 +1616,7 @@ Files: ./src/ActorProxy.h
  ./src/ScreenNameEntry.h
  ./src/ScreenNetSelectBase.h
  ./src/ScreenPackagesSSC.cpp
+ ./src/ScreenSelectProfile.h
 Copyright:
  2001-2011, Glenn Maynard
  2001-2011, Chris Danford
@@ -1640,6 +1641,7 @@ Copyright:
  2002-2006, Ben Anderson
  2004,      Hugo Hromic M. <hhromic@udec.cl>
  2009,      Damien Thebault
+ 2007,      vdl
 License: SM-License
 
 Files: ./src/archutils/Win32/ddk/hidpi.h
@@ -1650,12 +1652,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files: ./src/ScreenSelectProfile.h
-Copyright: 2007, vdl
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
 
 Files: ./src/CreateZip.cpp
 Copyright: 1990-1999, Info-ZIP.
