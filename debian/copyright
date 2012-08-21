@@ -286,6 +286,10 @@ License:
  source code in a product, acknowledgment is not required but would be
  appreciated.
 
+Files: extern/mad-0.15.1b/*
+Copyright: (C) 2000-2004 Underbit Technologies, Inc.
+License: GPL-2+
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
  ./Themes/_fallback/Other/Profile Stats.xsl
@@ -298,8 +302,6 @@ Files: ./Docs/Luadoc/Lua.xsl
  ./Utils/install-stepmania.pl
  ./Utils/make-src-archive.sh
  ./extern/ffmpeg/include/libavutil/avconfig.h
- ./extern/mad-0.15.1b/msvc++/config.h
- ./extern/mad-0.15.1b/xboxmad/config.h
  ./extern/pcre/chartables.c
  ./extern/zlib/contrib/delphi/ZLibConst.pas
  ./extern/zlib/contrib/infback9/inffix9.h
@@ -1479,35 +1481,6 @@ Copyright: 2001-2002,
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/mad-0.15.1b/bit.c
- ./extern/mad-0.15.1b/bit.h
- ./extern/mad-0.15.1b/decoder.c
- ./extern/mad-0.15.1b/decoder.h
- ./extern/mad-0.15.1b/fixed.c
- ./extern/mad-0.15.1b/fixed.h
- ./extern/mad-0.15.1b/frame.c
- ./extern/mad-0.15.1b/frame.h
- ./extern/mad-0.15.1b/global.h
- ./extern/mad-0.15.1b/huffman.c
- ./extern/mad-0.15.1b/huffman.h
- ./extern/mad-0.15.1b/layer12.c
- ./extern/mad-0.15.1b/layer12.h
- ./extern/mad-0.15.1b/layer3.c
- ./extern/mad-0.15.1b/layer3.h
- ./extern/mad-0.15.1b/mad.h
- ./extern/mad-0.15.1b/minimad.c
- ./extern/mad-0.15.1b/msvc++/mad.h
- ./extern/mad-0.15.1b/stream.c
- ./extern/mad-0.15.1b/stream.h
- ./extern/mad-0.15.1b/synth.c
- ./extern/mad-0.15.1b/synth.h
- ./extern/mad-0.15.1b/timer.c
- ./extern/mad-0.15.1b/timer.h
- ./extern/mad-0.15.1b/version.h
-Copyright: 2000-2004, Underbit Technologies, Inc
-License: GPL-2+
- FIXME
-
 Files: ./extern/zlib/adler32.c
  ./extern/zlib/contrib/blast/blast.h
  ./extern/zlib/contrib/infback9/infback9.c
@@ -1994,12 +1967,6 @@ Copyright: 1995-2010, Mark Adler
   1995-2010, Mark Adler ";
   string in the executable of your product
 License: zlib/libpng
- FIXME
-
-Files: ./extern/mad-0.15.1b/version.c
-Copyright: " MAD_PUBLISHYEAR " " MAD_AUTHOR;
-  2000-2004, Underbit Technologies, Inc
-License: GPL-2+
  FIXME
 
 Files: ./extern/ffmpeg/include/libpostproc/postprocess.h
