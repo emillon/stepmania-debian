@@ -71,10 +71,9 @@ License:
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Files: extern/glew-1.5.8/*
-Copyright:
- 2002-2008, Milan Ikits <milan ikits[]ieee org>
- 2002-2008, Marcelo E. Magallon <mmagallo[]debian org>
- 2002, Lev Povalahev
+Copyright: 2002-2008, Milan Ikits <milan ikits[]ieee org>
+           2002-2008, Marcelo E. Magallon <mmagallo[]debian org>
+           2002, Lev Povalahev
 License:
  All rights reserved.
  .
@@ -107,9 +106,8 @@ License:
  The json-cpp library and this documentation are in Public Domain.
 
 Files: extern/libjpeg/*
-Copyright:
-  1991-2011, Thomas G. Lane, Guido Vollbeding
-  1989, 2000 Aladdin Enterprises
+Copyright: 1991-2011, Thomas G. Lane, Guido Vollbeding
+           1989, 2000 Aladdin Enterprises
 License:
  LEGAL ISSUES
  ============
@@ -189,8 +187,7 @@ License:
      CompuServe Incorporated."
 
 Files: extern/libpng/*
-Copyright:
- 1998-2012 Glenn Randers-Pehrson
+Copyright: 1998-2012 Glenn Randers-Pehrson
 License:
  If you modify libpng you may insert additional notices immediately following
  this sentence.
@@ -327,22 +324,20 @@ License:
  the file ChangeLog history information documenting your changes.  Please read
  the FAQ for more information on the distribution of modified source versions.
 
-Files:
- extern/ffmpeg/*
-Copyright:
- 2000-2002 Fabrice Bellard
- 2009 Laurent Aimar
- 2008-2009 Splitted-Desktop Systems
- 2011 Sebastien Zwickert
- 2008 NVIDIA
- 2003 Ivan Kalvachev
- 2007 Bobby Bingham
- 2008 Vitor Sessak
- 2006-2007 Mans Rullgard
- 2008 Peter Ross
- 2001-2011 Michael Niedermayer <michaelni@gmx.at>
- 2006 Ryan Martell. (rdm4@martellventures.com)
- 2009 Baptiste Coudurier <baptiste.coudurier@gmail.com>
+Files: extern/ffmpeg/*
+Copyright: 2000-2002 Fabrice Bellard
+           2009 Laurent Aimar
+           2008-2009 Splitted-Desktop Systems
+           2011 Sebastien Zwickert
+           2008 NVIDIA
+           2003 Ivan Kalvachev
+           2007 Bobby Bingham
+           2008 Vitor Sessak
+           2006-2007 Mans Rullgard
+           2008 Peter Ross
+           2001-2011 Michael Niedermayer <michaelni@gmx.at>
+           2006 Ryan Martell. (rdm4@martellventures.com)
+           2009 Baptiste Coudurier <baptiste.coudurier@gmail.com>
 License: LGPL-2.1+
  TODO
 
@@ -1615,31 +1610,30 @@ Files: ./src/ActorProxy.h
  ./src/RoomInfoDisplay.h
  ./src/ScreenMiniMenu.h
  ./src/ScreenOptionsMasterPrefs.h
-Copyright:
- 2001-2011, Glenn Maynard
- 2001-2011, Chris Danford
- 2001-2005, Charles Lohr
- 2001-2004, Ben Nordstrom
- 2009-2011, Jason Felds
- 2003-2004, Kevin Slaughter
- 2001-2008, Steve Checkoway
- 2009-2011, Aldo Fregoso
- 2011,      Thai Pangsakulyanont
- 2001-2004, Thad Ward
- 2011,      AJ Kelly
- 2002-2004, Aaron VonderHaar
- 2001-2004, Chris Gomez
- 2001-2011, Colby Klein
- 2003-2005, Sean Burke
-            Andreas Schiffler
- 2001-2004, Adam Clauss
- 2003,      Andrew Wong
- 1998-2001, Avery Lee
- 2004-2006, Joshua Allen
- 2002-2006, Ben Anderson
- 2004,      Hugo Hromic M. <hhromic@udec.cl>
- 2009,      Damien Thebault
- 2007,      vdl
+Copyright: 2001-2011, Glenn Maynard
+           2001-2011, Chris Danford
+           2001-2005, Charles Lohr
+           2001-2004, Ben Nordstrom
+           2009-2011, Jason Felds
+           2003-2004, Kevin Slaughter
+           2001-2008, Steve Checkoway
+           2009-2011, Aldo Fregoso
+           2011,      Thai Pangsakulyanont
+           2001-2004, Thad Ward
+           2011,      AJ Kelly
+           2002-2004, Aaron VonderHaar
+           2001-2004, Chris Gomez
+           2001-2011, Colby Klein
+           2003-2005, Sean Burke
+                      Andreas Schiffler
+           2001-2004, Adam Clauss
+           2003,      Andrew Wong
+           1998-2001, Avery Lee
+           2004-2006, Joshua Allen
+           2002-2006, Ben Anderson
+           2004,      Hugo Hromic M. <hhromic@udec.cl>
+           2009,      Damien Thebault
+           2007,      vdl
 License: SM-License
 
 Files: ./src/archutils/Win32/ddk/hidpi.h
@@ -1647,8 +1641,7 @@ Files: ./src/archutils/Win32/ddk/hidpi.h
  ./src/archutils/Win32/ddk/hidusage.h
  ./src/archutils/Win32/ddk/setupapi.h
  ./src/archutils/Win32/ddk/dbghelp.h
-Copyright:
-  1995-1999, Microsoft Corporation
+Copyright: 1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
 
