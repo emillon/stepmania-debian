@@ -1551,6 +1551,13 @@ Files: ./src/ActorProxy.h
  ./src/arch/Dialog/Dialog.h
  ./src/arch/Dialog/DialogDriver.h
  ./src/arch/Dialog/DialogDriver_Win32.h
+ ./src/CodeSet.cpp
+ ./src/RageSoundReader_SpeedChange.h
+ ./src/ScreenProfileSave.cpp
+ ./src/arch/LoadingWindow/LoadingWindow.cpp
+ ./src/arch/Sound/ALSA9Functions.h
+ ./src/archutils/Win32/CrashHandlerNetworking.h
+ ./src/global.cpp
 Copyright:
  2001-2010, Glenn Maynard
  2001-2010, Chris Danford
@@ -1563,21 +1570,6 @@ Copyright:
  2011,      Thai Pangsakulyanont
  2003,      Thad Ward
 License: SM-License
-
-Files: ./src/CodeSet.cpp
- ./src/RageSoundReader_SpeedChange.h
- ./src/ScreenProfileSave.cpp
- ./src/arch/LoadingWindow/LoadingWindow.cpp
- ./src/arch/Sound/ALSA9Functions.h
- ./src/archutils/Win32/CrashHandlerNetworking.h
- ./src/global.cpp
-Copyright: 2002-2005, Glenn Maynard
-  2003-2004, Glenn Maynard
-  2004, Glenn Maynard
-  2006, Glenn Maynard
-  2007, Glenn Maynard
-License: UNKNOWN
- FIXME
 
 Files: ./src/archutils/Darwin/MouseDevice.h
  ./src/archutils/Darwin/SpecialDirs.cpp
