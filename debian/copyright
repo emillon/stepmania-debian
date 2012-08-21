@@ -1575,9 +1575,19 @@ Files: ./src/ActorProxy.h
  ./src/arch/LowLevelWindow/LowLevelWindow_MacOSX.h
  ./src/BGAnimationLayer.h
  ./src/CourseLoaderCRS.h
+ ./src/ScreenNetworkOptions.h
+ ./src/ScreenSMOnlineLogin.h
+ ./src/GamePreferences.cpp
+ ./src/GamePreferences.h
+ ./src/RageLog.h
+ ./src/arch/InputHandler/InputHandler_Win32_Para.cpp
+ ./src/RageDisplay_Legacy_Helpers.h
+ ./src/RageDisplay_OGL_Helpers.h
+ ./src/arch/LoadingWindow/LoadingWindow_Gtk.h
+ ./src/arch/LoadingWindow/LoadingWindow_GtkModule.h
 Copyright:
- 2001-2010, Glenn Maynard
- 2001-2010, Chris Danford
+ 2001-2011, Glenn Maynard
+ 2001-2011, Chris Danford
  2003-2005, Charles Lohr
  2001-2004, Ben Nordstrom
  2009-2011, Jason Felds
@@ -1588,6 +1598,9 @@ Copyright:
  2003,      Thad Ward
  2011,      AJ Kelly
  2002-2004, Aaron VonderHaar
+ 2001-2004, Chris Gomez
+ 2001-2011, Colby Klein
+ 2003-2004, Sean Burke
 License: SM-License
 
 Files: ./src/archutils/Win32/ddk/hidpi.h
@@ -1598,40 +1611,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files: ./src/ScreenNetworkOptions.h
- ./src/ScreenSMOnlineLogin.h
-Copyright: 2004, Charles Lohr
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/GamePreferences.cpp
- ./src/GamePreferences.h
-Copyright: 2001-2004, Chris Danford, Chris Gomez
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/RageLog.h
- ./src/arch/InputHandler/InputHandler_Win32_Para.cpp
-Copyright: 2001-2004, Chris Danford, Glenn Maynard
-  2002-2004, Chris Danford, Glenn Maynard
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/RageDisplay_Legacy_Helpers.h
- ./src/RageDisplay_OGL_Helpers.h
-Copyright: 2001-2011, Chris Danford, Glenn Maynard, Colby Klein
-License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/arch/LoadingWindow/LoadingWindow_Gtk.h
- ./src/arch/LoadingWindow/LoadingWindow_GtkModule.h
-Copyright: 2003-2004, Glenn Maynard, Sean Burke
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
 
 Files: ./src/InputQueue.h
  ./src/RageTimer.h
