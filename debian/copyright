@@ -301,6 +301,37 @@ Copyright: 1994-2002 by the Xiph.Org Foundation http://www.xiph.org/
 License: BSD (3 clause)
  TODO
 
+Files: extern/zlib/*
+Copyright: 1995-2010 Jean-loup Gailly and Mark Adler
+License:
+ This software is provided 'as-is', without any express or implied
+ warranty.  In no event will the authors be held liable for any damages
+ arising from the use of this software.
+ .
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it
+ freely, subject to the following restrictions:
+ .
+ 1. The origin of this software must not be misrepresented; you must not
+    claim that you wrote the original software. If you use this software
+    in a product, an acknowledgment in the product documentation would be
+    appreciated but is not required.
+ 2. Altered source versions must be plainly marked as such, and must not be
+    misrepresented as being the original software.
+ 3. This notice may not be removed or altered from any source distribution.
+ .
+ Jean-loup Gailly        Mark Adler
+ jloup@gzip.org          madler@alumni.caltech.edu
+ .
+ If you use the zlib library in a product, we would appreciate *not* receiving
+ lengthy legal documents to sign.  The sources are provided for free but without
+ warranty of any kind.  The library has been entirely written by Jean-loup
+ Gailly and Mark Adler; it does not include third-party code.
+ .
+ If you redistribute modified sources, we would appreciate that you include in
+ the file ChangeLog history information documenting your changes.  Please read
+ the FAQ for more information on the distribution of modified source versions.
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
  ./Themes/_fallback/Other/Profile Stats.xsl
@@ -313,25 +344,6 @@ Files: ./Docs/Luadoc/Lua.xsl
  ./Utils/install-stepmania.pl
  ./Utils/make-src-archive.sh
  ./extern/ffmpeg/include/libavutil/avconfig.h
- ./extern/zlib/contrib/delphi/ZLibConst.pas
- ./extern/zlib/contrib/infback9/inffix9.h
- ./extern/zlib/contrib/iostream/test.cpp
- ./extern/zlib/contrib/iostream/zfstream.cpp
- ./extern/zlib/contrib/iostream/zfstream.h
- ./extern/zlib/contrib/iostream2/zstream_test.cpp
- ./extern/zlib/contrib/iostream3/test.cc
- ./extern/zlib/contrib/iostream3/zfstream.cc
- ./extern/zlib/contrib/iostream3/zfstream.h
- ./extern/zlib/contrib/minizip/mztools.c
- ./extern/zlib/contrib/minizip/mztools.h
- ./extern/zlib/contrib/testzlib/testzlib.c
- ./extern/zlib/contrib/untgz/untgz.c
- ./extern/zlib/crc32.h
- ./extern/zlib/examples/fitblk.c
- ./extern/zlib/examples/zpipe.c
- ./extern/zlib/inffixed.h
- ./extern/zlib/old/as400/zlib.inc
- ./extern/zlib/trees.h
  ./src/Actor.cpp
  ./src/Actor.h
  ./src/ActorFrame.cpp
@@ -1491,49 +1503,6 @@ Copyright: 2001-2002,
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/zlib/adler32.c
- ./extern/zlib/contrib/blast/blast.h
- ./extern/zlib/contrib/infback9/infback9.c
- ./extern/zlib/contrib/infback9/infback9.h
- ./extern/zlib/contrib/infback9/inflate9.h
- ./extern/zlib/contrib/infback9/inftree9.h
- ./extern/zlib/contrib/puff/puff.h
- ./extern/zlib/crc32.c
- ./extern/zlib/examples/gun.c
- ./extern/zlib/examples/gzjoin.c
- ./extern/zlib/examples/gzlog.h
- ./extern/zlib/examples/zran.c
- ./extern/zlib/gzclose.c
- ./extern/zlib/gzguts.h
- ./extern/zlib/gzlib.c
- ./extern/zlib/gzread.c
- ./extern/zlib/gzwrite.c
- ./extern/zlib/infback.c
- ./extern/zlib/inffast.c
- ./extern/zlib/inffast.h
- ./extern/zlib/inflate.c
- ./extern/zlib/inflate.h
- ./extern/zlib/inftrees.h
-Copyright: 1995-2003, 2010 Mark Adler
-  1995-2003, Mark Adler
-  1995-2005, 2010 Mark Adler
-  1995-2006, 2010 Mark Adler
-  1995-2007, Mark Adler
-  1995-2008, 2010 Mark Adler
-  1995-2008, Mark Adler
-  1995-2009, Mark Adler
-  1995-2010, Mark Adler
-  2002-2010, Mark Adler
-  2003, 2005, 2008, 2010 Mark Adler
-  2003, Mark Adler
-  2004, 2008 Mark Adler
-  2004, 2010 Mark Adler
-  2004, Mark Adler
-  2004-2005, 2010 Mark Adler
-  2005, Mark Adler
-License: zlib/libpng
- FIXME
-
 Files: ./extern/ffmpeg/include/libavutil/aes.h
  ./extern/ffmpeg/include/libavutil/attributes.h
  ./extern/ffmpeg/include/libavutil/avassert.h
@@ -1722,35 +1691,6 @@ Copyright: 2002-2003, Glenn Maynard
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/zlib/contrib/dotzlib/DotZLib/ChecksumImpl.cs
- ./extern/zlib/contrib/dotzlib/DotZLib/CircularBuffer.cs
- ./extern/zlib/contrib/dotzlib/DotZLib/CodecBase.cs
- ./extern/zlib/contrib/dotzlib/DotZLib/Deflater.cs
- ./extern/zlib/contrib/dotzlib/DotZLib/DotZLib.cs
- ./extern/zlib/contrib/dotzlib/DotZLib/GZipStream.cs
- ./extern/zlib/contrib/dotzlib/DotZLib/Inflater.cs
- ./extern/zlib/contrib/dotzlib/DotZLib/UnitTests.cs
-Copyright: Henrik Ravn 2004
-License: BSL-1.0
- FIXME
-
-Files: ./extern/zlib/compress.c
- ./extern/zlib/deflate.h
- ./extern/zlib/example.c
- ./extern/zlib/minigzip.c
- ./extern/zlib/trees.c
- ./extern/zlib/uncompr.c
- ./extern/zlib/zutil.c
- ./extern/zlib/zutil.h
-Copyright: 1995-2003, 2010 Jean-loup Gailly
-  1995-2005, 2010 Jean-loup Gailly
-  1995-2005, Jean-loup Gailly
-  1995-2006, 2010 Jean-loup Gailly
-  1995-2006, Jean-loup Gailly
-  1995-2010, Jean-loup Gailly
-License: zlib/libpng
- FIXME
-
 Files: ./src/RageFileDriverDirectHelpers.h
  ./src/RageSurfaceUtils_Dither.h
  ./src/RageTextureRenderTarget.h
@@ -1790,16 +1730,6 @@ Copyright: 2011, AJ Kelly
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/zlib/contrib/minizip/ioapi.c
- ./extern/zlib/contrib/minizip/ioapi.h
- ./extern/zlib/contrib/minizip/iowin32.c
- ./extern/zlib/contrib/minizip/iowin32.h
- ./extern/zlib/contrib/minizip/zip.c
-Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-  2009-2010, Mathias Svensson ( http://result42.com )
-License: UNKNOWN
- FIXME
-
 Files: ./extern/ffmpeg/include/libavcodec/avcodec.h
  ./extern/ffmpeg/include/libavformat/avformat.h
  ./extern/ffmpeg/include/libavformat/avio.h
@@ -1817,17 +1747,6 @@ Copyright: 2001-2002, Chris Danford
   2003, Chris Danford
   2003-2004, Chris Danford
   2004, Chris Danford
-License: UNKNOWN
- FIXME
-
-Files: ./extern/zlib/contrib/blast/blast.c
- ./extern/zlib/contrib/puff/puff.c
- ./extern/zlib/examples/enough.c
- ./extern/zlib/examples/gzlog.c
-Copyright: 2002-2010, Mark Adler
-  2003, Mark Adler
-  2004, 2008 Mark Adler
-  2007-2008, Mark Adler
 License: UNKNOWN
  FIXME
 
@@ -1859,7 +1778,7 @@ Copyright: 2005-2006, 2008 Steve Checkoway
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/zlib/contrib/iostream2/zstream.h
+Files:
  ./src/BGAnimationLayer.h
  ./src/CourseLoaderCRS.h
 Copyright: 1997
@@ -1932,30 +1851,6 @@ Files: ./src/RageDisplay_Legacy_Helpers.cpp
  ./src/RageDisplay_OGL_Helpers.cpp
 Copyright: 2001-2011, Chris Danford, Glenn Maynard, Colby Klein
 License: UNKNOWN
- FIXME
-
-Files: ./extern/zlib/contrib/minizip/miniunz.c
- ./extern/zlib/contrib/minizip/minizip.c
-Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-  2007-2008, Even Rouault
-  2009-2010, Mathias Svensson ( http://result42.com )
-License: UNKNOWN
- FIXME
-
-Files: ./extern/zlib/contrib/inflate86/inffas86.c
- ./extern/zlib/contrib/masmx64/inffas8664.c
-Copyright: 1995-2003, Mark Adler
-  2003, Chris Anderson <christop@charm.net>
-  conditions above
-License: zlib/libpng
- FIXME
-
-Files: ./extern/zlib/contrib/infback9/inftree9.c
- ./extern/zlib/inftrees.c
-Copyright: 1995-2010, Mark Adler
-  1995-2010, Mark Adler ";
-  string in the executable of your product
-License: zlib/libpng
  FIXME
 
 Files: ./extern/ffmpeg/include/libpostproc/postprocess.h
@@ -2162,11 +2057,6 @@ Copyright: 2007, vdl
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/zlib/contrib/delphi/ZLib.pas
-Copyright: 1997,99 Borland Corporation }
-License: UNKNOWN
- FIXME
-
 Files: ./src/ScreenNetSelectBase.h
 Copyright: 2004, Charles Lohr
 License: UNKNOWN
@@ -2184,30 +2074,6 @@ License: UNKNOWN
 
 Files: ./src/ScreenPackagesSSC.cpp
 Copyright: 2009, Colby Klein
-License: UNKNOWN
- FIXME
-
-Files: ./extern/zlib/contrib/pascal/zlibpas.pas
-Copyright: 2003, Cosmin Truta
-License: UNKNOWN
- FIXME
-
-Files: ./extern/zlib/contrib/minizip/unzip.c
-Copyright: 1990-2000, Info-ZIP.
-  1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-  2007-2008, Even Rouault
-  2009-2010, Mathias Svensson ( http://result42.com )
-License: UNKNOWN
- FIXME
-
-Files: ./extern/zlib/contrib/minizip/crypt.h
-Copyright: 1998-2005, Gilles Vollant
-  ^ (b)) & 0xff))) ^ ( >> 8))
-License: UNKNOWN
- FIXME
-
-Files: ./extern/zlib/contrib/dotzlib/DotZLib/AssemblyInfo.cs
-Copyright: 2004, Henrik Ravn")
 License: UNKNOWN
  FIXME
 
@@ -2241,48 +2107,4 @@ License: UNKNOWN
 Files: ./src/ScreenOptionsMasterPrefs.h
 Copyright: names.push_back;
 License: UNKNOWN
- FIXME
-
-Files: ./extern/zlib/contrib/pascal/example.pas
-Copyright: 1995-2003, Jean-loup Gailly
-  1998, Jacques Nomssi Nzali
-  2003, Cosmin Truta
-License: zlib/libpng
- FIXME
-
-Files: ./extern/zlib/contrib/minizip/unzip.h
-Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-  2007-2008, Even Rouault
-  2009-2010, Mathias Svensson ( http://result42.com )
-License: zlib/libpng
- FIXME
-
-Files: ./extern/zlib/contrib/minizip/zip.h
-Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-  2009-2010, Mathias Svensson ( http://result42.com )
-License: zlib/libpng
- FIXME
-
-Files: ./extern/zlib/zconf.h
-Copyright: 1995-2010, Jean-loup Gailly
-  z_deflate_
-License: zlib/libpng
- FIXME
-
-Files: ./extern/zlib/zlib.h
-Copyright: 1995-2010, Jean-loup Gailly and Mark Adler
-License: zlib/libpng
- FIXME
-
-Files: ./extern/zlib/deflate.c
-Copyright: 1995-2010, Jean-loup Gailly and Mark Adler
-  1995-2010, Jean-loup Gailly and Mark Adler ";
-  string in the executable of your product
-License: zlib/libpng
- FIXME
-
-Files: ./extern/zlib/examples/gzappend.c
-Copyright: 2003, Mark Adler
-  to help
-License: zlib/libpng
  FIXME
