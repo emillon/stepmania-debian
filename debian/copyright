@@ -1558,6 +1558,11 @@ Files: ./src/ActorProxy.h
  ./src/arch/Sound/ALSA9Functions.h
  ./src/archutils/Win32/CrashHandlerNetworking.h
  ./src/global.cpp
+ ./src/archutils/Darwin/MouseDevice.h
+ ./src/archutils/Darwin/SpecialDirs.cpp
+ ./src/archutils/Darwin/SpecialDirs.h
+ ./src/archutils/Unix/SpecialDirs.cpp
+ ./src/archutils/Unix/SpecialDirs.h
 Copyright:
  2001-2010, Glenn Maynard
  2001-2010, Chris Danford
@@ -1569,17 +1574,8 @@ Copyright:
  2009-2011, Aldo Fregoso
  2011,      Thai Pangsakulyanont
  2003,      Thad Ward
+ 2011,      AJ Kelly
 License: SM-License
-
-Files: ./src/archutils/Darwin/MouseDevice.h
- ./src/archutils/Darwin/SpecialDirs.cpp
- ./src/archutils/Darwin/SpecialDirs.h
- ./src/archutils/Unix/SpecialDirs.cpp
- ./src/archutils/Unix/SpecialDirs.h
-Copyright: 2011, AJ Kelly
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
 
 Files: ./src/ActiveAttackList.cpp
  ./src/MemoryCardDisplay.cpp
