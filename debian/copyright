@@ -1463,18 +1463,10 @@ Files: ./src/ActorProxy.h
  ./src/ScreenTestSound.h
  ./src/SnapDisplay.h
  ./src/XmlFileUtil.h
-Copyright:
- 2001-2010, Glenn Maynard
- 2001-2007, Chris Danford
- 2003-2005, Charles Lohr
- 2001-2004, Ben Nordstrom
- 2011,      Jason Felds
- 2003,      Kevin Slaughter
- 2001-2008, Steve Checkoway
-License: SM-License
-
-Files: ./src/ActorMultiTexture.h
+ ./src/ActorMultiTexture.h
  ./src/AnnouncerManager.h
+ ./src/arch/LowLevelWindow/LowLevelWindow.h
+ ./src/archutils/Unix/Backtrace.h
  ./src/BeginnerHelper.h
  ./src/CourseWriterCRS.h
  ./src/Foreach.h
@@ -1490,21 +1482,18 @@ Files: ./src/ActorMultiTexture.h
  ./src/TitleSubstitution.h
  ./src/Tween.h
  ./src/WheelNotifyIcon.h
- ./src/arch/LowLevelWindow/LowLevelWindow.h
- ./src/archutils/Unix/Backtrace.h
-Copyright: 2001-2004
-  2001-2005
-  2003
-  2003-2004
-  2003-2005
-  2004-2005
-  2004-2006
-  2006
-  2006-2007
-  2009-2011
-  2011
-License: MIT/X11 (BSD like)
- FIXME
+Copyright:
+ 2001-2010, Glenn Maynard
+ 2001-2007, Chris Danford
+ 2003-2005, Charles Lohr
+ 2001-2004, Ben Nordstrom
+ 2009-2011, Jason Felds
+ 2003,      Kevin Slaughter
+ 2001-2008, Steve Checkoway
+ 2009-2011, Aldo Fregoso
+ 2011,      Thai Pangsakulyanont
+ 2003,      Thad Ward
+License: SM-License
 
 Files: ./src/FontManager.h
  ./src/GameLoop.h
