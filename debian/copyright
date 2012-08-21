@@ -1570,6 +1570,9 @@ Files: ./src/ActorProxy.h
  ./src/arch/Sound/RageSoundDriver_ALSA9_Software.h
  ./src/arch/Sound/RageSoundDriver_Null.cpp
  ./src/arch/Sound/RageSoundDriver_Null.h
+ ./src/ScoreKeeper.cpp
+ ./src/arch/InputHandler/InputHandler_MacOSX_HID.h
+ ./src/arch/LowLevelWindow/LowLevelWindow_MacOSX.h
 Copyright:
  2001-2010, Glenn Maynard
  2001-2010, Chris Danford
@@ -1593,15 +1596,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files: ./src/ScoreKeeper.cpp
- ./src/arch/InputHandler/InputHandler_MacOSX_HID.h
- ./src/arch/LowLevelWindow/LowLevelWindow_MacOSX.h
-Copyright: 2005-2006, 2008 Steve Checkoway
-  2005-2006, Steve Checkoway
-  2006, Steve Checkoway
-License: MIT/X11 (BSD like)
- FIXME
 
 Files:
  ./src/BGAnimationLayer.h
