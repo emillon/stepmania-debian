@@ -21,11 +21,6 @@ License: GPL-2+
  On Debian systems, the complete text of the GNU General
  Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
 
-# Please also look if there are files or directories which have a
-# different copyright/license attached and list them here.
-# Please avoid to pick license terms that are more restrictive than the
-# packaged work, as it may make Debian's contributions unacceptable upstream.
-
 Files: extern/lua-5.1/*
 Copyright: 1994-2006 Lua.org, PUC-Rio
 License:
@@ -1708,7 +1703,7 @@ License:
     4. Info-ZIP retains the right to use the names "Info-ZIP," "Zip," "UnZip,"
        "WiZ," "Pocket UnZip," "Pocket Zip," and "MacZip" for its own source and
        binary releases.
-TODO
+Comment: TODO
 
 Files: ./src/glext.h
 Copyright: 1991-2004, Silicon Graphics, Inc
@@ -1739,7 +1734,7 @@ License: SGI Free Software License B Version 1.1
  OpenGL(R) version 1.2.1 Sample Implementation published by SGI, but has
  not been independently verified as being compliant with the OpenGL(R)
  version 1.2.1 Specification.
-TODO
+Comment: TODO
 
 License: SM-License
  All rights reserved.
