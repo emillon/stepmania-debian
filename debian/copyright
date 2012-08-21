@@ -289,10 +289,12 @@ License:
 Files: extern/mad-0.15.1b/*
 Copyright: (C) 2000-2004 Underbit Technologies, Inc.
 License: GPL-2+
+ TODO
 
 Files: extern/pcre/*
 Copyright: 1997-2003 University of Cambridge
 License: BSD (3 clause)
+ TODO
 
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
