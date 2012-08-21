@@ -1544,6 +1544,13 @@ Files: ./src/ActorProxy.h
  ./src/RageUtil_CachedObject.cpp
  ./src/arch/InputHandler/InputHandler_DirectInputHelper.h
  ./src/archutils/Win32/USB.h
+ ./src/RageFileDriverDirectHelpers.h
+ ./src/RageSurfaceUtils_Dither.h
+ ./src/RageTextureRenderTarget.h
+ ./src/arch/ArchHooks/ArchHooks_Win32.h
+ ./src/arch/Dialog/Dialog.h
+ ./src/arch/Dialog/DialogDriver.h
+ ./src/arch/Dialog/DialogDriver_Win32.h
 Copyright:
  2001-2010, Glenn Maynard
  2001-2010, Chris Danford
@@ -1556,20 +1563,6 @@ Copyright:
  2011,      Thai Pangsakulyanont
  2003,      Thad Ward
 License: SM-License
-
-Files: ./src/RageFileDriverDirectHelpers.h
- ./src/RageSurfaceUtils_Dither.h
- ./src/RageTextureRenderTarget.h
- ./src/arch/ArchHooks/ArchHooks_Win32.h
- ./src/arch/Dialog/Dialog.h
- ./src/arch/Dialog/DialogDriver.h
- ./src/arch/Dialog/DialogDriver_Win32.h
-Copyright: 2001-2006, Glenn Maynard, Chris Danford
-  2002-2004, Glenn Maynard, Chris Danford
-  2003-2004, Glenn Maynard, Chris Danford
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
 
 Files: ./src/CodeSet.cpp
  ./src/RageSoundReader_SpeedChange.h
