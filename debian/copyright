@@ -1567,6 +1567,9 @@ Files: ./src/ActorProxy.h
  ./src/MemoryCardDisplay.cpp
  ./src/SnapDisplay.cpp
  ./src/StreamDisplay.h
+ ./src/arch/Sound/RageSoundDriver_ALSA9_Software.h
+ ./src/arch/Sound/RageSoundDriver_Null.cpp
+ ./src/arch/Sound/RageSoundDriver_Null.h
 Copyright:
  2001-2010, Glenn Maynard
  2001-2010, Chris Danford
@@ -1579,6 +1582,7 @@ Copyright:
  2011,      Thai Pangsakulyanont
  2003,      Thad Ward
  2011,      AJ Kelly
+ 2002-2004, Aaron VonderHaar
 License: SM-License
 
 Files: ./src/archutils/Win32/ddk/hidpi.h
@@ -1589,14 +1593,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files: ./src/arch/Sound/RageSoundDriver_ALSA9_Software.h
- ./src/arch/Sound/RageSoundDriver_Null.cpp
- ./src/arch/Sound/RageSoundDriver_Null.h
-Copyright: 2002-2004, Glenn Maynard, Aaron VonderHaar
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
 
 Files: ./src/ScoreKeeper.cpp
  ./src/arch/InputHandler/InputHandler_MacOSX_HID.h
