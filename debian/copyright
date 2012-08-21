@@ -1500,20 +1500,7 @@ Files: ./src/ActorProxy.h
  ./src/archutils/Win32/DirectXHelpers.h
  ./src/archutils/Win32/ErrorStrings.h
  ./src/archutils/Win32/VideoDriverInfo.h
-Copyright:
- 2001-2010, Glenn Maynard
- 2001-2010, Chris Danford
- 2003-2005, Charles Lohr
- 2001-2004, Ben Nordstrom
- 2009-2011, Jason Felds
- 2003,      Kevin Slaughter
- 2001-2008, Steve Checkoway
- 2009-2011, Aldo Fregoso
- 2011,      Thai Pangsakulyanont
- 2003,      Thad Ward
-License: SM-License
-
-Files: ./src/Command.h
+ ./src/Command.h
  ./src/Difficulty.h
  ./src/LuaExpressionTransform.h
  ./src/OptionsCursor.h
@@ -1529,14 +1516,18 @@ Files: ./src/Command.h
  ./src/Transition.h
  ./src/arch/Lights/LightsDriver_SystemMessage.cpp
  ./src/archutils/Win32/CommandLine.cpp
-Copyright: 2001-2003, Chris Danford
-  2001-2004, Chris Danford
-  2003-2004, Chris Danford
-  2004, Chris Danford
-  2004-2005, Chris Danford
-  2006, Chris Danford
-License: MIT/X11 (BSD like)
- FIXME
+Copyright:
+ 2001-2010, Glenn Maynard
+ 2001-2010, Chris Danford
+ 2003-2005, Charles Lohr
+ 2001-2004, Ben Nordstrom
+ 2009-2011, Jason Felds
+ 2003,      Kevin Slaughter
+ 2001-2008, Steve Checkoway
+ 2009-2011, Aldo Fregoso
+ 2011,      Thai Pangsakulyanont
+ 2003,      Thad Ward
+License: SM-License
 
 Files: ./src/ModsGroup.cpp
  ./src/ScoreKeeperShared.h
