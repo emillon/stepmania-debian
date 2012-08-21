@@ -290,6 +290,10 @@ Files: extern/mad-0.15.1b/*
 Copyright: (C) 2000-2004 Underbit Technologies, Inc.
 License: GPL-2+
 
+Files: extern/pcre/*
+Copyright: 1997-2003 University of Cambridge
+License: BSD (3 clause)
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
  ./Themes/_fallback/Other/Profile Stats.xsl
@@ -302,7 +306,6 @@ Files: ./Docs/Luadoc/Lua.xsl
  ./Utils/install-stepmania.pl
  ./Utils/make-src-archive.sh
  ./extern/ffmpeg/include/libavutil/avconfig.h
- ./extern/pcre/chartables.c
  ./extern/zlib/contrib/delphi/ZLibConst.pas
  ./extern/zlib/contrib/infback9/inffix9.h
  ./extern/zlib/contrib/iostream/test.cpp
@@ -1770,18 +1773,6 @@ Copyright: 2002-2005, Glenn Maynard
 License: UNKNOWN
  FIXME
 
-Files: ./extern/pcre/get.c
- ./extern/pcre/internal.h
- ./extern/pcre/maketables.c
- ./extern/pcre/pcre.c
- ./extern/pcre/printint.c
- ./extern/pcre/study.c
-Copyright: 1997-2003, University of Cambridge
-  HOLDERS AND CONTRIBUTORS "AS IS"
-  OWNER OR CONTRIBUTORS BE
-License: BSD (3 clause)
- FIXME
-
 Files: ./src/archutils/Darwin/MouseDevice.h
  ./src/archutils/Darwin/SpecialDirs.cpp
  ./src/archutils/Darwin/SpecialDirs.h
@@ -2241,11 +2232,6 @@ License: UNKNOWN
 Files: ./src/glext.h
 Copyright: 1991-2004, Silicon Graphics, Inc
   in any portions created by third parties is as indicated
-License: UNKNOWN
- FIXME
-
-Files: ./extern/pcre/pcre.h
-Copyright: 1997-2003, University of Cambridge */
 License: UNKNOWN
  FIXME
 
