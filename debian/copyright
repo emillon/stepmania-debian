@@ -1516,20 +1516,7 @@ Files: ./src/ActorProxy.h
  ./src/Transition.h
  ./src/arch/Lights/LightsDriver_SystemMessage.cpp
  ./src/archutils/Win32/CommandLine.cpp
-Copyright:
- 2001-2010, Glenn Maynard
- 2001-2010, Chris Danford
- 2003-2005, Charles Lohr
- 2001-2004, Ben Nordstrom
- 2009-2011, Jason Felds
- 2003,      Kevin Slaughter
- 2001-2008, Steve Checkoway
- 2009-2011, Aldo Fregoso
- 2011,      Thai Pangsakulyanont
- 2003,      Thad Ward
-License: SM-License
-
-Files: ./src/ModsGroup.cpp
+ ./src/ModsGroup.cpp
  ./src/ScoreKeeperShared.h
  ./src/ScreenGameplayShared.cpp
  ./src/ScreenGameplayShared.h
@@ -1544,18 +1531,18 @@ Files: ./src/ModsGroup.cpp
  ./src/archutils/Darwin/PreferredLanguage.m
  ./src/archutils/Darwin/PumpDevice.h
  ./src/archutils/Darwin/VectorHelper.h
-Copyright: 2003, Steve Checkoway
-  2003-2004, Steve Checkoway
-  2003-2005, Steve Checkoway
-  2003-2006, Steve Checkoway
-  2004-2006, Steve Checkoway
-  2005, Steve Checkoway
-  2005-2006, 2008 Steve Checkoway
-  2005-2006, Steve Checkoway
-  2006, Steve Checkoway
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
+Copyright:
+ 2001-2010, Glenn Maynard
+ 2001-2010, Chris Danford
+ 2003-2005, Charles Lohr
+ 2001-2004, Ben Nordstrom
+ 2009-2011, Jason Felds
+ 2003,      Kevin Slaughter
+ 2001-2008, Steve Checkoway
+ 2009-2011, Aldo Fregoso
+ 2011,      Thai Pangsakulyanont
+ 2003,      Thad Ward
+License: SM-License
 
 Files: ./src/LifeMeter.cpp
  ./src/RageFileDriver.h
