@@ -1419,19 +1419,18 @@ Files: ./src/ActorProxy.h
  ./src/archutils/Win32/RestartProgram.h
  ./src/archutils/Win32/SpecialDirs.cpp
  ./src/archutils/Win32/SpecialDirs.h
-Copyright:
- 2002-2010, Glenn Maynard
- 2001-2006, Chris Danford
-License: SM-License
-
-Files: ./src/ActiveAttackList.h
+ ./src/ActiveAttackList.h
  ./src/ActorSound.h
+ ./src/arch/Lights/LightsDriver.h
+ ./src/arch/LoadingWindow/LoadingWindow.h
+ ./src/arch/LoadingWindow/LoadingWindow_MacOSX.h
+ ./src/archutils/Darwin/DarwinThreadHelpers.h
  ./src/AttackDisplay.h
  ./src/AutoActor.h
  ./src/AutoKeysounds.h
- ./src/BGAnimation.h
  ./src/Background.h
  ./src/BannerCache.h
+ ./src/BGAnimation.h
  ./src/CombinedLifeMeter.h
  ./src/CombinedLifeMeterTug.h
  ./src/CommandLineActions.h
@@ -1445,8 +1444,8 @@ Files: ./src/ActiveAttackList.h
  ./src/LocalizedString.h
  ./src/LyricsLoader.h
  ./src/NoteDataWithScoring.h
- ./src/NotesLoader.h
  ./src/NotesLoaderDWI.h
+ ./src/NotesLoader.h
  ./src/NotesWriterDWI.h
  ./src/NotesWriterSM.h
  ./src/NotesWriterSSC.h
@@ -1464,32 +1463,15 @@ Files: ./src/ActiveAttackList.h
  ./src/ScreenTestSound.h
  ./src/SnapDisplay.h
  ./src/XmlFileUtil.h
- ./src/arch/Lights/LightsDriver.h
- ./src/arch/LoadingWindow/LoadingWindow.h
- ./src/arch/LoadingWindow/LoadingWindow_MacOSX.h
- ./src/archutils/Darwin/DarwinThreadHelpers.h
-Copyright: 2001-2002,
-  2001-2003,
-  2001-2003,2007,
-  2001-2004,
-  2001-2005,
-  2001-2007
-  2002-2003,
-  2002-2004,
-  2003
-  2003-2004,
-  2003-2005,
-  2003-2005, 2008
-  2003-2006,
-  2004,
-  2004-2006
-  2005,
-  2006,
-  2006-2007,
-  2011,
-  HOLDER OR HOLDERS
-License: MIT/X11 (BSD like)
- FIXME
+Copyright:
+ 2001-2010, Glenn Maynard
+ 2001-2007, Chris Danford
+ 2003-2005, Charles Lohr
+ 2001-2004, Ben Nordstrom
+ 2011,      Jason Felds
+ 2003,      Kevin Slaughter
+ 2001-2008, Steve Checkoway
+License: SM-License
 
 Files: ./src/ActorMultiTexture.h
  ./src/AnnouncerManager.h
