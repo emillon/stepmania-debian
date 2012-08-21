@@ -193,6 +193,99 @@ License:
      CompuServe Incorporated.  GIF(sm) is a Service Mark property of
      CompuServe Incorporated."
 
+Files: extern/libpng/*
+Copyright:
+ 1998-2012 Glenn Randers-Pehrson
+License:
+ If you modify libpng you may insert additional notices immediately following
+ this sentence.
+ .
+ This code is released under the libpng license.
+ .
+ libpng versions 1.2.6, August 15, 2004, through 1.5.10, March 29, 2012, are
+ Copyright (c) 2004, 2006-2012 Glenn Randers-Pehrson, and are
+ distributed according to the same disclaimer and license as libpng-1.2.5
+ with the following individual added to the list of Contributing Authors:
+ .
+    Cosmin Truta
+ .
+ libpng versions 1.0.7, July 1, 2000, through 1.2.5, October 3, 2002, are
+ Copyright (c) 2000-2002 Glenn Randers-Pehrson, and are
+ distributed according to the same disclaimer and license as libpng-1.0.6
+ with the following individuals added to the list of Contributing Authors:
+ .
+    Simon-Pierre Cadieux
+    Eric S. Raymond
+    Gilles Vollant
+ .
+ and with the following additions to the disclaimer:
+ .
+    There is no warranty against interference with your enjoyment of the
+    library or against infringement.  There is no warranty that our
+    efforts or the library will fulfill any of your particular purposes
+    or needs.  This library is provided with all faults, and the entire
+    risk of satisfactory quality, performance, accuracy, and effort is with
+    the user.
+ .
+ libpng versions 0.97, January 1998, through 1.0.6, March 20, 2000, are
+ Copyright (c) 1998, 1999, 2000 Glenn Randers-Pehrson, and are
+ distributed according to the same disclaimer and license as libpng-0.96,
+ with the following individuals added to the list of Contributing Authors:
+ .
+    Tom Lane
+    Glenn Randers-Pehrson
+    Willem van Schaik
+ .
+ libpng versions 0.89, June 1996, through 0.96, May 1997, are
+ Copyright (c) 1996, 1997 Andreas Dilger
+ Distributed according to the same disclaimer and license as libpng-0.88,
+ with the following individuals added to the list of Contributing Authors:
+ .
+    John Bowler
+    Kevin Bracey
+    Sam Bushell
+    Magnus Holmgren
+    Greg Roelofs
+    Tom Tanner
+ .
+ libpng versions 0.5, May 1995, through 0.88, January 1996, are
+ Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.
+ .
+ For the purposes of this copyright and license, "Contributing Authors"
+ is defined as the following set of individuals:
+ .
+    Andreas Dilger
+    Dave Martindale
+    Guy Eric Schalnat
+    Paul Schmidt
+    Tim Wegner
+ .
+ The PNG Reference Library is supplied "AS IS".  The Contributing Authors
+ and Group 42, Inc. disclaim all warranties, expressed or implied,
+ including, without limitation, the warranties of merchantability and of
+ fitness for any purpose.  The Contributing Authors and Group 42, Inc.
+ assume no liability for direct, indirect, incidental, special, exemplary,
+ or consequential damages, which may result from the use of the PNG
+ Reference Library, even if advised of the possibility of such damage.
+ .
+ Permission is hereby granted to use, copy, modify, and distribute this
+ source code, or portions hereof, for any purpose, without fee, subject
+ to the following restrictions:
+ .
+   1. The origin of this source code must not be misrepresented.
+ .
+   2. Altered versions must be plainly marked as such and must not
+      be misrepresented as being the original source.
+ .
+   3. This Copyright notice may not be removed or altered from
+      any source or altered source distribution.
+ .
+ The Contributing Authors and Group 42, Inc. specifically permit, without
+ fee, and encourage the use of this source code as a component to
+ supporting the PNG file format in commercial products.  If you use this
+ source code in a product, acknowledgment is not required but would be
+ appreciated.
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
  ./Themes/_fallback/Other/Profile Stats.xsl
@@ -205,15 +298,6 @@ Files: ./Docs/Luadoc/Lua.xsl
  ./Utils/install-stepmania.pl
  ./Utils/make-src-archive.sh
  ./extern/ffmpeg/include/libavutil/avconfig.h
- ./extern/libpng/include/autogen.sh
- ./extern/libpng/include/contrib/pngminus/png2pnm.sh
- ./extern/libpng/include/contrib/pngminus/pngminus.sh
- ./extern/libpng/include/contrib/pngminus/pnm2png.sh
- ./extern/libpng/include/contrib/visupng/resource.h
- ./extern/libpng/include/example.c
- ./extern/libpng/include/test-pngtest.sh
- ./extern/libpng/include/test-pngvalid-full.sh
- ./extern/libpng/include/test-pngvalid-simple.sh
  ./extern/mad-0.15.1b/msvc++/config.h
  ./extern/mad-0.15.1b/xboxmad/config.h
  ./extern/pcre/chartables.c
@@ -1467,35 +1551,6 @@ Copyright: 1995-2003, 2010 Mark Adler
 License: zlib/libpng
  FIXME
 
-Files: ./extern/libpng/include/png.c
- ./extern/libpng/include/png.h
- ./extern/libpng/include/pngconf.h
- ./extern/libpng/include/pngdebug.h
- ./extern/libpng/include/pngerror.c
- ./extern/libpng/include/pngget.c
- ./extern/libpng/include/pnginfo.h
- ./extern/libpng/include/pngmem.c
- ./extern/libpng/include/pngpread.c
- ./extern/libpng/include/pngpriv.h
- ./extern/libpng/include/pngread.c
- ./extern/libpng/include/pngrio.c
- ./extern/libpng/include/pngrtran.c
- ./extern/libpng/include/pngrutil.c
- ./extern/libpng/include/pngset.c
- ./extern/libpng/include/pngstruct.h
- ./extern/libpng/include/pngtest.c
- ./extern/libpng/include/pngtrans.c
- ./extern/libpng/include/pngwio.c
- ./extern/libpng/include/pngwrite.c
- ./extern/libpng/include/pngwtran.c
- ./extern/libpng/include/pngwutil.c
-Copyright: 1995-1996, Guy Eric Schalnat, Group 42, Inc.)
-  1996-1997, Andreas Dilger)
-  1998-2011, Glenn Randers-Pehrson
-  1998-2012, Glenn Randers-Pehrson
-License: libpng
- FIXME
-
 Files: ./extern/ffmpeg/include/libavutil/aes.h
  ./extern/ffmpeg/include/libavutil/attributes.h
  ./extern/ffmpeg/include/libavutil/avassert.h
@@ -1713,18 +1768,6 @@ Copyright: 1995-2003, 2010 Jean-loup Gailly
 License: zlib/libpng
  FIXME
 
-Files: ./extern/libpng/include/contrib/gregbook/readpng.c
- ./extern/libpng/include/contrib/gregbook/readpng.h
- ./extern/libpng/include/contrib/gregbook/readpng2.c
- ./extern/libpng/include/contrib/gregbook/readpng2.h
- ./extern/libpng/include/contrib/gregbook/readppm.c
- ./extern/libpng/include/contrib/gregbook/writepng.c
- ./extern/libpng/include/contrib/gregbook/writepng.h
-Copyright: 1998-2007, Greg Roelofs.
-  1998-2008, Greg Roelofs.
-License: GPL-2+
- FIXME
-
 Files: ./src/RageFileDriverDirectHelpers.h
  ./src/RageSurfaceUtils_Dither.h
  ./src/RageTextureRenderTarget.h
@@ -1784,29 +1827,6 @@ Files: ./extern/zlib/contrib/minizip/ioapi.c
 Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
   2009-2010, Mathias Svensson ( http://result42.com )
 License: UNKNOWN
- FIXME
-
-Files: ./extern/libpng/include/contrib/gregbook/rpng-win.c
- ./extern/libpng/include/contrib/gregbook/rpng-x.c
- ./extern/libpng/include/contrib/gregbook/rpng2-win.c
- ./extern/libpng/include/contrib/gregbook/rpng2-x.c
- ./extern/libpng/include/contrib/gregbook/wpng.c
-Copyright: 1998-2007, Greg Roelofs.
-  1998-2008, Greg Roelofs.
-License: UNKNOWN
- FIXME
-
-Files: ./extern/libpng/include/contrib/libtests/pngvalid.c
- ./extern/libpng/include/contrib/pngminim/decoder/pngusr.h
- ./extern/libpng/include/contrib/pngminim/encoder/pngusr.h
- ./extern/libpng/include/contrib/pngminim/preader/pngusr.h
- ./extern/libpng/include/pngvalid.c
-Copyright: 1998-2007, Glenn Randers-Pehrson
-  2007, 2010-2011, Glenn Randers-Pehrson
-  2009-2011, Glenn Randers-Pehrson
-  2011, Glenn Randers-Pehrson
-  2012, Glenn Randers-Pehrson
-License: libpng
  FIXME
 
 Files: ./extern/ffmpeg/include/libavcodec/avcodec.h
@@ -1892,13 +1912,6 @@ Copyright: 2006, Alexander Chemeris
 License: BSD (2 clause)
  FIXME
 
-Files: ./extern/libpng/include/ltmain.sh
- ./extern/mad-0.15.1b/ltmain.sh
-Copyright: 1996-2001, 2003
-  1996-2001, 2003-2006
-License: GPL-2+
- FIXME
-
 Files: ./extern/ffmpeg/include/libavfilter/avfilter.h
  ./extern/ffmpeg/include/libavfilter/avfiltergraph.h
 Copyright: 2007, Bobby Bingham
@@ -1965,18 +1978,6 @@ Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll
   2007-2008, Even Rouault
   2009-2010, Mathias Svensson ( http://result42.com )
 License: UNKNOWN
- FIXME
-
-Files: ./extern/libpng/include/contrib/pngminus/png2pnm.c
- ./extern/libpng/include/contrib/pngminus/pnm2png.c
-Copyright: 1999, Willem van Schaik <willem@schaik.com>
-License: UNKNOWN
- FIXME
-
-Files: ./extern/libpng/include/contrib/visupng/PngFile.c
- ./extern/libpng/include/contrib/visupng/VisualPng.c
-Copyright: 2000, Willem van Schaik
-License: libpng
  FIXME
 
 Files: ./extern/zlib/contrib/inflate86/inffas86.c
@@ -2205,12 +2206,6 @@ Copyright: 2007, vdl
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/libpng/include/contrib/visupng/cexcept.h
-Copyright: 2000-2008, Adam M. Costello and Cosmin Truta
-  holders make no guarantees
-License: UNKNOWN
- FIXME
-
 Files: ./extern/zlib/contrib/delphi/ZLib.pas
 Copyright: 1997,99 Borland Corporation }
 License: UNKNOWN
@@ -2295,16 +2290,6 @@ License: UNKNOWN
 Files: ./src/ScreenOptionsMasterPrefs.h
 Copyright: names.push_back;
 License: UNKNOWN
- FIXME
-
-Files: ./extern/libpng/include/pnglibconf.h
-Copyright: 1998-2012, Glenn Randers-Pehrson */
-License: libpng
- FIXME
-
-Files: ./extern/libpng/include/contrib/visupng/PngFile.h
-Copyright: 2000, Willem van Schaik.*/
-License: libpng
  FIXME
 
 Files: ./extern/zlib/contrib/pascal/example.pas
