@@ -332,6 +332,25 @@ License:
  the file ChangeLog history information documenting your changes.  Please read
  the FAQ for more information on the distribution of modified source versions.
 
+Files:
+ extern/ffmpeg/*
+Copyright:
+ 2000-2002 Fabrice Bellard
+ 2009 Laurent Aimar
+ 2008-2009 Splitted-Desktop Systems
+ 2011 Sebastien Zwickert
+ 2008 NVIDIA
+ 2003 Ivan Kalvachev
+ 2007 Bobby Bingham
+ 2008 Vitor Sessak
+ 2006-2007 Mans Rullgard
+ 2008 Peter Ross
+ 2001-2011 Michael Niedermayer <michaelni@gmx.at>
+ 2006 Ryan Martell. (rdm4@martellventures.com)
+ 2009 Baptiste Coudurier <baptiste.coudurier@gmail.com>
+License: LGPL-2.1+
+ TODO
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
  ./Themes/_fallback/Other/Profile Stats.xsl
@@ -343,7 +362,6 @@ Files: ./Docs/Luadoc/Lua.xsl
  ./Utils/build.sh
  ./Utils/install-stepmania.pl
  ./Utils/make-src-archive.sh
- ./extern/ffmpeg/include/libavutil/avconfig.h
  ./src/Actor.cpp
  ./src/Actor.h
  ./src/ActorFrame.cpp
@@ -1503,36 +1521,6 @@ Copyright: 2001-2002,
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/ffmpeg/include/libavutil/aes.h
- ./extern/ffmpeg/include/libavutil/attributes.h
- ./extern/ffmpeg/include/libavutil/avassert.h
- ./extern/ffmpeg/include/libavutil/avutil.h
- ./extern/ffmpeg/include/libavutil/bswap.h
- ./extern/ffmpeg/include/libavutil/common.h
- ./extern/ffmpeg/include/libavutil/crc.h
- ./extern/ffmpeg/include/libavutil/eval.h
- ./extern/ffmpeg/include/libavutil/intfloat_readwrite.h
- ./extern/ffmpeg/include/libavutil/log.h
- ./extern/ffmpeg/include/libavutil/mathematics.h
- ./extern/ffmpeg/include/libavutil/md5.h
- ./extern/ffmpeg/include/libavutil/mem.h
- ./extern/ffmpeg/include/libavutil/opt.h
- ./extern/ffmpeg/include/libavutil/pixdesc.h
- ./extern/ffmpeg/include/libavutil/pixfmt.h
- ./extern/ffmpeg/include/libavutil/rational.h
- ./extern/ffmpeg/include/libavutil/sha.h
- ./extern/ffmpeg/include/libswscale/swscale.h
-Copyright: 2001-2011, Michael Niedermayer <michaelni@gmx.at>
-  2002, Michael Niedermayer <michaelni@gmx.at>
-  2003, Michael Niedermayer <michaelni@gmx.at>
-  2005, Michael Niedermayer <michaelni@gmx.at>
-  2006, Michael Niedermayer <michaelni@gmx.at>
-  2007, Michael Niedermayer <michaelni@gmx.at>
-  2009, Michael Niedermayer <michaelni@gmx.at>
-  2010, Michael Niedermayer <michaelni@gmx.at>
-License: LGPL-2.1+
- FIXME
-
 Files: ./src/ActorMultiTexture.h
  ./src/AnnouncerManager.h
  ./src/BeginnerHelper.h
@@ -1591,26 +1579,6 @@ Copyright: 2001-2003, Chris Danford, Glenn Maynard
   2002-2004, Chris Danford, Glenn Maynard
   HOLDER OR HOLDERS
 License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./extern/ffmpeg/include/libavcodec/avfft.h
- ./extern/ffmpeg/include/libavcodec/opt.h
- ./extern/ffmpeg/include/libavcodec/version.h
- ./extern/ffmpeg/include/libavdevice/avdevice.h
- ./extern/ffmpeg/include/libavfilter/avcodec.h
- ./extern/ffmpeg/include/libavfilter/buffersink.h
- ./extern/ffmpeg/include/libavfilter/version.h
- ./extern/ffmpeg/include/libavformat/version.h
- ./extern/ffmpeg/include/libavutil/dict.h
- ./extern/ffmpeg/include/libavutil/error.h
- ./extern/ffmpeg/include/libavutil/fifo.h
- ./extern/ffmpeg/include/libavutil/file.h
- ./extern/ffmpeg/include/libavutil/imgutils.h
- ./extern/ffmpeg/include/libavutil/intreadwrite.h
- ./extern/ffmpeg/include/libavutil/parseutils.h
- ./extern/ffmpeg/include/libavutil/samplefmt.h
-Copyright: *No copyright*
-License: LGPL-2.1+
  FIXME
 
 Files: ./src/Command.h
@@ -1730,15 +1698,6 @@ Copyright: 2011, AJ Kelly
 License: MIT/X11 (BSD like)
  FIXME
 
-Files: ./extern/ffmpeg/include/libavcodec/avcodec.h
- ./extern/ffmpeg/include/libavformat/avformat.h
- ./extern/ffmpeg/include/libavformat/avio.h
- ./extern/ffmpeg/include/libavutil/cpu.h
-Copyright: 2000-2002, Fabrice Bellard
-  2001, Fabrice Bellard
-License: LGPL-2.1+
- FIXME
-
 Files: ./src/ActiveAttackList.cpp
  ./src/MemoryCardDisplay.cpp
  ./src/SnapDisplay.cpp
@@ -1786,26 +1745,6 @@ Copyright: 1997
 License: UNKNOWN
  FIXME
 
-Files: ./extern/ffmpeg/include/inttypes.h
- ./extern/ffmpeg/include/stdint.h
-Copyright: 2006, Alexander Chemeris
-  2006-2008, Alexander Chemeris
-License: BSD (2 clause)
- FIXME
-
-Files: ./extern/ffmpeg/include/libavfilter/avfilter.h
- ./extern/ffmpeg/include/libavfilter/avfiltergraph.h
-Copyright: 2007, Bobby Bingham
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavutil/adler32.h
- ./extern/ffmpeg/include/libavutil/avstring.h
-Copyright: 2006, Mans Rullgard
-  2007, Mans Rullgard
-License: LGPL-2.1+
- FIXME
-
 Files: ./src/ScreenNetworkOptions.h
  ./src/ScreenSMOnlineLogin.h
 Copyright: 2004, Charles Lohr
@@ -1851,72 +1790,6 @@ Files: ./src/RageDisplay_Legacy_Helpers.cpp
  ./src/RageDisplay_OGL_Helpers.cpp
 Copyright: 2001-2011, Chris Danford, Glenn Maynard, Colby Klein
 License: UNKNOWN
- FIXME
-
-Files: ./extern/ffmpeg/include/libpostproc/postprocess.h
-Copyright: 2001-2003, Michael Niedermayer (michaelni@gmx.at)
-License: GPL-2+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavutil/random_seed.h
-Copyright: 2009, Baptiste Coudurier <baptiste.coudurier@gmail.com>
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavcodec/xvmc.h
-Copyright: 2003, Ivan Kalvachev
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavcodec/dxva2.h
-Copyright: 2009, Laurent Aimar
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavutil/lfg.h
-Copyright: 2008, Michael Niedermayer
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libswresample/swresample.h
-Copyright: 2011, Michael Niedermayer (michaelni@gmx.at)
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavutil/audioconvert.h
-Copyright: 2006, Michael Niedermayer <michaelni@gmx.at>
-  2008, Peter Ross
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavcodec/vdpau.h
-Copyright: 2008, NVIDIA
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavutil/lzo.h
-Copyright: 2006, Reimar Doeffinger
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavutil/base64.h
-Copyright: 2006, Ryan Martell. (rdm4@martellventures.com)
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavcodec/vda.h
-Copyright: 2011, Sebastien Zwickert
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavcodec/vaapi.h
-Copyright: 2008-2009, Splitted-Desktop Systems
-License: LGPL-2.1+
- FIXME
-
-Files: ./extern/ffmpeg/include/libavfilter/vsrc_buffer.h
-Copyright: 2008, Vitor Sessak
-License: LGPL-2.1+
  FIXME
 
 Files: ./src/RageSurfaceUtils_Zoom.h
