@@ -296,6 +296,11 @@ Copyright: 1997-2003 University of Cambridge
 License: BSD (3 clause)
  TODO
 
+Files: extern/vorbis/*
+Copyright: 1994-2002 by the Xiph.Org Foundation http://www.xiph.org/
+License: BSD (3 clause)
+ TODO
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
  ./Themes/_fallback/Other/Profile Stats.xsl
@@ -1802,15 +1807,6 @@ Files: ./extern/ffmpeg/include/libavcodec/avcodec.h
 Copyright: 2000-2002, Fabrice Bellard
   2001, Fabrice Bellard
 License: LGPL-2.1+
- FIXME
-
-Files: ./extern/vorbis/ogg/ogg.h
- ./extern/vorbis/ogg/os_types.h
- ./extern/vorbis/vorbis/codec.h
- ./extern/vorbis/vorbis/vorbisfile.h
-Copyright: 1994-2001, *
-  1994-2002, *
-License: UNKNOWN
  FIXME
 
 Files: ./src/ActiveAttackList.cpp
