@@ -1612,6 +1612,10 @@ Files: ./src/ActorProxy.h
  ./src/arch/Sound/RageSoundDriver_PulseAudio.h
  ./src/LyricDisplay.h
  ./src/ScreenHowToPlay.h
+ ./src/PlayerNumber.cpp
+ ./src/ScreenNameEntry.h
+ ./src/ScreenNetSelectBase.h
+ ./src/ScreenPackagesSSC.cpp
 Copyright:
  2001-2011, Glenn Maynard
  2001-2011, Chris Danford
@@ -1651,26 +1655,6 @@ Files: ./src/ScreenSelectProfile.h
 Copyright: 2007, vdl
   HOLDER OR HOLDERS
 License: MIT/X11 (BSD like)
- FIXME
-
-Files: ./src/ScreenNetSelectBase.h
-Copyright: 2004, Charles Lohr
-License: UNKNOWN
- FIXME
-
-Files: ./src/PlayerNumber.cpp
-Copyright: 2001-2004, Chris Danford, Chris Gomez
-License: UNKNOWN
- FIXME
-
-Files: ./src/ScreenNameEntry.h
-Copyright: 2001-2006, Chris Danford, Steve Checkoway
-License: UNKNOWN
- FIXME
-
-Files: ./src/ScreenPackagesSSC.cpp
-Copyright: 2009, Colby Klein
-License: UNKNOWN
  FIXME
 
 Files: ./src/CreateZip.cpp
