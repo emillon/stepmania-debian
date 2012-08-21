@@ -1585,6 +1585,10 @@ Files: ./src/ActorProxy.h
  ./src/RageDisplay_OGL_Helpers.h
  ./src/arch/LoadingWindow/LoadingWindow_Gtk.h
  ./src/arch/LoadingWindow/LoadingWindow_GtkModule.h
+ ./src/InputQueue.h
+ ./src/RageTimer.h
+ ./src/RageDisplay_Legacy_Helpers.cpp
+ ./src/RageDisplay_OGL_Helpers.cpp
 Copyright:
  2001-2011, Glenn Maynard
  2001-2011, Chris Danford
@@ -1611,19 +1615,6 @@ Copyright:
   1995-1999, Microsoft Corporation
 License: UNKNOWN
  TODO
-
-Files: ./src/InputQueue.h
- ./src/RageTimer.h
-Copyright: 2001-2003, Chris Danford, Glenn Maynard
-  2001-2007, Chris Danford, Glenn Maynard
-License: UNKNOWN
- FIXME
-
-Files: ./src/RageDisplay_Legacy_Helpers.cpp
- ./src/RageDisplay_OGL_Helpers.cpp
-Copyright: 2001-2011, Chris Danford, Glenn Maynard, Colby Klein
-License: UNKNOWN
- FIXME
 
 Files: ./src/RageSurfaceUtils_Zoom.h
 Copyright: A. Schiffler, Glenn Maynard
