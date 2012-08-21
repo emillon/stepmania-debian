@@ -1,0 +1,3 @@
+copyright check
+don't link against embedded libraries
+don't build embedded libraries

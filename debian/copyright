@@ -293,6 +293,10 @@ Copyright: 1994-2002 by the Xiph.Org Foundation http://www.xiph.org/
 License: BSD (3 clause)
  TODO
 
+Files: *
+Copyright: TODO
+ TODO. Art assets, etc
+
 Files: extern/zlib/*
 Copyright: 1995-2010 Jean-loup Gailly and Mark Adler
 License:
