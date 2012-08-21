@@ -1,18 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: stepmania
-Source: <url://example.com>
+Source: http://stepmania.com/
 
-Files: *
-Copyright: <years> <put author's name and email here>
-           <years> <likewise for another author>
-License: <special license>
- <Put the license of the package here indented by 1 space>
- <This follows the format of Description: lines in control file>
- .
- <Including paragraphs>
-
-# If you want to use GPL v2 or later for the /debian/* files use
-# the following clauses, or change it to suit. Delete these two lines
 Files: debian/*
 Copyright: 2012 Etienne Millon <etienne.millon@gmail.com>
 License: GPL-2+
@@ -36,3 +25,2388 @@ License: GPL-2+
 # different copyright/license attached and list them here.
 # Please avoid to pick license terms that are more restrictive than the
 # packaged work, as it may make Debian's contributions unacceptable upstream.
+
+Files: ./Docs/Luadoc/Lua.xsl
+ ./Themes/_fallback/Other/Profile Common.xsl
+ ./Themes/_fallback/Other/Profile Stats.xsl
+ ./Themes/default/Other/Profile Catalog.xsl
+ ./Themes/default/Other/Profile Common.xsl
+ ./Themes/default/Other/Profile Stats.xsl
+ ./Utils/CreatePackage.pl
+ ./Utils/GetProductVer.sh
+ ./Utils/build.sh
+ ./Utils/install-stepmania.pl
+ ./Utils/make-src-archive.sh
+ ./extern/crypto/CryptBn.cpp
+ ./extern/crypto/CryptBn.h
+ ./extern/crypto/CryptMD5.cpp
+ ./extern/crypto/CryptNoise.cpp
+ ./extern/crypto/CryptPrime.cpp
+ ./extern/crypto/CryptRSA.cpp
+ ./extern/crypto/CryptRand.cpp
+ ./extern/crypto/CryptSH512.cpp
+ ./extern/crypto/CryptSHA.cpp
+ ./extern/ffmpeg/include/libavutil/avconfig.h
+ ./extern/jsoncpp/include/json/autolink.h
+ ./extern/jsoncpp/include/json/config.h
+ ./extern/jsoncpp/include/json/features.h
+ ./extern/jsoncpp/include/json/forwards.h
+ ./extern/jsoncpp/include/json/json.h
+ ./extern/jsoncpp/include/json/reader.h
+ ./extern/jsoncpp/include/json/value.h
+ ./extern/jsoncpp/include/json/writer.h
+ ./extern/jsoncpp/src/lib_json/json_batchallocator.h
+ ./extern/jsoncpp/src/lib_json/json_reader.cpp
+ ./extern/jsoncpp/src/lib_json/json_value.cpp
+ ./extern/jsoncpp/src/lib_json/json_writer.cpp
+ ./extern/libjpeg/example.c
+ ./extern/libjpeg/jaricom.c
+ ./extern/libjpeg/jcarith.c
+ ./extern/libjpeg/jconfig.h
+ ./extern/libjpeg/jdarith.c
+ ./extern/libpng/include/autogen.sh
+ ./extern/libpng/include/contrib/pngminus/png2pnm.sh
+ ./extern/libpng/include/contrib/pngminus/pngminus.sh
+ ./extern/libpng/include/contrib/pngminus/pnm2png.sh
+ ./extern/libpng/include/contrib/visupng/resource.h
+ ./extern/libpng/include/example.c
+ ./extern/libpng/include/test-pngtest.sh
+ ./extern/libpng/include/test-pngvalid-full.sh
+ ./extern/libpng/include/test-pngvalid-simple.sh
+ ./extern/lua-5.1/etc/all.c
+ ./extern/lua-5.1/etc/lua.hpp
+ ./extern/lua-5.1/etc/min.c
+ ./extern/lua-5.1/etc/noparser.c
+ ./extern/lua-5.1/src/lapi.h
+ ./extern/lua-5.1/src/lauxlib.c
+ ./extern/lua-5.1/src/lauxlib.h
+ ./extern/lua-5.1/src/lbaselib.c
+ ./extern/lua-5.1/src/lcode.c
+ ./extern/lua-5.1/src/lcode.h
+ ./extern/lua-5.1/src/ldblib.c
+ ./extern/lua-5.1/src/ldebug.c
+ ./extern/lua-5.1/src/ldebug.h
+ ./extern/lua-5.1/src/ldo.c
+ ./extern/lua-5.1/src/ldo.h
+ ./extern/lua-5.1/src/ldump.c
+ ./extern/lua-5.1/src/lfunc.c
+ ./extern/lua-5.1/src/lfunc.h
+ ./extern/lua-5.1/src/lgc.c
+ ./extern/lua-5.1/src/lgc.h
+ ./extern/lua-5.1/src/linit.c
+ ./extern/lua-5.1/src/liolib.c
+ ./extern/lua-5.1/src/llex.c
+ ./extern/lua-5.1/src/llex.h
+ ./extern/lua-5.1/src/llimits.h
+ ./extern/lua-5.1/src/lmathlib.c
+ ./extern/lua-5.1/src/lmem.c
+ ./extern/lua-5.1/src/lmem.h
+ ./extern/lua-5.1/src/loadlib.c
+ ./extern/lua-5.1/src/lobject.c
+ ./extern/lua-5.1/src/lobject.h
+ ./extern/lua-5.1/src/lopcodes.c
+ ./extern/lua-5.1/src/lopcodes.h
+ ./extern/lua-5.1/src/loslib.c
+ ./extern/lua-5.1/src/lparser.c
+ ./extern/lua-5.1/src/lparser.h
+ ./extern/lua-5.1/src/lstate.c
+ ./extern/lua-5.1/src/lstate.h
+ ./extern/lua-5.1/src/lstring.c
+ ./extern/lua-5.1/src/lstring.h
+ ./extern/lua-5.1/src/ltable.c
+ ./extern/lua-5.1/src/ltable.h
+ ./extern/lua-5.1/src/ltablib.c
+ ./extern/lua-5.1/src/ltm.c
+ ./extern/lua-5.1/src/ltm.h
+ ./extern/lua-5.1/src/lua.c
+ ./extern/lua-5.1/src/luac.c
+ ./extern/lua-5.1/src/luaconf.h
+ ./extern/lua-5.1/src/lualib.h
+ ./extern/lua-5.1/src/lundump.h
+ ./extern/lua-5.1/src/lvm.c
+ ./extern/lua-5.1/src/lvm.h
+ ./extern/lua-5.1/src/lzio.c
+ ./extern/lua-5.1/src/print.c
+ ./extern/mad-0.15.1b/msvc++/config.h
+ ./extern/mad-0.15.1b/xboxmad/config.h
+ ./extern/pcre/chartables.c
+ ./extern/zlib/contrib/delphi/ZLibConst.pas
+ ./extern/zlib/contrib/infback9/inffix9.h
+ ./extern/zlib/contrib/iostream/test.cpp
+ ./extern/zlib/contrib/iostream/zfstream.cpp
+ ./extern/zlib/contrib/iostream/zfstream.h
+ ./extern/zlib/contrib/iostream2/zstream_test.cpp
+ ./extern/zlib/contrib/iostream3/test.cc
+ ./extern/zlib/contrib/iostream3/zfstream.cc
+ ./extern/zlib/contrib/iostream3/zfstream.h
+ ./extern/zlib/contrib/minizip/mztools.c
+ ./extern/zlib/contrib/minizip/mztools.h
+ ./extern/zlib/contrib/testzlib/testzlib.c
+ ./extern/zlib/contrib/untgz/untgz.c
+ ./extern/zlib/crc32.h
+ ./extern/zlib/examples/fitblk.c
+ ./extern/zlib/examples/zpipe.c
+ ./extern/zlib/inffixed.h
+ ./extern/zlib/old/as400/zlib.inc
+ ./extern/zlib/trees.h
+ ./src/Actor.cpp
+ ./src/Actor.h
+ ./src/ActorFrame.cpp
+ ./src/ActorFrame.h
+ ./src/ActorFrameTexture.cpp
+ ./src/ActorFrameTexture.h
+ ./src/ActorMultiTexture.cpp
+ ./src/ActorProxy.cpp
+ ./src/ActorScroller.cpp
+ ./src/ActorScroller.h
+ ./src/ActorSound.cpp
+ ./src/ActorUtil.cpp
+ ./src/ActorUtil.h
+ ./src/AdjustSync.cpp
+ ./src/AdjustSync.h
+ ./src/AnnouncerManager.cpp
+ ./src/ArrowEffects.cpp
+ ./src/ArrowEffects.h
+ ./src/Attack.cpp
+ ./src/Attack.h
+ ./src/AttackDisplay.cpp
+ ./src/AutoActor.cpp
+ ./src/AutoKeysounds.cpp
+ ./src/BGAnimation.cpp
+ ./src/BGAnimationLayer.cpp
+ ./src/BPMDisplay.cpp
+ ./src/BPMDisplay.h
+ ./src/Background.cpp
+ ./src/BackgroundUtil.cpp
+ ./src/BackgroundUtil.h
+ ./src/Banner.cpp
+ ./src/Banner.h
+ ./src/BannerCache.cpp
+ ./src/BeginnerHelper.cpp
+ ./src/BitmapText.cpp
+ ./src/BitmapText.h
+ ./src/Bookkeeper.cpp
+ ./src/Bookkeeper.h
+ ./src/Character.cpp
+ ./src/Character.h
+ ./src/CharacterManager.cpp
+ ./src/CodeDetector.cpp
+ ./src/CodeDetector.h
+ ./src/CombinedLifeMeterTug.cpp
+ ./src/ComboGraph.cpp
+ ./src/Command.cpp
+ ./src/CommandLineActions.cpp
+ ./src/CommonMetrics.cpp
+ ./src/CommonMetrics.h
+ ./src/ControllerStateDisplay.cpp
+ ./src/ControllerStateDisplay.h
+ ./src/Course.cpp
+ ./src/Course.h
+ ./src/CourseContentsList.cpp
+ ./src/CourseLoaderCRS.cpp
+ ./src/CourseUtil.cpp
+ ./src/CourseUtil.h
+ ./src/CourseWriterCRS.cpp
+ ./src/CreateZip.h
+ ./src/CryptHelpers.cpp
+ ./src/CryptHelpers.h
+ ./src/CryptManager.cpp
+ ./src/CsvFile.cpp
+ ./src/DancingCharacters.cpp
+ ./src/DancingCharacters.h
+ ./src/DateTime.cpp
+ ./src/DateTime.h
+ ./src/Difficulty.cpp
+ ./src/DifficultyIcon.cpp
+ ./src/DifficultyList.cpp
+ ./src/DifficultyList.h
+ ./src/DualScrollBar.cpp
+ ./src/DynamicActorScroller.cpp
+ ./src/EditMenu.cpp
+ ./src/EditMenu.h
+ ./src/EnumHelper.cpp
+ ./src/EnumHelper.h
+ ./src/FadingBanner.cpp
+ ./src/FadingBanner.h
+ ./src/FileDownload.cpp
+ ./src/FileDownload.h
+ ./src/Font.cpp
+ ./src/Font.h
+ ./src/FontCharAliases.cpp
+ ./src/FontCharmaps.cpp
+ ./src/FontManager.cpp
+ ./src/Foreground.cpp
+ ./src/Game.cpp
+ ./src/Game.h
+ ./src/GameCommand.cpp
+ ./src/GameCommand.h
+ ./src/GameConstantsAndTypes.cpp
+ ./src/GameConstantsAndTypes.h
+ ./src/GameInput.cpp
+ ./src/GameInput.h
+ ./src/GameLoop.cpp
+ ./src/GameManager.cpp
+ ./src/GameManager.h
+ ./src/GameSoundManager.cpp
+ ./src/GameSoundManager.h
+ ./src/GameState.cpp
+ ./src/GameState.h
+ ./src/GameplayAssist.cpp
+ ./src/GhostArrowRow.cpp
+ ./src/Grade.cpp
+ ./src/Grade.h
+ ./src/GradeDisplay.cpp
+ ./src/GraphDisplay.cpp
+ ./src/GrooveRadar.cpp
+ ./src/GrooveRadar.h
+ ./src/HelpDisplay.cpp
+ ./src/HighScore.cpp
+ ./src/HighScore.h
+ ./src/HoldJudgment.cpp
+ ./src/IniFile.cpp
+ ./src/IniFile.h
+ ./src/InputFilter.cpp
+ ./src/InputFilter.h
+ ./src/InputMapper.cpp
+ ./src/InputMapper.h
+ ./src/InputQueue.cpp
+ ./src/Inventory.cpp
+ ./src/JsonUtil.cpp
+ ./src/JsonUtil.h
+ ./src/LifeMeter.h
+ ./src/LifeMeterBar.cpp
+ ./src/LifeMeterBar.h
+ ./src/LifeMeterBattery.cpp
+ ./src/LifeMeterBattery.h
+ ./src/LifeMeterTime.cpp
+ ./src/LightsManager.cpp
+ ./src/LightsManager.h
+ ./src/LocalizedString.cpp
+ ./src/LuaBinding.cpp
+ ./src/LuaBinding.h
+ ./src/LuaExpressionTransform.cpp
+ ./src/LuaManager.cpp
+ ./src/LuaManager.h
+ ./src/LuaReference.cpp
+ ./src/LuaReference.h
+ ./src/LyricDisplay.cpp
+ ./src/LyricsLoader.cpp
+ ./src/MemoryCardManager.cpp
+ ./src/MemoryCardManager.h
+ ./src/MenuTimer.cpp
+ ./src/MenuTimer.h
+ ./src/MessageManager.cpp
+ ./src/MessageManager.h
+ ./src/MeterDisplay.cpp
+ ./src/ModIcon.cpp
+ ./src/ModIconRow.cpp
+ ./src/Model.cpp
+ ./src/Model.h
+ ./src/ModelManager.cpp
+ ./src/ModelManager.h
+ ./src/ModelTypes.cpp
+ ./src/ModelTypes.h
+ ./src/ModsGroup.h
+ ./src/MsdFile.cpp
+ ./src/MsdFile.h
+ ./src/MusicWheel.cpp
+ ./src/MusicWheel.h
+ ./src/MusicWheelItem.cpp
+ ./src/MusicWheelItem.h
+ ./src/NetworkSyncManager.cpp
+ ./src/NetworkSyncManager.h
+ ./src/NoteData.cpp
+ ./src/NoteData.h
+ ./src/NoteDataUtil.cpp
+ ./src/NoteDataUtil.h
+ ./src/NoteDataWithScoring.cpp
+ ./src/NoteDisplay.cpp
+ ./src/NoteDisplay.h
+ ./src/NoteField.cpp
+ ./src/NoteField.h
+ ./src/NoteSkinManager.cpp
+ ./src/NoteSkinManager.h
+ ./src/NoteTypes.cpp
+ ./src/NoteTypes.h
+ ./src/NotesLoader.cpp
+ ./src/NotesLoaderBMS.cpp
+ ./src/NotesLoaderDWI.cpp
+ ./src/NotesLoaderJson.cpp
+ ./src/NotesLoaderKSF.cpp
+ ./src/NotesLoaderSM.cpp
+ ./src/NotesLoaderSM.h
+ ./src/NotesLoaderSMA.cpp
+ ./src/NotesLoaderSSC.cpp
+ ./src/NotesLoaderSSC.h
+ ./src/NotesWriterDWI.cpp
+ ./src/NotesWriterJson.cpp
+ ./src/NotesWriterSM.cpp
+ ./src/NotesWriterSSC.cpp
+ ./src/OptionRow.cpp
+ ./src/OptionRow.h
+ ./src/OptionRowHandler.cpp
+ ./src/OptionRowHandler.h
+ ./src/OptionsCursor.cpp
+ ./src/OptionsList.cpp
+ ./src/OptionsList.h
+ ./src/PaneDisplay.cpp
+ ./src/PaneDisplay.h
+ ./src/PercentageDisplay.cpp
+ ./src/Player.cpp
+ ./src/Player.h
+ ./src/PlayerAI.cpp
+ ./src/PlayerNumber.h
+ ./src/PlayerOptions.cpp
+ ./src/PlayerOptions.h
+ ./src/PlayerStageStats.cpp
+ ./src/PlayerStageStats.h
+ ./src/PlayerState.cpp
+ ./src/PlayerState.h
+ ./src/Preference.cpp
+ ./src/Preference.h
+ ./src/PrefsManager.cpp
+ ./src/PrefsManager.h
+ ./src/ProductInfo.h
+ ./src/ProductInfo.inc
+ ./src/Profile.cpp
+ ./src/Profile.h
+ ./src/ProfileManager.cpp
+ ./src/ProfileManager.h
+ ./src/RadarValues.cpp
+ ./src/RadarValues.h
+ ./src/RageBitmapTexture.cpp
+ ./src/RageDisplay.cpp
+ ./src/RageDisplay.h
+ ./src/RageDisplay_D3D.cpp
+ ./src/RageDisplay_D3D.h
+ ./src/RageDisplay_Legacy.cpp
+ ./src/RageDisplay_Legacy.h
+ ./src/RageDisplay_Null.cpp
+ ./src/RageDisplay_Null.h
+ ./src/RageDisplay_OGL.cpp
+ ./src/RageDisplay_OGL.h
+ ./src/RageException.cpp
+ ./src/RageFile.cpp
+ ./src/RageFile.h
+ ./src/RageFileBasic.cpp
+ ./src/RageFileBasic.h
+ ./src/RageFileDriver.cpp
+ ./src/RageFileDriverDeflate.cpp
+ ./src/RageFileDriverDeflate.h
+ ./src/RageFileDriverDirect.cpp
+ ./src/RageFileDriverDirect.h
+ ./src/RageFileDriverDirectHelpers.cpp
+ ./src/RageFileDriverMemory.cpp
+ ./src/RageFileDriverReadAhead.cpp
+ ./src/RageFileDriverSlice.cpp
+ ./src/RageFileDriverTimeout.cpp
+ ./src/RageFileDriverZip.cpp
+ ./src/RageFileDriverZip.h
+ ./src/RageFileManager.cpp
+ ./src/RageFileManager.h
+ ./src/RageFileManager_ReadAhead.cpp
+ ./src/RageInput.cpp
+ ./src/RageInputDevice.cpp
+ ./src/RageInputDevice.h
+ ./src/RageLog.cpp
+ ./src/RageMath.cpp
+ ./src/RageMath.h
+ ./src/RageModelGeometry.cpp
+ ./src/RageSound.cpp
+ ./src/RageSound.h
+ ./src/RageSoundManager.cpp
+ ./src/RageSoundManager.h
+ ./src/RageSoundMixBuffer.cpp
+ ./src/RageSoundPosMap.cpp
+ ./src/RageSoundReader_Chain.cpp
+ ./src/RageSoundReader_Chain.h
+ ./src/RageSoundReader_ChannelSplit.cpp
+ ./src/RageSoundReader_ChannelSplit.h
+ ./src/RageSoundReader_Extend.cpp
+ ./src/RageSoundReader_FileReader.cpp
+ ./src/RageSoundReader_MP3.cpp
+ ./src/RageSoundReader_MP3.h
+ ./src/RageSoundReader_Merge.cpp
+ ./src/RageSoundReader_PitchChange.cpp
+ ./src/RageSoundReader_Preload.cpp
+ ./src/RageSoundReader_Resample_Good.cpp
+ ./src/RageSoundReader_SpeedChange.cpp
+ ./src/RageSoundReader_ThreadedBuffer.cpp
+ ./src/RageSoundReader_ThreadedBuffer.h
+ ./src/RageSoundReader_Vorbisfile.cpp
+ ./src/RageSoundReader_WAV.cpp
+ ./src/RageSoundUtil.cpp
+ ./src/RageSurface.cpp
+ ./src/RageSurface.h
+ ./src/RageSurfaceUtils.cpp
+ ./src/RageSurfaceUtils.h
+ ./src/RageSurfaceUtils_Dither.cpp
+ ./src/RageSurfaceUtils_Palettize.cpp
+ ./src/RageSurfaceUtils_Zoom.cpp
+ ./src/RageSurface_Load.cpp
+ ./src/RageSurface_Load_BMP.cpp
+ ./src/RageSurface_Load_GIF.cpp
+ ./src/RageSurface_Load_JPEG.cpp
+ ./src/RageSurface_Load_PNG.cpp
+ ./src/RageSurface_Load_XPM.cpp
+ ./src/RageSurface_Save_BMP.cpp
+ ./src/RageSurface_Save_JPEG.cpp
+ ./src/RageSurface_Save_PNG.cpp
+ ./src/RageTexture.cpp
+ ./src/RageTexture.h
+ ./src/RageTextureID.cpp
+ ./src/RageTextureID.h
+ ./src/RageTextureManager.cpp
+ ./src/RageTextureManager.h
+ ./src/RageTextureRenderTarget.cpp
+ ./src/RageThreads.cpp
+ ./src/RageThreads.h
+ ./src/RageTimer.cpp
+ ./src/RageTypes.cpp
+ ./src/RageTypes.h
+ ./src/RageUtil.cpp
+ ./src/RageUtil.h
+ ./src/RageUtil_AutoPtr.h
+ ./src/RageUtil_BackgroundLoader.cpp
+ ./src/RageUtil_BackgroundLoader.h
+ ./src/RageUtil_CachedObject.h
+ ./src/RageUtil_CharConversions.cpp
+ ./src/RageUtil_CharConversions.h
+ ./src/RageUtil_CircularBuffer.h
+ ./src/RageUtil_FileDB.cpp
+ ./src/RageUtil_FileDB.h
+ ./src/RageUtil_WorkerThread.cpp
+ ./src/RageUtil_WorkerThread.h
+ ./src/RandomSample.cpp
+ ./src/ReceptorArrow.cpp
+ ./src/ReceptorArrowRow.cpp
+ ./src/RollingNumbers.cpp
+ ./src/RoomInfoDisplay.cpp
+ ./src/RoomWheel.cpp
+ ./src/RoomWheel.h
+ ./src/SampleHistory.cpp
+ ./src/ScoreDisplayAliveTime.cpp
+ ./src/ScoreDisplayBattle.cpp
+ ./src/ScoreDisplayCalories.cpp
+ ./src/ScoreDisplayLifeTime.cpp
+ ./src/ScoreDisplayRave.cpp
+ ./src/ScoreKeeper.h
+ ./src/ScoreKeeperNormal.cpp
+ ./src/ScoreKeeperNormal.h
+ ./src/ScoreKeeperRave.cpp
+ ./src/ScoreKeeperShared.cpp
+ ./src/Screen.cpp
+ ./src/Screen.h
+ ./src/ScreenAttract.cpp
+ ./src/ScreenBookkeeping.cpp
+ ./src/ScreenContinue.cpp
+ ./src/ScreenDebugOverlay.cpp
+ ./src/ScreenDemonstration.cpp
+ ./src/ScreenDimensions.cpp
+ ./src/ScreenEdit.cpp
+ ./src/ScreenEdit.h
+ ./src/ScreenEditMenu.cpp
+ ./src/ScreenEnding.cpp
+ ./src/ScreenEvaluation.cpp
+ ./src/ScreenEvaluation.h
+ ./src/ScreenGameplay.cpp
+ ./src/ScreenGameplay.h
+ ./src/ScreenGameplayLesson.cpp
+ ./src/ScreenGameplaySyncMachine.cpp
+ ./src/ScreenHighScores.cpp
+ ./src/ScreenHighScores.h
+ ./src/ScreenHowToPlay.cpp
+ ./src/ScreenInstallOverlay.cpp
+ ./src/ScreenJukebox.cpp
+ ./src/ScreenManager.cpp
+ ./src/ScreenManager.h
+ ./src/ScreenMapControllers.cpp
+ ./src/ScreenMapControllers.h
+ ./src/ScreenMapControllers2.cpp
+ ./src/ScreenMapControllers2.h
+ ./src/ScreenMiniMenu.cpp
+ ./src/ScreenNameEntry.cpp
+ ./src/ScreenNameEntryTraditional.cpp
+ ./src/ScreenNetEvaluation.cpp
+ ./src/ScreenNetRoom.cpp
+ ./src/ScreenNetRoom.h
+ ./src/ScreenNetSelectBase.cpp
+ ./src/ScreenNetSelectMusic.cpp
+ ./src/ScreenNetSelectMusic.h
+ ./src/ScreenNetworkOptions.cpp
+ ./src/ScreenOptions.cpp
+ ./src/ScreenOptions.h
+ ./src/ScreenOptionsCourseOverview.cpp
+ ./src/ScreenOptionsEditCourse.cpp
+ ./src/ScreenOptionsEditProfile.cpp
+ ./src/ScreenOptionsExportPackage.cpp
+ ./src/ScreenOptionsManageCourses.cpp
+ ./src/ScreenOptionsManageEditSteps.cpp
+ ./src/ScreenOptionsManageProfiles.cpp
+ ./src/ScreenOptionsMaster.cpp
+ ./src/ScreenOptionsMasterPrefs.cpp
+ ./src/ScreenOptionsMemoryCard.cpp
+ ./src/ScreenOptionsReviewWorkout.cpp
+ ./src/ScreenOptionsToggleSongs.cpp
+ ./src/ScreenPackages.cpp
+ ./src/ScreenPackages.h
+ ./src/ScreenPlayerOptions.cpp
+ ./src/ScreenProfileLoad.cpp
+ ./src/ScreenPrompt.cpp
+ ./src/ScreenPrompt.h
+ ./src/ScreenRanking.cpp
+ ./src/ScreenRanking.h
+ ./src/ScreenReloadSongs.cpp
+ ./src/ScreenSMOnlineLogin.cpp
+ ./src/ScreenSaveSync.cpp
+ ./src/ScreenSelect.cpp
+ ./src/ScreenSelectCharacter.cpp
+ ./src/ScreenSelectCharacter.h
+ ./src/ScreenSelectLanguage.cpp
+ ./src/ScreenSelectMaster.cpp
+ ./src/ScreenSelectMaster.h
+ ./src/ScreenSelectMusic.cpp
+ ./src/ScreenSelectMusic.h
+ ./src/ScreenSelectProfile.cpp
+ ./src/ScreenServiceAction.cpp
+ ./src/ScreenSetTime.cpp
+ ./src/ScreenStatsOverlay.cpp
+ ./src/ScreenSyncOverlay.cpp
+ ./src/ScreenSystemLayer.cpp
+ ./src/ScreenTestInput.cpp
+ ./src/ScreenTestLights.cpp
+ ./src/ScreenTestSound.cpp
+ ./src/ScreenTextEntry.cpp
+ ./src/ScreenTextEntry.h
+ ./src/ScreenTitleMenu.cpp
+ ./src/ScreenUnlockBrowse.cpp
+ ./src/ScreenUnlockStatus.cpp
+ ./src/ScreenWithMenuElements.cpp
+ ./src/ScreenWithMenuElements.h
+ ./src/ScrollBar.cpp
+ ./src/Song.cpp
+ ./src/Song.h
+ ./src/SongCacheIndex.cpp
+ ./src/SongManager.cpp
+ ./src/SongManager.h
+ ./src/SongOptions.cpp
+ ./src/SongOptions.h
+ ./src/SongPosition.cpp
+ ./src/SongUtil.cpp
+ ./src/SongUtil.h
+ ./src/SoundEffectControl.cpp
+ ./src/Sprite.cpp
+ ./src/Sprite.h
+ ./src/StageStats.cpp
+ ./src/StageStats.h
+ ./src/StatsManager.cpp
+ ./src/StdString.h
+ ./src/StepMania.cpp
+ ./src/Steps.cpp
+ ./src/Steps.h
+ ./src/StepsDisplay.cpp
+ ./src/StepsDisplay.h
+ ./src/StepsUtil.cpp
+ ./src/StepsUtil.h
+ ./src/StreamDisplay.cpp
+ ./src/Style.cpp
+ ./src/Style.h
+ ./src/StyleUtil.cpp
+ ./src/TextBanner.cpp
+ ./src/ThemeManager.cpp
+ ./src/ThemeManager.h
+ ./src/ThemeMetric.h
+ ./src/TimingData.cpp
+ ./src/TimingData.h
+ ./src/TimingSegments.cpp
+ ./src/TimingSegments.h
+ ./src/TitleSubstitution.cpp
+ ./src/Trail.cpp
+ ./src/Trail.h
+ ./src/TrailUtil.cpp
+ ./src/Transition.cpp
+ ./src/Tween.cpp
+ ./src/UnlockManager.cpp
+ ./src/UnlockManager.h
+ ./src/WheelBase.cpp
+ ./src/WheelBase.h
+ ./src/WheelItemBase.cpp
+ ./src/WheelItemBase.h
+ ./src/WheelNotifyIcon.cpp
+ ./src/WorkoutGraph.cpp
+ ./src/XmlFile.cpp
+ ./src/XmlFile.h
+ ./src/XmlFileUtil.cpp
+ ./src/arch/ArchHooks/ArchHooks.cpp
+ ./src/arch/ArchHooks/ArchHooks.h
+ ./src/arch/ArchHooks/ArchHooksUtil.cpp
+ ./src/arch/ArchHooks/ArchHooks_MacOSX.cpp
+ ./src/arch/ArchHooks/ArchHooks_Unix.cpp
+ ./src/arch/ArchHooks/ArchHooks_Win32.cpp
+ ./src/arch/ArchHooks/ArchHooks_Win32Static.cpp
+ ./src/arch/Dialog/Dialog.cpp
+ ./src/arch/Dialog/DialogDriver_MacOSX.cpp
+ ./src/arch/Dialog/DialogDriver_Win32.cpp
+ ./src/arch/InputHandler/InputHandler.cpp
+ ./src/arch/InputHandler/InputHandler.h
+ ./src/arch/InputHandler/InputHandler_DirectInput.cpp
+ ./src/arch/InputHandler/InputHandler_DirectInputHelper.cpp
+ ./src/arch/InputHandler/InputHandler_Linux_Event.cpp
+ ./src/arch/InputHandler/InputHandler_Linux_Joystick.cpp
+ ./src/arch/InputHandler/InputHandler_Linux_tty.cpp
+ ./src/arch/InputHandler/InputHandler_Linux_tty_keys.h
+ ./src/arch/InputHandler/InputHandler_MacOSX_HID.cpp
+ ./src/arch/InputHandler/InputHandler_MonkeyKeyboard.cpp
+ ./src/arch/InputHandler/InputHandler_Win32_MIDI.cpp
+ ./src/arch/InputHandler/InputHandler_Win32_Pump.cpp
+ ./src/arch/InputHandler/InputHandler_X11.cpp
+ ./src/arch/Lights/LightsDriver_LinuxParallel.cpp
+ ./src/arch/Lights/LightsDriver_LinuxWeedTech.cpp
+ ./src/arch/Lights/LightsDriver_Win32Parallel.cpp
+ ./src/arch/LoadingWindow/LoadingWindow_Gtk.cpp
+ ./src/arch/LoadingWindow/LoadingWindow_GtkModule.cpp
+ ./src/arch/LoadingWindow/LoadingWindow_Win32.cpp
+ ./src/arch/LowLevelWindow/LowLevelWindow_Win32.cpp
+ ./src/arch/LowLevelWindow/LowLevelWindow_X11.cpp
+ ./src/arch/MemoryCard/MemoryCardDriver.cpp
+ ./src/arch/MemoryCard/MemoryCardDriver.h
+ ./src/arch/MemoryCard/MemoryCardDriverThreaded_Linux.cpp
+ ./src/arch/MemoryCard/MemoryCardDriverThreaded_MacOSX.cpp
+ ./src/arch/MemoryCard/MemoryCardDriverThreaded_Windows.cpp
+ ./src/arch/MovieTexture/MovieTexture.cpp
+ ./src/arch/MovieTexture/MovieTexture_DShow.cpp
+ ./src/arch/MovieTexture/MovieTexture_DShow.h
+ ./src/arch/MovieTexture/MovieTexture_DShowHelper.cpp
+ ./src/arch/MovieTexture/MovieTexture_FFMpeg.cpp
+ ./src/arch/MovieTexture/MovieTexture_Generic.cpp
+ ./src/arch/MovieTexture/MovieTexture_Generic.h
+ ./src/arch/MovieTexture/MovieTexture_Null.cpp
+ ./src/arch/Sound/ALSA9Dynamic.cpp
+ ./src/arch/Sound/ALSA9Helpers.cpp
+ ./src/arch/Sound/DSoundHelpers.cpp
+ ./src/arch/Sound/DSoundHelpers.h
+ ./src/arch/Sound/RageSoundDriver.h
+ ./src/arch/Sound/RageSoundDriver_ALSA9_Software.cpp
+ ./src/arch/Sound/RageSoundDriver_AU.cpp
+ ./src/arch/Sound/RageSoundDriver_DSound_Software.cpp
+ ./src/arch/Sound/RageSoundDriver_Generic_Software.cpp
+ ./src/arch/Sound/RageSoundDriver_OSS.cpp
+ ./src/arch/Sound/RageSoundDriver_PulseAudio.cpp
+ ./src/arch/Sound/RageSoundDriver_WDMKS.cpp
+ ./src/arch/Sound/RageSoundDriver_WaveOut.cpp
+ ./src/arch/Threads/Threads.h
+ ./src/arch/Threads/Threads_Pthreads.cpp
+ ./src/arch/Threads/Threads_Pthreads.h
+ ./src/arch/Threads/Threads_Win32.cpp
+ ./src/arch/Threads/Threads_Win32.h
+ ./src/arch/arch.cpp
+ ./src/archutils/Darwin/Crash.cpp
+ ./src/archutils/Darwin/DarwinThreadHelpers.cpp
+ ./src/archutils/Darwin/HIDDevice.cpp
+ ./src/archutils/Darwin/HIDDevice.h
+ ./src/archutils/Darwin/JoystickDevice.cpp
+ ./src/archutils/Darwin/KeyboardDevice.cpp
+ ./src/archutils/Darwin/MouseDevice.cpp
+ ./src/archutils/Darwin/PumpDevice.cpp
+ ./src/archutils/Darwin/VectorHelper.cpp
+ ./src/archutils/Darwin/arch_setup.h
+ ./src/archutils/Unix/AssertionHandler.cpp
+ ./src/archutils/Unix/Backtrace.cpp
+ ./src/archutils/Unix/BacktraceNames.cpp
+ ./src/archutils/Unix/CrashHandler.cpp
+ ./src/archutils/Unix/CrashHandlerChild.cpp
+ ./src/archutils/Unix/CrashHandlerInternal.cpp
+ ./src/archutils/Unix/EmergencyShutdown.cpp
+ ./src/archutils/Unix/EmergencyShutdown.h
+ ./src/archutils/Unix/LinuxThreadHelpers.cpp
+ ./src/archutils/Unix/SignalHandler.cpp
+ ./src/archutils/Unix/X11Helper.cpp
+ ./src/archutils/Win32/Crash.cpp
+ ./src/archutils/Win32/CrashHandlerChild.cpp
+ ./src/archutils/Win32/CrashHandlerNetworking.cpp
+ ./src/archutils/Win32/DebugInfoHunt.cpp
+ ./src/archutils/Win32/DialogUtil.cpp
+ ./src/archutils/Win32/ErrorStrings.cpp
+ ./src/archutils/Win32/GetFileInformation.cpp
+ ./src/archutils/Win32/GotoURL.cpp
+ ./src/archutils/Win32/GraphicsWindow.cpp
+ ./src/archutils/Win32/MessageWindow.cpp
+ ./src/archutils/Win32/RegistryAccess.cpp
+ ./src/archutils/Win32/USB.cpp
+ ./src/archutils/Win32/VideoDriverInfo.cpp
+ ./src/archutils/Win32/WindowIcon.cpp
+ ./src/archutils/Win32/WindowsResources.h
+ ./src/archutils/Win32/arch_setup.h
+ ./src/archutils/Win32/mapconv.cpp
+ ./src/archutils/Win32/verinc.c
+ ./src/ezsockets.cpp
+ ./src/ezsockets.h
+ ./src/global.h
+ ./src/libtomcrypt/src/ciphers/aes/aes.c
+ ./src/libtomcrypt/src/ciphers/aes/aes_tab.c
+ ./src/libtomcrypt/src/hashes/helper/hash_memory.c
+ ./src/libtomcrypt/src/hashes/md5.c
+ ./src/libtomcrypt/src/hashes/sha1.c
+ ./src/libtomcrypt/src/headers/tomcrypt.h
+ ./src/libtomcrypt/src/headers/tomcrypt_argchk.h
+ ./src/libtomcrypt/src/headers/tomcrypt_cfg.h
+ ./src/libtomcrypt/src/headers/tomcrypt_cipher.h
+ ./src/libtomcrypt/src/headers/tomcrypt_custom.h
+ ./src/libtomcrypt/src/headers/tomcrypt_hash.h
+ ./src/libtomcrypt/src/headers/tomcrypt_mac.h
+ ./src/libtomcrypt/src/headers/tomcrypt_macros.h
+ ./src/libtomcrypt/src/headers/tomcrypt_math.h
+ ./src/libtomcrypt/src/headers/tomcrypt_misc.h
+ ./src/libtomcrypt/src/headers/tomcrypt_pk.h
+ ./src/libtomcrypt/src/headers/tomcrypt_pkcs.h
+ ./src/libtomcrypt/src/headers/tomcrypt_prng.h
+ ./src/libtomcrypt/src/math/fp/ltc_ecc_fp_mulmod.c
+ ./src/libtomcrypt/src/math/ltm_desc.c
+ ./src/libtomcrypt/src/math/multi.c
+ ./src/libtomcrypt/src/math/rand_prime.c
+ ./src/libtomcrypt/src/misc/base64/base64_decode.c
+ ./src/libtomcrypt/src/misc/base64/base64_encode.c
+ ./src/libtomcrypt/src/misc/burn_stack.c
+ ./src/libtomcrypt/src/misc/crypt/crypt.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_argchk.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_cipher_descriptor.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_cipher_is_valid.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_find_cipher.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_find_cipher_any.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_find_cipher_id.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_find_hash.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_find_hash_any.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_find_hash_id.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_find_hash_oid.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_find_prng.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_fsa.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_hash_descriptor.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_hash_is_valid.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_ltc_mp_descriptor.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_prng_descriptor.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_prng_is_valid.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_register_cipher.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_register_hash.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_register_prng.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_unregister_cipher.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_unregister_hash.c
+ ./src/libtomcrypt/src/misc/crypt/crypt_unregister_prng.c
+ ./src/libtomcrypt/src/misc/error_to_string.c
+ ./src/libtomcrypt/src/misc/pkcs5/pkcs_5_1.c
+ ./src/libtomcrypt/src/misc/pkcs5/pkcs_5_2.c
+ ./src/libtomcrypt/src/misc/zeromem.c
+ ./src/libtomcrypt/src/modes/cbc/cbc_decrypt.c
+ ./src/libtomcrypt/src/modes/cbc/cbc_done.c
+ ./src/libtomcrypt/src/modes/cbc/cbc_encrypt.c
+ ./src/libtomcrypt/src/modes/cbc/cbc_getiv.c
+ ./src/libtomcrypt/src/modes/cbc/cbc_setiv.c
+ ./src/libtomcrypt/src/modes/cbc/cbc_start.c
+ ./src/libtomcrypt/src/modes/cfb/cfb_decrypt.c
+ ./src/libtomcrypt/src/modes/cfb/cfb_done.c
+ ./src/libtomcrypt/src/modes/cfb/cfb_encrypt.c
+ ./src/libtomcrypt/src/modes/cfb/cfb_getiv.c
+ ./src/libtomcrypt/src/modes/cfb/cfb_setiv.c
+ ./src/libtomcrypt/src/modes/cfb/cfb_start.c
+ ./src/libtomcrypt/src/modes/ctr/ctr_decrypt.c
+ ./src/libtomcrypt/src/modes/ctr/ctr_done.c
+ ./src/libtomcrypt/src/modes/ctr/ctr_encrypt.c
+ ./src/libtomcrypt/src/modes/ctr/ctr_getiv.c
+ ./src/libtomcrypt/src/modes/ctr/ctr_setiv.c
+ ./src/libtomcrypt/src/modes/ctr/ctr_start.c
+ ./src/libtomcrypt/src/modes/ctr/ctr_test.c
+ ./src/libtomcrypt/src/modes/ecb/ecb_decrypt.c
+ ./src/libtomcrypt/src/modes/ecb/ecb_done.c
+ ./src/libtomcrypt/src/modes/ecb/ecb_encrypt.c
+ ./src/libtomcrypt/src/modes/ecb/ecb_start.c
+ ./src/libtomcrypt/src/modes/ofb/ofb_decrypt.c
+ ./src/libtomcrypt/src/modes/ofb/ofb_done.c
+ ./src/libtomcrypt/src/modes/ofb/ofb_encrypt.c
+ ./src/libtomcrypt/src/modes/ofb/ofb_getiv.c
+ ./src/libtomcrypt/src/modes/ofb/ofb_setiv.c
+ ./src/libtomcrypt/src/modes/ofb/ofb_start.c
+ ./src/libtomcrypt/src/pk/asn1/der/bit/der_decode_bit_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/bit/der_encode_bit_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/bit/der_length_bit_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/boolean/der_decode_boolean.c
+ ./src/libtomcrypt/src/pk/asn1/der/boolean/der_encode_boolean.c
+ ./src/libtomcrypt/src/pk/asn1/der/boolean/der_length_boolean.c
+ ./src/libtomcrypt/src/pk/asn1/der/choice/der_decode_choice.c
+ ./src/libtomcrypt/src/pk/asn1/der/ia5/der_decode_ia5_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/ia5/der_encode_ia5_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/ia5/der_length_ia5_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/integer/der_decode_integer.c
+ ./src/libtomcrypt/src/pk/asn1/der/integer/der_encode_integer.c
+ ./src/libtomcrypt/src/pk/asn1/der/integer/der_length_integer.c
+ ./src/libtomcrypt/src/pk/asn1/der/object_identifier/der_decode_object_identifier.c
+ ./src/libtomcrypt/src/pk/asn1/der/object_identifier/der_encode_object_identifier.c
+ ./src/libtomcrypt/src/pk/asn1/der/object_identifier/der_length_object_identifier.c
+ ./src/libtomcrypt/src/pk/asn1/der/octet/der_decode_octet_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/octet/der_encode_octet_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/octet/der_length_octet_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/printable_string/der_decode_printable_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/printable_string/der_encode_printable_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/printable_string/der_length_printable_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/sequence/der_decode_sequence_ex.c
+ ./src/libtomcrypt/src/pk/asn1/der/sequence/der_decode_sequence_flexi.c
+ ./src/libtomcrypt/src/pk/asn1/der/sequence/der_decode_sequence_multi.c
+ ./src/libtomcrypt/src/pk/asn1/der/sequence/der_encode_sequence_ex.c
+ ./src/libtomcrypt/src/pk/asn1/der/sequence/der_encode_sequence_multi.c
+ ./src/libtomcrypt/src/pk/asn1/der/sequence/der_length_sequence.c
+ ./src/libtomcrypt/src/pk/asn1/der/sequence/der_sequence_free.c
+ ./src/libtomcrypt/src/pk/asn1/der/set/der_encode_set.c
+ ./src/libtomcrypt/src/pk/asn1/der/set/der_encode_setof.c
+ ./src/libtomcrypt/src/pk/asn1/der/short_integer/der_decode_short_integer.c
+ ./src/libtomcrypt/src/pk/asn1/der/short_integer/der_encode_short_integer.c
+ ./src/libtomcrypt/src/pk/asn1/der/short_integer/der_length_short_integer.c
+ ./src/libtomcrypt/src/pk/asn1/der/utctime/der_decode_utctime.c
+ ./src/libtomcrypt/src/pk/asn1/der/utctime/der_encode_utctime.c
+ ./src/libtomcrypt/src/pk/asn1/der/utctime/der_length_utctime.c
+ ./src/libtomcrypt/src/pk/asn1/der/utf8/der_decode_utf8_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/utf8/der_encode_utf8_string.c
+ ./src/libtomcrypt/src/pk/asn1/der/utf8/der_length_utf8_string.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_decrypt_key.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_encrypt_key.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_export.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_free.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_import.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_make_key.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_shared_secret.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_sign_hash.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_verify_hash.c
+ ./src/libtomcrypt/src/pk/dsa/dsa_verify_key.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_i2osp.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_mgf1.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_oaep_decode.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_oaep_encode.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_os2ip.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_pss_decode.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_pss_encode.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_v1_5_decode.c
+ ./src/libtomcrypt/src/pk/pkcs1/pkcs_1_v1_5_encode.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_decrypt_key.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_encrypt_key.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_export.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_exptmod.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_free.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_import.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_make_key.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_sign_hash.c
+ ./src/libtomcrypt/src/pk/rsa/rsa_verify_hash.c
+ ./src/libtomcrypt/src/prngs/fortuna.c
+ ./src/libtomcrypt/src/prngs/rc4.c
+ ./src/libtomcrypt/src/prngs/rng_get_bytes.c
+ ./src/libtomcrypt/src/prngs/rng_make_prng.c
+ ./src/libtomcrypt/src/prngs/sober128.c
+ ./src/libtomcrypt/src/prngs/sober128tab.c
+ ./src/libtomcrypt/src/prngs/sprng.c
+ ./src/libtomcrypt/src/prngs/yarrow.c
+ ./src/libtommath/bn_error.c
+ ./src/libtommath/bn_fast_mp_invmod.c
+ ./src/libtommath/bn_fast_mp_montgomery_reduce.c
+ ./src/libtommath/bn_fast_s_mp_mul_digs.c
+ ./src/libtommath/bn_fast_s_mp_mul_high_digs.c
+ ./src/libtommath/bn_fast_s_mp_sqr.c
+ ./src/libtommath/bn_mp_2expt.c
+ ./src/libtommath/bn_mp_abs.c
+ ./src/libtommath/bn_mp_add.c
+ ./src/libtommath/bn_mp_add_d.c
+ ./src/libtommath/bn_mp_addmod.c
+ ./src/libtommath/bn_mp_and.c
+ ./src/libtommath/bn_mp_clamp.c
+ ./src/libtommath/bn_mp_clear.c
+ ./src/libtommath/bn_mp_clear_multi.c
+ ./src/libtommath/bn_mp_cmp.c
+ ./src/libtommath/bn_mp_cmp_d.c
+ ./src/libtommath/bn_mp_cmp_mag.c
+ ./src/libtommath/bn_mp_cnt_lsb.c
+ ./src/libtommath/bn_mp_copy.c
+ ./src/libtommath/bn_mp_count_bits.c
+ ./src/libtommath/bn_mp_div.c
+ ./src/libtommath/bn_mp_div_2.c
+ ./src/libtommath/bn_mp_div_2d.c
+ ./src/libtommath/bn_mp_div_3.c
+ ./src/libtommath/bn_mp_div_d.c
+ ./src/libtommath/bn_mp_dr_is_modulus.c
+ ./src/libtommath/bn_mp_dr_reduce.c
+ ./src/libtommath/bn_mp_dr_setup.c
+ ./src/libtommath/bn_mp_exch.c
+ ./src/libtommath/bn_mp_expt_d.c
+ ./src/libtommath/bn_mp_exptmod.c
+ ./src/libtommath/bn_mp_exptmod_fast.c
+ ./src/libtommath/bn_mp_exteuclid.c
+ ./src/libtommath/bn_mp_fread.c
+ ./src/libtommath/bn_mp_fwrite.c
+ ./src/libtommath/bn_mp_gcd.c
+ ./src/libtommath/bn_mp_get_int.c
+ ./src/libtommath/bn_mp_grow.c
+ ./src/libtommath/bn_mp_init.c
+ ./src/libtommath/bn_mp_init_copy.c
+ ./src/libtommath/bn_mp_init_multi.c
+ ./src/libtommath/bn_mp_init_set.c
+ ./src/libtommath/bn_mp_init_set_int.c
+ ./src/libtommath/bn_mp_init_size.c
+ ./src/libtommath/bn_mp_invmod.c
+ ./src/libtommath/bn_mp_invmod_slow.c
+ ./src/libtommath/bn_mp_is_square.c
+ ./src/libtommath/bn_mp_jacobi.c
+ ./src/libtommath/bn_mp_karatsuba_mul.c
+ ./src/libtommath/bn_mp_karatsuba_sqr.c
+ ./src/libtommath/bn_mp_lcm.c
+ ./src/libtommath/bn_mp_lshd.c
+ ./src/libtommath/bn_mp_mod.c
+ ./src/libtommath/bn_mp_mod_2d.c
+ ./src/libtommath/bn_mp_mod_d.c
+ ./src/libtommath/bn_mp_montgomery_calc_normalization.c
+ ./src/libtommath/bn_mp_montgomery_reduce.c
+ ./src/libtommath/bn_mp_montgomery_setup.c
+ ./src/libtommath/bn_mp_mul.c
+ ./src/libtommath/bn_mp_mul_2.c
+ ./src/libtommath/bn_mp_mul_2d.c
+ ./src/libtommath/bn_mp_mul_d.c
+ ./src/libtommath/bn_mp_mulmod.c
+ ./src/libtommath/bn_mp_n_root.c
+ ./src/libtommath/bn_mp_neg.c
+ ./src/libtommath/bn_mp_or.c
+ ./src/libtommath/bn_mp_prime_fermat.c
+ ./src/libtommath/bn_mp_prime_is_divisible.c
+ ./src/libtommath/bn_mp_prime_is_prime.c
+ ./src/libtommath/bn_mp_prime_miller_rabin.c
+ ./src/libtommath/bn_mp_prime_next_prime.c
+ ./src/libtommath/bn_mp_prime_rabin_miller_trials.c
+ ./src/libtommath/bn_mp_prime_random_ex.c
+ ./src/libtommath/bn_mp_radix_size.c
+ ./src/libtommath/bn_mp_radix_smap.c
+ ./src/libtommath/bn_mp_rand.c
+ ./src/libtommath/bn_mp_read_radix.c
+ ./src/libtommath/bn_mp_read_signed_bin.c
+ ./src/libtommath/bn_mp_read_unsigned_bin.c
+ ./src/libtommath/bn_mp_reduce.c
+ ./src/libtommath/bn_mp_reduce_2k.c
+ ./src/libtommath/bn_mp_reduce_2k_l.c
+ ./src/libtommath/bn_mp_reduce_2k_setup.c
+ ./src/libtommath/bn_mp_reduce_2k_setup_l.c
+ ./src/libtommath/bn_mp_reduce_is_2k.c
+ ./src/libtommath/bn_mp_reduce_is_2k_l.c
+ ./src/libtommath/bn_mp_reduce_setup.c
+ ./src/libtommath/bn_mp_rshd.c
+ ./src/libtommath/bn_mp_set.c
+ ./src/libtommath/bn_mp_set_int.c
+ ./src/libtommath/bn_mp_shrink.c
+ ./src/libtommath/bn_mp_signed_bin_size.c
+ ./src/libtommath/bn_mp_sqr.c
+ ./src/libtommath/bn_mp_sqrmod.c
+ ./src/libtommath/bn_mp_sqrt.c
+ ./src/libtommath/bn_mp_sub.c
+ ./src/libtommath/bn_mp_sub_d.c
+ ./src/libtommath/bn_mp_submod.c
+ ./src/libtommath/bn_mp_to_signed_bin.c
+ ./src/libtommath/bn_mp_to_signed_bin_n.c
+ ./src/libtommath/bn_mp_to_unsigned_bin.c
+ ./src/libtommath/bn_mp_to_unsigned_bin_n.c
+ ./src/libtommath/bn_mp_toom_mul.c
+ ./src/libtommath/bn_mp_toom_sqr.c
+ ./src/libtommath/bn_mp_toradix.c
+ ./src/libtommath/bn_mp_toradix_n.c
+ ./src/libtommath/bn_mp_unsigned_bin_size.c
+ ./src/libtommath/bn_mp_xor.c
+ ./src/libtommath/bn_mp_zero.c
+ ./src/libtommath/bn_prime_tab.c
+ ./src/libtommath/bn_reverse.c
+ ./src/libtommath/bn_s_mp_add.c
+ ./src/libtommath/bn_s_mp_exptmod.c
+ ./src/libtommath/bn_s_mp_mul_digs.c
+ ./src/libtommath/bn_s_mp_mul_high_digs.c
+ ./src/libtommath/bn_s_mp_sqr.c
+ ./src/libtommath/bn_s_mp_sub.c
+ ./src/libtommath/bncore.c
+ ./src/libtommath/tommath.h
+ ./src/libtommath/tommath_class.h
+ ./src/libtommath/tommath_superclass.h
+ ./src/tests/test_audio_readers.cpp
+ ./src/tests/test_file_errors.cpp
+ ./src/tests/test_file_readers.cpp
+ ./src/tests/test_misc.cpp
+ ./src/tests/test_misc.h
+ ./src/tests/test_threads.cpp
+ ./src/tests/test_timing_data.cpp
+ ./src/tests/test_vector.cpp
+ ./src/update_check/check_sm5.php
+ ./src/verify_signature/cpp_cryptopp/test.cpp
+ ./src/verify_signature/csharp/VerifySignature.cs
+ ./src/verify_signature/java/VerifySignature.java
+Copyright: *No copyright*
+License: UNKNOWN
+ FIXME
+
+Files: ./src/ActorProxy.h
+ ./src/CodeSet.h
+ ./src/ComboGraph.h
+ ./src/FontCharAliases.h
+ ./src/FontCharmaps.h
+ ./src/Foreground.h
+ ./src/GraphDisplay.h
+ ./src/Quad.cpp
+ ./src/RageFileDriverSlice.h
+ ./src/RageFileDriverTimeout.h
+ ./src/RageFileManager_ReadAhead.h
+ ./src/RageSoundMixBuffer.h
+ ./src/RageSoundPosMap.h
+ ./src/RageSoundReader.cpp
+ ./src/RageSoundReader_Extend.h
+ ./src/RageSoundReader_Filter.h
+ ./src/RageSoundReader_Pan.h
+ ./src/RageSoundReader_PitchChange.h
+ ./src/RageSoundReader_PostBuffering.cpp
+ ./src/RageSoundReader_PostBuffering.h
+ ./src/RageSoundReader_Vorbisfile.h
+ ./src/RageSoundReader_WAV.h
+ ./src/RageSoundUtil.h
+ ./src/RageSurfaceUtils_Palettize.h
+ ./src/RageSurface_Load.h
+ ./src/RageSurface_Load_BMP.h
+ ./src/RageSurface_Load_GIF.h
+ ./src/RageSurface_Load_JPEG.h
+ ./src/RageSurface_Load_PNG.h
+ ./src/RageSurface_Load_XPM.h
+ ./src/RageSurface_Save_BMP.h
+ ./src/RageSurface_Save_PNG.h
+ ./src/RageTexturePreloader.h
+ ./src/ScoreDisplayPercentage.cpp
+ ./src/ScoreDisplayPercentage.h
+ ./src/ScreenExit.cpp
+ ./src/ScreenExit.h
+ ./src/ScreenOptionsMaster.h
+ ./src/ScreenOptionsToggleSongs.h
+ ./src/ScreenProfileLoad.h
+ ./src/ScreenProfileSave.h
+ ./src/ScreenReloadSongs.h
+ ./src/SongCacheIndex.h
+ ./src/arch/ArchHooks/ArchHooks_Unix.h
+ ./src/arch/InputHandler/InputHandler_DirectInput.h
+ ./src/arch/InputHandler/InputHandler_Linux_Event.h
+ ./src/arch/InputHandler/InputHandler_Linux_Joystick.h
+ ./src/arch/InputHandler/InputHandler_Linux_tty.h
+ ./src/arch/InputHandler/InputHandler_MonkeyKeyboard.h
+ ./src/arch/InputHandler/InputHandler_Win32_Para.h
+ ./src/arch/InputHandler/InputHandler_Win32_Pump.h
+ ./src/arch/Lights/LightsDriver.cpp
+ ./src/arch/Lights/LightsDriver_Export.cpp
+ ./src/arch/Lights/LightsDriver_Export.h
+ ./src/arch/LoadingWindow/LoadingWindow_Null.h
+ ./src/arch/LoadingWindow/LoadingWindow_Win32.h
+ ./src/arch/LowLevelWindow/LowLevelWindow.cpp
+ ./src/arch/LowLevelWindow/LowLevelWindow_Win32.h
+ ./src/arch/MovieTexture/MovieTexture.h
+ ./src/arch/MovieTexture/MovieTexture_FFMpeg.h
+ ./src/arch/RageDriver.cpp
+ ./src/arch/RageDriver.h
+ ./src/arch/Sound/ALSA9Dynamic.h
+ ./src/arch/Sound/RageSoundDriver_DSound_Software.h
+ ./src/arch/Sound/RageSoundDriver_OSS.h
+ ./src/arch/Sound/RageSoundDriver_WDMKS.h
+ ./src/arch/Sound/RageSoundDriver_WaveOut.h
+ ./src/archutils/Common/gcc_byte_swaps.h
+ ./src/archutils/Unix/AssertionHandler.h
+ ./src/archutils/Unix/BacktraceNames.h
+ ./src/archutils/Unix/CrashHandler.h
+ ./src/archutils/Unix/CrashHandlerInternal.h
+ ./src/archutils/Unix/GetSysInfo.cpp
+ ./src/archutils/Unix/GetSysInfo.h
+ ./src/archutils/Unix/LinuxThreadHelpers.h
+ ./src/archutils/Unix/RunningUnderValgrind.cpp
+ ./src/archutils/Unix/RunningUnderValgrind.h
+ ./src/archutils/Unix/SignalHandler.h
+ ./src/archutils/Unix/StackCheck.cpp
+ ./src/archutils/Unix/arch_setup.h
+ ./src/archutils/Win32/AppInstance.cpp
+ ./src/archutils/Win32/AppInstance.h
+ ./src/archutils/Win32/CrashHandlerInternal.h
+ ./src/archutils/Win32/DebugInfoHunt.h
+ ./src/archutils/Win32/DialogUtil.h
+ ./src/archutils/Win32/GetFileInformation.h
+ ./src/archutils/Win32/GraphicsWindow.h
+ ./src/archutils/Win32/MessageWindow.h
+ ./src/archutils/Win32/RegistryAccess.h
+ ./src/archutils/Win32/WindowIcon.h
+ ./src/archutils/Win32/WindowsDialogBox.cpp
+ ./src/archutils/Win32/WindowsDialogBox.h
+ ./src/archutils/Win32/arch_setup.cpp
+ ./src/archutils/Win32/arch_time.cpp
+Copyright: 2002-2003, Glenn Maynard
+  2002-2004, Glenn Maynard
+  2002-2005, Glenn Maynard
+  2002-2006, Glenn Maynard
+  2003, Glenn Maynard
+  2003-2004, Glenn Maynard
+  2003-2005, Glenn Maynard
+  2003-2006, Glenn Maynard
+  2003-2008, Glenn Maynard
+  2004, Glenn Maynard
+  2004-2006, Glenn Maynard
+  2005, Glenn Maynard
+  2006, Glenn Maynard
+  2007, Glenn Maynard
+  2008, Glenn Maynard
+  2010, Glenn Maynard
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/CharacterManager.h
+ ./src/CourseContentsList.h
+ ./src/CryptManager.h
+ ./src/DifficultyIcon.h
+ ./src/GradeDisplay.h
+ ./src/HoldJudgment.h
+ ./src/MemoryCardDisplay.h
+ ./src/MeterDisplay.h
+ ./src/ModIcon.h
+ ./src/ModIconRow.h
+ ./src/NotesLoaderBMS.h
+ ./src/PlayerAI.h
+ ./src/RageException.h
+ ./src/RageModelGeometry.h
+ ./src/RageSurface_Save_JPEG.h
+ ./src/RandomSample.h
+ ./src/ScoreDisplay.cpp
+ ./src/ScoreDisplay.h
+ ./src/ScoreDisplayAliveTime.h
+ ./src/ScoreDisplayBattle.h
+ ./src/ScoreDisplayCalories.h
+ ./src/ScoreDisplayLifeTime.h
+ ./src/ScoreDisplayNormal.h
+ ./src/ScoreDisplayOni.h
+ ./src/ScoreDisplayRave.h
+ ./src/ScoreKeeperRave.h
+ ./src/ScreenAttract.h
+ ./src/ScreenContinue.h
+ ./src/ScreenDemonstration.h
+ ./src/ScreenEditMenu.h
+ ./src/ScreenGameplayLesson.h
+ ./src/ScreenGameplayNormal.cpp
+ ./src/ScreenGameplayNormal.h
+ ./src/ScreenInstructions.cpp
+ ./src/ScreenInstructions.h
+ ./src/ScreenJukebox.h
+ ./src/ScreenOptionsCourseOverview.h
+ ./src/ScreenOptionsEditCourse.h
+ ./src/ScreenOptionsEditProfile.h
+ ./src/ScreenOptionsManageEditSteps.h
+ ./src/ScreenOptionsManageProfiles.h
+ ./src/ScreenOptionsMemoryCard.h
+ ./src/ScreenOptionsReviewWorkout.h
+ ./src/ScreenPlayerOptions.h
+ ./src/ScreenSandbox.cpp
+ ./src/ScreenSandbox.h
+ ./src/ScreenSaveSync.h
+ ./src/ScreenSelectLanguage.h
+ ./src/ScreenServiceAction.h
+ ./src/ScreenSongOptions.cpp
+ ./src/ScreenSongOptions.h
+ ./src/ScreenSplash.h
+ ./src/ScreenTestInput.h
+ ./src/ScreenTestLights.h
+ ./src/ScreenTitleMenu.h
+ ./src/ScreenUnlockBrowse.h
+ ./src/ScreenUnlockCelebrate.cpp
+ ./src/ScreenUnlockCelebrate.h
+ ./src/ScrollBar.h
+ ./src/SpecialFiles.cpp
+ ./src/StepMania.h
+ ./src/TextBanner.h
+ ./src/WorkoutGraph.h
+ ./src/arch/Lights/LightsDriver_SystemMessage.h
+ ./src/arch/Lights/LightsDriver_Win32Parallel.h
+ ./src/arch/MemoryCard/MemoryCardDriverThreaded_Linux.h
+ ./src/arch/MemoryCard/MemoryCardDriverThreaded_Windows.h
+ ./src/arch/MemoryCard/MemoryCardDriver_Null.h
+ ./src/archutils/Win32/CommandLine.h
+ ./src/archutils/Win32/GotoURL.h
+ ./src/archutils/Win32/RestartProgram.cpp
+ ./src/archutils/Win32/RestartProgram.h
+ ./src/archutils/Win32/SpecialDirs.cpp
+ ./src/archutils/Win32/SpecialDirs.h
+Copyright: 2001-2002, Chris Danford
+  2001-2003, Chris Danford
+  2001-2004, Chris Danford
+  2001-2005, Chris Danford
+  2002-2004, Chris Danford
+  2003, Chris Danford
+  2003-2004, Chris Danford
+  2003-2005, Chris Danford
+  2004, Chris Danford
+  2005, Chris Danford
+  2006, Chris Danford
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/libjpeg/cderror.h
+ ./extern/libjpeg/cdjpeg.c
+ ./extern/libjpeg/cdjpeg.h
+ ./extern/libjpeg/cjpeg.c
+ ./extern/libjpeg/ckconfig.c
+ ./extern/libjpeg/djpeg.c
+ ./extern/libjpeg/jcapimin.c
+ ./extern/libjpeg/jcapistd.c
+ ./extern/libjpeg/jccoefct.c
+ ./extern/libjpeg/jccolor.c
+ ./extern/libjpeg/jcdctmgr.c
+ ./extern/libjpeg/jchuff.c
+ ./extern/libjpeg/jcinit.c
+ ./extern/libjpeg/jcmainct.c
+ ./extern/libjpeg/jcmarker.c
+ ./extern/libjpeg/jcmaster.c
+ ./extern/libjpeg/jcomapi.c
+ ./extern/libjpeg/jcparam.c
+ ./extern/libjpeg/jcprepct.c
+ ./extern/libjpeg/jcsample.c
+ ./extern/libjpeg/jctrans.c
+ ./extern/libjpeg/jdapimin.c
+ ./extern/libjpeg/jdapistd.c
+ ./extern/libjpeg/jdatadst.c
+ ./extern/libjpeg/jdatasrc.c
+ ./extern/libjpeg/jdcoefct.c
+ ./extern/libjpeg/jdcolor.c
+ ./extern/libjpeg/jdct.h
+ ./extern/libjpeg/jddctmgr.c
+ ./extern/libjpeg/jdhuff.c
+ ./extern/libjpeg/jdinput.c
+ ./extern/libjpeg/jdmainct.c
+ ./extern/libjpeg/jdmarker.c
+ ./extern/libjpeg/jdmaster.c
+ ./extern/libjpeg/jdmerge.c
+ ./extern/libjpeg/jdpostct.c
+ ./extern/libjpeg/jdsample.c
+ ./extern/libjpeg/jdtrans.c
+ ./extern/libjpeg/jerror.c
+ ./extern/libjpeg/jerror.h
+ ./extern/libjpeg/jfdctflt.c
+ ./extern/libjpeg/jfdctfst.c
+ ./extern/libjpeg/jfdctint.c
+ ./extern/libjpeg/jidctflt.c
+ ./extern/libjpeg/jidctfst.c
+ ./extern/libjpeg/jidctint.c
+ ./extern/libjpeg/jinclude.h
+ ./extern/libjpeg/jmemansi.c
+ ./extern/libjpeg/jmemdos.c
+ ./extern/libjpeg/jmemmac.c
+ ./extern/libjpeg/jmemmgr.c
+ ./extern/libjpeg/jmemname.c
+ ./extern/libjpeg/jmemnobs.c
+ ./extern/libjpeg/jmemsys.h
+ ./extern/libjpeg/jmorecfg.h
+ ./extern/libjpeg/jpegint.h
+ ./extern/libjpeg/jpeglib.h
+ ./extern/libjpeg/jquant1.c
+ ./extern/libjpeg/jquant2.c
+ ./extern/libjpeg/jutils.c
+Copyright: 1991-1994, Thomas G. Lane
+  1991-1996, Thomas G. Lane
+  1991-1997, Thomas G. Lane
+  1991-1998, Thomas G. Lane
+  1992-1996, Thomas G. Lane
+  1992-1997, Thomas G. Lane
+  1994-1996, Thomas G. Lane
+  1994-1997, Thomas G. Lane
+  1994-1998, Thomas G. Lane
+  1995-1997, Thomas G. Lane
+  1995-1998, Thomas G. Lane
+License: UNKNOWN
+ FIXME
+
+Files: ./src/ActiveAttackList.h
+ ./src/ActorSound.h
+ ./src/AttackDisplay.h
+ ./src/AutoActor.h
+ ./src/AutoKeysounds.h
+ ./src/BGAnimation.h
+ ./src/Background.h
+ ./src/BannerCache.h
+ ./src/CombinedLifeMeter.h
+ ./src/CombinedLifeMeterTug.h
+ ./src/CommandLineActions.h
+ ./src/DisplayResolutions.h
+ ./src/DualScrollBar.h
+ ./src/DynamicActorScroller.h
+ ./src/GameplayAssist.h
+ ./src/GhostArrowRow.h
+ ./src/InputEventPlus.h
+ ./src/Inventory.h
+ ./src/LocalizedString.h
+ ./src/LyricsLoader.h
+ ./src/NoteDataWithScoring.h
+ ./src/NotesLoader.h
+ ./src/NotesLoaderDWI.h
+ ./src/NotesWriterDWI.h
+ ./src/NotesWriterSM.h
+ ./src/NotesWriterSSC.h
+ ./src/Quad.h
+ ./src/ReceptorArrow.h
+ ./src/ReceptorArrowRow.h
+ ./src/SampleHistory.h
+ ./src/ScreenDimensions.h
+ ./src/ScreenEnding.h
+ ./src/ScreenGameplaySyncMachine.h
+ ./src/ScreenMessage.h
+ ./src/ScreenNameEntryTraditional.h
+ ./src/ScreenPackagesSSC.h
+ ./src/ScreenSyncOverlay.h
+ ./src/ScreenTestSound.h
+ ./src/SnapDisplay.h
+ ./src/XmlFileUtil.h
+ ./src/arch/Lights/LightsDriver.h
+ ./src/arch/LoadingWindow/LoadingWindow.h
+ ./src/arch/LoadingWindow/LoadingWindow_MacOSX.h
+ ./src/archutils/Darwin/DarwinThreadHelpers.h
+Copyright: 2001-2002,
+  2001-2003,
+  2001-2003,2007,
+  2001-2004,
+  2001-2005,
+  2001-2007
+  2002-2003,
+  2002-2004,
+  2003
+  2003-2004,
+  2003-2005,
+  2003-2005, 2008
+  2003-2006,
+  2004,
+  2004-2006
+  2005,
+  2006,
+  2006-2007,
+  2011,
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/mad-0.15.1b/bit.c
+ ./extern/mad-0.15.1b/bit.h
+ ./extern/mad-0.15.1b/decoder.c
+ ./extern/mad-0.15.1b/decoder.h
+ ./extern/mad-0.15.1b/fixed.c
+ ./extern/mad-0.15.1b/fixed.h
+ ./extern/mad-0.15.1b/frame.c
+ ./extern/mad-0.15.1b/frame.h
+ ./extern/mad-0.15.1b/global.h
+ ./extern/mad-0.15.1b/huffman.c
+ ./extern/mad-0.15.1b/huffman.h
+ ./extern/mad-0.15.1b/layer12.c
+ ./extern/mad-0.15.1b/layer12.h
+ ./extern/mad-0.15.1b/layer3.c
+ ./extern/mad-0.15.1b/layer3.h
+ ./extern/mad-0.15.1b/mad.h
+ ./extern/mad-0.15.1b/minimad.c
+ ./extern/mad-0.15.1b/msvc++/mad.h
+ ./extern/mad-0.15.1b/stream.c
+ ./extern/mad-0.15.1b/stream.h
+ ./extern/mad-0.15.1b/synth.c
+ ./extern/mad-0.15.1b/synth.h
+ ./extern/mad-0.15.1b/timer.c
+ ./extern/mad-0.15.1b/timer.h
+ ./extern/mad-0.15.1b/version.h
+Copyright: 2000-2004, Underbit Technologies, Inc
+License: GPL-2+
+ FIXME
+
+Files: ./extern/zlib/adler32.c
+ ./extern/zlib/contrib/blast/blast.h
+ ./extern/zlib/contrib/infback9/infback9.c
+ ./extern/zlib/contrib/infback9/infback9.h
+ ./extern/zlib/contrib/infback9/inflate9.h
+ ./extern/zlib/contrib/infback9/inftree9.h
+ ./extern/zlib/contrib/puff/puff.h
+ ./extern/zlib/crc32.c
+ ./extern/zlib/examples/gun.c
+ ./extern/zlib/examples/gzjoin.c
+ ./extern/zlib/examples/gzlog.h
+ ./extern/zlib/examples/zran.c
+ ./extern/zlib/gzclose.c
+ ./extern/zlib/gzguts.h
+ ./extern/zlib/gzlib.c
+ ./extern/zlib/gzread.c
+ ./extern/zlib/gzwrite.c
+ ./extern/zlib/infback.c
+ ./extern/zlib/inffast.c
+ ./extern/zlib/inffast.h
+ ./extern/zlib/inflate.c
+ ./extern/zlib/inflate.h
+ ./extern/zlib/inftrees.h
+Copyright: 1995-2003, 2010 Mark Adler
+  1995-2003, Mark Adler
+  1995-2005, 2010 Mark Adler
+  1995-2006, 2010 Mark Adler
+  1995-2007, Mark Adler
+  1995-2008, 2010 Mark Adler
+  1995-2008, Mark Adler
+  1995-2009, Mark Adler
+  1995-2010, Mark Adler
+  2002-2010, Mark Adler
+  2003, 2005, 2008, 2010 Mark Adler
+  2003, Mark Adler
+  2004, 2008 Mark Adler
+  2004, 2010 Mark Adler
+  2004, Mark Adler
+  2004-2005, 2010 Mark Adler
+  2005, Mark Adler
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/libpng/include/png.c
+ ./extern/libpng/include/png.h
+ ./extern/libpng/include/pngconf.h
+ ./extern/libpng/include/pngdebug.h
+ ./extern/libpng/include/pngerror.c
+ ./extern/libpng/include/pngget.c
+ ./extern/libpng/include/pnginfo.h
+ ./extern/libpng/include/pngmem.c
+ ./extern/libpng/include/pngpread.c
+ ./extern/libpng/include/pngpriv.h
+ ./extern/libpng/include/pngread.c
+ ./extern/libpng/include/pngrio.c
+ ./extern/libpng/include/pngrtran.c
+ ./extern/libpng/include/pngrutil.c
+ ./extern/libpng/include/pngset.c
+ ./extern/libpng/include/pngstruct.h
+ ./extern/libpng/include/pngtest.c
+ ./extern/libpng/include/pngtrans.c
+ ./extern/libpng/include/pngwio.c
+ ./extern/libpng/include/pngwrite.c
+ ./extern/libpng/include/pngwtran.c
+ ./extern/libpng/include/pngwutil.c
+Copyright: 1995-1996, Guy Eric Schalnat, Group 42, Inc.)
+  1996-1997, Andreas Dilger)
+  1998-2011, Glenn Randers-Pehrson
+  1998-2012, Glenn Randers-Pehrson
+License: libpng
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavutil/aes.h
+ ./extern/ffmpeg/include/libavutil/attributes.h
+ ./extern/ffmpeg/include/libavutil/avassert.h
+ ./extern/ffmpeg/include/libavutil/avutil.h
+ ./extern/ffmpeg/include/libavutil/bswap.h
+ ./extern/ffmpeg/include/libavutil/common.h
+ ./extern/ffmpeg/include/libavutil/crc.h
+ ./extern/ffmpeg/include/libavutil/eval.h
+ ./extern/ffmpeg/include/libavutil/intfloat_readwrite.h
+ ./extern/ffmpeg/include/libavutil/log.h
+ ./extern/ffmpeg/include/libavutil/mathematics.h
+ ./extern/ffmpeg/include/libavutil/md5.h
+ ./extern/ffmpeg/include/libavutil/mem.h
+ ./extern/ffmpeg/include/libavutil/opt.h
+ ./extern/ffmpeg/include/libavutil/pixdesc.h
+ ./extern/ffmpeg/include/libavutil/pixfmt.h
+ ./extern/ffmpeg/include/libavutil/rational.h
+ ./extern/ffmpeg/include/libavutil/sha.h
+ ./extern/ffmpeg/include/libswscale/swscale.h
+Copyright: 2001-2011, Michael Niedermayer <michaelni@gmx.at>
+  2002, Michael Niedermayer <michaelni@gmx.at>
+  2003, Michael Niedermayer <michaelni@gmx.at>
+  2005, Michael Niedermayer <michaelni@gmx.at>
+  2006, Michael Niedermayer <michaelni@gmx.at>
+  2007, Michael Niedermayer <michaelni@gmx.at>
+  2009, Michael Niedermayer <michaelni@gmx.at>
+  2010, Michael Niedermayer <michaelni@gmx.at>
+License: LGPL-2.1+
+ FIXME
+
+Files: ./src/ActorMultiTexture.h
+ ./src/AnnouncerManager.h
+ ./src/BeginnerHelper.h
+ ./src/CourseWriterCRS.h
+ ./src/Foreach.h
+ ./src/LifeMeterTime.h
+ ./src/NotesLoaderSMA.h
+ ./src/RageSoundReader_Merge.h
+ ./src/RollingNumbers.h
+ ./src/ScreenSelect.h
+ ./src/SongPosition.h
+ ./src/SoundEffectControl.h
+ ./src/SpecialFiles.h
+ ./src/StatsManager.h
+ ./src/TitleSubstitution.h
+ ./src/Tween.h
+ ./src/WheelNotifyIcon.h
+ ./src/arch/LowLevelWindow/LowLevelWindow.h
+ ./src/archutils/Unix/Backtrace.h
+Copyright: 2001-2004
+  2001-2005
+  2003
+  2003-2004
+  2003-2005
+  2004-2005
+  2004-2006
+  2006
+  2006-2007
+  2009-2011
+  2011
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/FontManager.h
+ ./src/GameLoop.h
+ ./src/HelpDisplay.h
+ ./src/NotesLoaderJson.h
+ ./src/NotesLoaderKSF.h
+ ./src/NotesWriterJson.h
+ ./src/RageBitmapTexture.h
+ ./src/RageInput.h
+ ./src/ScreenDebugOverlay.h
+ ./src/ScreenInstallOverlay.h
+ ./src/ScreenStatsOverlay.h
+ ./src/ScreenSystemLayer.h
+ ./src/StyleUtil.h
+ ./src/arch/MovieTexture/MovieTexture_DShowHelper.h
+ ./src/archutils/Win32/DirectXHelpers.cpp
+ ./src/archutils/Win32/DirectXHelpers.h
+ ./src/archutils/Win32/ErrorStrings.h
+ ./src/archutils/Win32/VideoDriverInfo.h
+Copyright: 2001-2003, Chris Danford, Glenn Maynard
+  2001-2004, Chris Danford, Glenn Maynard
+  2001-2005, Chris Danford, Glenn Maynard
+  2001-2010, Chris Danford, Glenn Maynard
+  2002-2004, Chris Danford, Glenn Maynard
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavcodec/avfft.h
+ ./extern/ffmpeg/include/libavcodec/opt.h
+ ./extern/ffmpeg/include/libavcodec/version.h
+ ./extern/ffmpeg/include/libavdevice/avdevice.h
+ ./extern/ffmpeg/include/libavfilter/avcodec.h
+ ./extern/ffmpeg/include/libavfilter/buffersink.h
+ ./extern/ffmpeg/include/libavfilter/version.h
+ ./extern/ffmpeg/include/libavformat/version.h
+ ./extern/ffmpeg/include/libavutil/dict.h
+ ./extern/ffmpeg/include/libavutil/error.h
+ ./extern/ffmpeg/include/libavutil/fifo.h
+ ./extern/ffmpeg/include/libavutil/file.h
+ ./extern/ffmpeg/include/libavutil/imgutils.h
+ ./extern/ffmpeg/include/libavutil/intreadwrite.h
+ ./extern/ffmpeg/include/libavutil/parseutils.h
+ ./extern/ffmpeg/include/libavutil/samplefmt.h
+Copyright: *No copyright*
+License: LGPL-2.1+
+ FIXME
+
+Files: ./src/Command.h
+ ./src/Difficulty.h
+ ./src/LuaExpressionTransform.h
+ ./src/OptionsCursor.h
+ ./src/PercentageDisplay.h
+ ./src/ScoreDisplayNormal.cpp
+ ./src/ScoreDisplayOni.cpp
+ ./src/ScreenBookkeeping.h
+ ./src/ScreenOptionsExportPackage.h
+ ./src/ScreenSetTime.h
+ ./src/ScreenSplash.cpp
+ ./src/SubscriptionManager.h
+ ./src/TrailUtil.h
+ ./src/Transition.h
+ ./src/arch/Lights/LightsDriver_SystemMessage.cpp
+ ./src/archutils/Win32/CommandLine.cpp
+Copyright: 2001-2003, Chris Danford
+  2001-2004, Chris Danford
+  2003-2004, Chris Danford
+  2004, Chris Danford
+  2004-2005, Chris Danford
+  2006, Chris Danford
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/ModsGroup.cpp
+ ./src/ScoreKeeperShared.h
+ ./src/ScreenGameplayShared.cpp
+ ./src/ScreenGameplayShared.h
+ ./src/arch/ArchHooks/ArchHooks_MacOSX.h
+ ./src/arch/Dialog/DialogDriver_MacOSX.h
+ ./src/arch/MemoryCard/MemoryCardDriverThreaded_MacOSX.h
+ ./src/arch/MovieTexture/MovieTexture_Null.h
+ ./src/arch/Sound/RageSoundDriver_AU.h
+ ./src/archutils/Darwin/Crash.h
+ ./src/archutils/Darwin/JoystickDevice.h
+ ./src/archutils/Darwin/KeyboardDevice.h
+ ./src/archutils/Darwin/PreferredLanguage.m
+ ./src/archutils/Darwin/PumpDevice.h
+ ./src/archutils/Darwin/VectorHelper.h
+Copyright: 2003, Steve Checkoway
+  2003-2004, Steve Checkoway
+  2003-2005, Steve Checkoway
+  2003-2006, Steve Checkoway
+  2004-2006, Steve Checkoway
+  2005, Steve Checkoway
+  2005-2006, 2008 Steve Checkoway
+  2005-2006, Steve Checkoway
+  2006, Steve Checkoway
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/LifeMeter.cpp
+ ./src/RageFileDriver.h
+ ./src/RageFileDriverMemory.h
+ ./src/RageFileDriverReadAhead.h
+ ./src/RageSoundReader.h
+ ./src/RageSoundReader_FileReader.h
+ ./src/RageSoundReader_Pan.cpp
+ ./src/RageSoundReader_Preload.h
+ ./src/RageSoundReader_Resample_Good.h
+ ./src/RageTexturePreloader.cpp
+ ./src/RageUtil_CachedObject.cpp
+ ./src/arch/InputHandler/InputHandler_DirectInputHelper.h
+ ./src/archutils/Win32/USB.h
+Copyright: 2002-2003, Glenn Maynard
+  2002-2005, Glenn Maynard
+  2003, Glenn Maynard
+  2003-2004, Glenn Maynard
+  2004, Glenn Maynard
+  2005, Glenn Maynard
+  2006, Glenn Maynard
+  2007, Glenn Maynard
+  2010, Glenn Maynard
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/zlib/contrib/dotzlib/DotZLib/ChecksumImpl.cs
+ ./extern/zlib/contrib/dotzlib/DotZLib/CircularBuffer.cs
+ ./extern/zlib/contrib/dotzlib/DotZLib/CodecBase.cs
+ ./extern/zlib/contrib/dotzlib/DotZLib/Deflater.cs
+ ./extern/zlib/contrib/dotzlib/DotZLib/DotZLib.cs
+ ./extern/zlib/contrib/dotzlib/DotZLib/GZipStream.cs
+ ./extern/zlib/contrib/dotzlib/DotZLib/Inflater.cs
+ ./extern/zlib/contrib/dotzlib/DotZLib/UnitTests.cs
+Copyright: Henrik Ravn 2004
+License: BSL-1.0
+ FIXME
+
+Files: ./extern/zlib/compress.c
+ ./extern/zlib/deflate.h
+ ./extern/zlib/example.c
+ ./extern/zlib/minigzip.c
+ ./extern/zlib/trees.c
+ ./extern/zlib/uncompr.c
+ ./extern/zlib/zutil.c
+ ./extern/zlib/zutil.h
+Copyright: 1995-2003, 2010 Jean-loup Gailly
+  1995-2005, 2010 Jean-loup Gailly
+  1995-2005, Jean-loup Gailly
+  1995-2006, 2010 Jean-loup Gailly
+  1995-2006, Jean-loup Gailly
+  1995-2010, Jean-loup Gailly
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/libpng/include/contrib/gregbook/readpng.c
+ ./extern/libpng/include/contrib/gregbook/readpng.h
+ ./extern/libpng/include/contrib/gregbook/readpng2.c
+ ./extern/libpng/include/contrib/gregbook/readpng2.h
+ ./extern/libpng/include/contrib/gregbook/readppm.c
+ ./extern/libpng/include/contrib/gregbook/writepng.c
+ ./extern/libpng/include/contrib/gregbook/writepng.h
+Copyright: 1998-2007, Greg Roelofs.
+  1998-2008, Greg Roelofs.
+License: GPL-2+
+ FIXME
+
+Files: ./src/RageFileDriverDirectHelpers.h
+ ./src/RageSurfaceUtils_Dither.h
+ ./src/RageTextureRenderTarget.h
+ ./src/arch/ArchHooks/ArchHooks_Win32.h
+ ./src/arch/Dialog/Dialog.h
+ ./src/arch/Dialog/DialogDriver.h
+ ./src/arch/Dialog/DialogDriver_Win32.h
+Copyright: 2001-2006, Glenn Maynard, Chris Danford
+  2002-2004, Glenn Maynard, Chris Danford
+  2003-2004, Glenn Maynard, Chris Danford
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/CodeSet.cpp
+ ./src/RageSoundReader_SpeedChange.h
+ ./src/ScreenProfileSave.cpp
+ ./src/arch/LoadingWindow/LoadingWindow.cpp
+ ./src/arch/Sound/ALSA9Functions.h
+ ./src/archutils/Win32/CrashHandlerNetworking.h
+ ./src/global.cpp
+Copyright: 2002-2005, Glenn Maynard
+  2003-2004, Glenn Maynard
+  2004, Glenn Maynard
+  2006, Glenn Maynard
+  2007, Glenn Maynard
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/pcre/get.c
+ ./extern/pcre/internal.h
+ ./extern/pcre/maketables.c
+ ./extern/pcre/pcre.c
+ ./extern/pcre/printint.c
+ ./extern/pcre/study.c
+Copyright: 1997-2003, University of Cambridge
+  HOLDERS AND CONTRIBUTORS "AS IS"
+  OWNER OR CONTRIBUTORS BE
+License: BSD (3 clause)
+ FIXME
+
+Files: ./src/archutils/Darwin/MouseDevice.h
+ ./src/archutils/Darwin/SpecialDirs.cpp
+ ./src/archutils/Darwin/SpecialDirs.h
+ ./src/archutils/Unix/SpecialDirs.cpp
+ ./src/archutils/Unix/SpecialDirs.h
+Copyright: 2011, AJ Kelly
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/crypto/CryptMD5.h
+ ./extern/crypto/CryptPrime.h
+ ./extern/crypto/CryptRand.h
+ ./extern/crypto/CryptSH512.h
+ ./extern/crypto/CryptSHA.h
+Copyright: 1997-2001, Simon Tatham
+  HOLDERS BE LIABLE
+  Robert de Bath, Joris van Rantwijk, Delian
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/zlib/contrib/minizip/ioapi.c
+ ./extern/zlib/contrib/minizip/ioapi.h
+ ./extern/zlib/contrib/minizip/iowin32.c
+ ./extern/zlib/contrib/minizip/iowin32.h
+ ./extern/zlib/contrib/minizip/zip.c
+Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+  2009-2010, Mathias Svensson ( http://result42.com )
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libpng/include/contrib/gregbook/rpng-win.c
+ ./extern/libpng/include/contrib/gregbook/rpng-x.c
+ ./extern/libpng/include/contrib/gregbook/rpng2-win.c
+ ./extern/libpng/include/contrib/gregbook/rpng2-x.c
+ ./extern/libpng/include/contrib/gregbook/wpng.c
+Copyright: 1998-2007, Greg Roelofs.
+  1998-2008, Greg Roelofs.
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libpng/include/contrib/libtests/pngvalid.c
+ ./extern/libpng/include/contrib/pngminim/decoder/pngusr.h
+ ./extern/libpng/include/contrib/pngminim/encoder/pngusr.h
+ ./extern/libpng/include/contrib/pngminim/preader/pngusr.h
+ ./extern/libpng/include/pngvalid.c
+Copyright: 1998-2007, Glenn Randers-Pehrson
+  2007, 2010-2011, Glenn Randers-Pehrson
+  2009-2011, Glenn Randers-Pehrson
+  2011, Glenn Randers-Pehrson
+  2012, Glenn Randers-Pehrson
+License: libpng
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavcodec/avcodec.h
+ ./extern/ffmpeg/include/libavformat/avformat.h
+ ./extern/ffmpeg/include/libavformat/avio.h
+ ./extern/ffmpeg/include/libavutil/cpu.h
+Copyright: 2000-2002, Fabrice Bellard
+  2001, Fabrice Bellard
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/vorbis/ogg/ogg.h
+ ./extern/vorbis/ogg/os_types.h
+ ./extern/vorbis/vorbis/codec.h
+ ./extern/vorbis/vorbis/vorbisfile.h
+Copyright: 1994-2001, *
+  1994-2002, *
+License: UNKNOWN
+ FIXME
+
+Files: ./src/ActiveAttackList.cpp
+ ./src/MemoryCardDisplay.cpp
+ ./src/SnapDisplay.cpp
+ ./src/StreamDisplay.h
+Copyright: 2001-2002, Chris Danford
+  2003, Chris Danford
+  2003-2004, Chris Danford
+  2004, Chris Danford
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/zlib/contrib/blast/blast.c
+ ./extern/zlib/contrib/puff/puff.c
+ ./extern/zlib/examples/enough.c
+ ./extern/zlib/examples/gzlog.c
+Copyright: 2002-2010, Mark Adler
+  2003, Mark Adler
+  2004, 2008 Mark Adler
+  2007-2008, Mark Adler
+License: UNKNOWN
+ FIXME
+
+Files: ./src/archutils/Win32/ddk/hidpi.h
+ ./src/archutils/Win32/ddk/hidsdi.h
+ ./src/archutils/Win32/ddk/hidusage.h
+ ./src/archutils/Win32/ddk/setupapi.h
+Copyright: 1995-1999, Microsoft Corporation
+  1996, Microsoft Corporation
+  1996-1997, Microsoft Corporation
+  1996-1998, Microsoft Corporation
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/glew-1.5.8/include/GL/glew.h
+ ./extern/glew-1.5.8/include/GL/glxew.h
+ ./extern/glew-1.5.8/include/GL/wglew.h
+Copyright: 2002-2008, Marcelo E. Magallon <mmagallo[
+  2007, The Khronos Group Inc
+  HOLDERS AND CONTRIBUTORS "AS IS"
+License: BSD (2 clause) MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/Sound/RageSoundDriver_ALSA9_Software.h
+ ./src/arch/Sound/RageSoundDriver_Null.cpp
+ ./src/arch/Sound/RageSoundDriver_Null.h
+Copyright: 2002-2004, Glenn Maynard, Aaron VonderHaar
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/ScoreKeeper.cpp
+ ./src/arch/InputHandler/InputHandler_MacOSX_HID.h
+ ./src/arch/LowLevelWindow/LowLevelWindow_MacOSX.h
+Copyright: 2005-2006, 2008 Steve Checkoway
+  2005-2006, Steve Checkoway
+  2006, Steve Checkoway
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/zlib/contrib/iostream2/zstream.h
+ ./src/BGAnimationLayer.h
+ ./src/CourseLoaderCRS.h
+Copyright: 1997
+  2001-2004
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/ffmpeg/include/inttypes.h
+ ./extern/ffmpeg/include/stdint.h
+Copyright: 2006, Alexander Chemeris
+  2006-2008, Alexander Chemeris
+License: BSD (2 clause)
+ FIXME
+
+Files: ./extern/libpng/include/ltmain.sh
+ ./extern/mad-0.15.1b/ltmain.sh
+Copyright: 1996-2001, 2003
+  1996-2001, 2003-2006
+License: GPL-2+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavfilter/avfilter.h
+ ./extern/ffmpeg/include/libavfilter/avfiltergraph.h
+Copyright: 2007, Bobby Bingham
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavutil/adler32.h
+ ./extern/ffmpeg/include/libavutil/avstring.h
+Copyright: 2006, Mans Rullgard
+  2007, Mans Rullgard
+License: LGPL-2.1+
+ FIXME
+
+Files: ./src/ScreenNetworkOptions.h
+ ./src/ScreenSMOnlineLogin.h
+Copyright: 2004, Charles Lohr
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/GamePreferences.cpp
+ ./src/GamePreferences.h
+Copyright: 2001-2004, Chris Danford, Chris Gomez
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/RageLog.h
+ ./src/arch/InputHandler/InputHandler_Win32_Para.cpp
+Copyright: 2001-2004, Chris Danford, Glenn Maynard
+  2002-2004, Chris Danford, Glenn Maynard
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/RageDisplay_Legacy_Helpers.h
+ ./src/RageDisplay_OGL_Helpers.h
+Copyright: 2001-2011, Chris Danford, Glenn Maynard, Colby Klein
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/LoadingWindow/LoadingWindow_Gtk.h
+ ./src/arch/LoadingWindow/LoadingWindow_GtkModule.h
+Copyright: 2003-2004, Glenn Maynard, Sean Burke
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/InputQueue.h
+ ./src/RageTimer.h
+Copyright: 2001-2003, Chris Danford, Glenn Maynard
+  2001-2007, Chris Danford, Glenn Maynard
+License: UNKNOWN
+ FIXME
+
+Files: ./src/RageDisplay_Legacy_Helpers.cpp
+ ./src/RageDisplay_OGL_Helpers.cpp
+Copyright: 2001-2011, Chris Danford, Glenn Maynard, Colby Klein
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/zlib/contrib/minizip/miniunz.c
+ ./extern/zlib/contrib/minizip/minizip.c
+Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+  2007-2008, Even Rouault
+  2009-2010, Mathias Svensson ( http://result42.com )
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libpng/include/contrib/pngminus/png2pnm.c
+ ./extern/libpng/include/contrib/pngminus/pnm2png.c
+Copyright: 1999, Willem van Schaik <willem@schaik.com>
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libpng/include/contrib/visupng/PngFile.c
+ ./extern/libpng/include/contrib/visupng/VisualPng.c
+Copyright: 2000, Willem van Schaik
+License: libpng
+ FIXME
+
+Files: ./extern/zlib/contrib/inflate86/inffas86.c
+ ./extern/zlib/contrib/masmx64/inffas8664.c
+Copyright: 1995-2003, Mark Adler
+  2003, Chris Anderson <christop@charm.net>
+  conditions above
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/zlib/contrib/infback9/inftree9.c
+ ./extern/zlib/inftrees.c
+Copyright: 1995-2010, Mark Adler
+  1995-2010, Mark Adler ";
+  string in the executable of your product
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/glew-1.5.8/src/glew.c
+Copyright: 2002-2008, Marcelo E. Magallon <mmagallo[
+  HOLDERS AND CONTRIBUTORS "AS IS"
+License: BSD (2 clause)
+ FIXME
+
+Files: ./extern/mad-0.15.1b/version.c
+Copyright: " MAD_PUBLISHYEAR " " MAD_AUTHOR;
+  2000-2004, Underbit Technologies, Inc
+License: GPL-2+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libpostproc/postprocess.h
+Copyright: 2001-2003, Michael Niedermayer (michaelni@gmx.at)
+License: GPL-2+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavutil/random_seed.h
+Copyright: 2009, Baptiste Coudurier <baptiste.coudurier@gmail.com>
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavcodec/xvmc.h
+Copyright: 2003, Ivan Kalvachev
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavcodec/dxva2.h
+Copyright: 2009, Laurent Aimar
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavutil/lfg.h
+Copyright: 2008, Michael Niedermayer
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libswresample/swresample.h
+Copyright: 2011, Michael Niedermayer (michaelni@gmx.at)
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavutil/audioconvert.h
+Copyright: 2006, Michael Niedermayer <michaelni@gmx.at>
+  2008, Peter Ross
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavcodec/vdpau.h
+Copyright: 2008, NVIDIA
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavutil/lzo.h
+Copyright: 2006, Reimar Doeffinger
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavutil/base64.h
+Copyright: 2006, Ryan Martell. (rdm4@martellventures.com)
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavcodec/vda.h
+Copyright: 2011, Sebastien Zwickert
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavcodec/vaapi.h
+Copyright: 2008-2009, Splitted-Desktop Systems
+License: LGPL-2.1+
+ FIXME
+
+Files: ./extern/ffmpeg/include/libavfilter/vsrc_buffer.h
+Copyright: 2008, Vitor Sessak
+License: LGPL-2.1+
+ FIXME
+
+Files: ./src/RageSurfaceUtils_Zoom.h
+Copyright: A. Schiffler, Glenn Maynard
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/CsvFile.h
+Copyright: 2001-2004, Adam Clauss, Chris Danford
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/ScreenUnlockStatus.h
+Copyright: 2003, Andrew Wong
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/archutils/Win32/Crash.h
+Copyright: 1998-2001, Avery Lee
+  2003-2004, Glenn Maynard
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/LowLevelWindow/LowLevelWindow_X11.h
+Copyright: 2005, Ben Anderson
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/Dialog/Selector_Dialog.h
+Copyright: 2005, Ben Anderson
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/archutils/Unix/X11Helper.h
+Copyright: 2005-2006, Ben Anderson, Steve Checkoway
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/InputHandler/InputHandler_Win32_MIDI.h
+Copyright: 2002-2005, Charles Lohr, Glenn Maynard
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/ScreenNetEvaluation.h
+Copyright: 2004-2005, Charles Lohr, Joshua Allen
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/ScreenMessage.cpp
+Copyright: 2001-2005, Chris Danford, Glenn Maynard, Charles Lohr
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/ScreenOptionsManageCourses.h
+Copyright: 2003-2006, Chris Danford, Steve Checkoway
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/ScreenHowToPlay.h
+Copyright: 2001-2004, Chris Danford, Thad Ward
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/Sound/RageSoundDriver_PulseAudio.h
+Copyright: 2009, Damien Thebault
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/Sound/ALSA9Helpers.h
+Copyright: 2002-2004, Glenn Maynard, Aaron VonderHaar
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/arch.h
+Copyright: 2002-2005, Glenn Maynard, Ben Anderson
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/arch_platform.h
+Copyright: 2002-2005, Glenn Maynard, Ben Anderson
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/arch_default.h
+Copyright: 2002-2006, Glenn Maynard, Ben Anderson, Steve Checkoway
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/Dialog/DialogDriver.cpp
+Copyright: 2002-2006, Glenn Maynard, Steve Checkoway
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/Sound/RageSoundDriver.cpp
+Copyright: 2002-2006, Glenn Maynard, Steve Checkoway
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/Lights/LightsDriver_LinuxParallel.h
+Copyright: 2004, Hugo Hromic M. <hhromic@udec.cl>
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/Lights/LightsDriver_LinuxWeedTech.h
+Copyright: 2003-2004, Kevin Slaughter
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/LyricDisplay.h
+Copyright: 2003-2004, Kevin Slaughter, Glenn Maynard
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/arch/InputHandler/InputHandler_X11.h
+Copyright: 2005, Sean Burke, Ben Anderson
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./src/ScreenSelectProfile.h
+Copyright: 2007, vdl
+  HOLDER OR HOLDERS
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/crypto/CryptRSA.h
+Copyright: 1997-2001, Simon Tatham
+  Robert de Bath, Joris van Rantwijk, Delian
+License: MIT/X11 (BSD like)
+ FIXME
+
+Files: ./extern/lua-5.1/src/lapi.c
+Copyright:
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/lua-5.1/src/lua.h
+Copyright: " 1994-2006, Lua.org, PUC-Rio"
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libjpeg/jversion.h
+Copyright: " 2011, Thomas G. Lane, Guido Vollbeding"
+  1991-2011, Thomas G. Lane, Guido Vollbeding
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/lua-5.1/src/lstrlib.c
+Copyright: ((unsigned char))
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libpng/include/contrib/visupng/cexcept.h
+Copyright: 2000-2008, Adam M. Costello and Cosmin Truta
+  holders make no guarantees
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libjpeg/ansi2knr.c
+Copyright: 1989, 2000 Aladdin Enterprises. */
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/zlib/contrib/delphi/ZLib.pas
+Copyright: 1997,99 Borland Corporation }
+License: UNKNOWN
+ FIXME
+
+Files: ./src/ScreenNetSelectBase.h
+Copyright: 2004, Charles Lohr
+License: UNKNOWN
+ FIXME
+
+Files: ./src/PlayerNumber.cpp
+Copyright: 2001-2004, Chris Danford, Chris Gomez
+License: UNKNOWN
+ FIXME
+
+Files: ./src/ScreenNameEntry.h
+Copyright: 2001-2006, Chris Danford, Steve Checkoway
+License: UNKNOWN
+ FIXME
+
+Files: ./src/ScreenPackagesSSC.cpp
+Copyright: 2009, Colby Klein
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/zlib/contrib/pascal/zlibpas.pas
+Copyright: 2003, Cosmin Truta
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/zlib/contrib/minizip/unzip.c
+Copyright: 1990-2000, Info-ZIP.
+  1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+  2007-2008, Even Rouault
+  2009-2010, Mathias Svensson ( http://result42.com )
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/zlib/contrib/minizip/crypt.h
+Copyright: 1998-2005, Gilles Vollant
+  ^ (b)) & 0xff))) ^ ( >> 8))
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/zlib/contrib/dotzlib/DotZLib/AssemblyInfo.cs
+Copyright: 2004, Henrik Ravn")
+License: UNKNOWN
+ FIXME
+
+Files: ./src/CreateZip.cpp
+Copyright: 1990-1999, Info-ZIP.
+  text follows
+License: UNKNOWN
+ FIXME
+
+Files: ./src/RoomInfoDisplay.h
+Copyright: 2006, Josh Allen
+License: UNKNOWN
+ FIXME
+
+Files: ./src/archutils/Win32/ddk/dbghelp.h
+Copyright: Microsoft Corporation.
+License: UNKNOWN
+ FIXME
+
+Files: ./src/glext.h
+Copyright: 1991-2004, Silicon Graphics, Inc
+  in any portions created by third parties is as indicated
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libjpeg/jpegtran.c
+Copyright: 1995-2010, Thomas G. Lane, Guido Vollbeding
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/pcre/pcre.h
+Copyright: 1997-2003, University of Cambridge */
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/lua-5.1/src/lzio.h
+Copyright: cast(int, cast(unsigned char, ))
+License: UNKNOWN
+ FIXME
+
+Files: ./src/ScreenMiniMenu.h
+Copyright: choices.push_back;
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/lua-5.1/src/lundump.c
+Copyright: error(S,s)
+License: UNKNOWN
+ FIXME
+
+Files: ./src/ScreenOptionsMasterPrefs.h
+Copyright: names.push_back;
+License: UNKNOWN
+ FIXME
+
+Files: ./extern/libpng/include/pnglibconf.h
+Copyright: 1998-2012, Glenn Randers-Pehrson */
+License: libpng
+ FIXME
+
+Files: ./extern/libpng/include/contrib/visupng/PngFile.h
+Copyright: 2000, Willem van Schaik.*/
+License: libpng
+ FIXME
+
+Files: ./extern/zlib/contrib/pascal/example.pas
+Copyright: 1995-2003, Jean-loup Gailly
+  1998, Jacques Nomssi Nzali
+  2003, Cosmin Truta
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/zlib/contrib/minizip/unzip.h
+Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+  2007-2008, Even Rouault
+  2009-2010, Mathias Svensson ( http://result42.com )
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/zlib/contrib/minizip/zip.h
+Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+  2009-2010, Mathias Svensson ( http://result42.com )
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/zlib/zconf.h
+Copyright: 1995-2010, Jean-loup Gailly
+  z_deflate_
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/zlib/zlib.h
+Copyright: 1995-2010, Jean-loup Gailly and Mark Adler
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/zlib/deflate.c
+Copyright: 1995-2010, Jean-loup Gailly and Mark Adler
+  1995-2010, Jean-loup Gailly and Mark Adler ";
+  string in the executable of your product
+License: zlib/libpng
+ FIXME
+
+Files: ./extern/zlib/examples/gzappend.c
+Copyright: 2003, Mark Adler
+  to help
+License: zlib/libpng
+ FIXME
