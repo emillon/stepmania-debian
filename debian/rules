@@ -15,3 +15,6 @@ override_dh_fixperms:
 	chmod a-x 'debian/stepmania-data/usr/share/stepmania/Themes/default/Graphics/LifeMeterBattery lives/_lives 1x10.png'
 	chmod a-x 'debian/stepmania-data/usr/share/stepmania/Themes/default/Languages/pl.ini'
 	chmod a-x 'debian/stepmania-data/usr/share/stepmania/Themes/_fallback/Languages/pl.ini'
+
+override_dh_installchangelogs:
+	dh_installchangelogs Docs/Changelog_sm5.txt
