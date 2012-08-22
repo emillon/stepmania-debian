@@ -8,3 +8,10 @@ override_dh_clean:
 
 override_dh_auto_test:
 	# Skip tests
+
+override_dh_fixperms:
+	dh_fixperms
+	chmod a-x 'debian/stepmania-data/usr/share/stepmania/Themes/default/Graphics/LifeMeterBattery lives/default.lua'
+	chmod a-x 'debian/stepmania-data/usr/share/stepmania/Themes/default/Graphics/LifeMeterBattery lives/_lives 1x10.png'
+	chmod a-x 'debian/stepmania-data/usr/share/stepmania/Themes/default/Languages/pl.ini'
+	chmod a-x 'debian/stepmania-data/usr/share/stepmania/Themes/_fallback/Languages/pl.ini'
