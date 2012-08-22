@@ -6,8 +6,8 @@
  install-exec-hook:
 -	mkdir -p "$(prefix)/$(productID)"
 -	$(INSTALL) $(installFiles) "$(prefix)/$(productID)"
-+	mkdir -p "$(DESTDIR)/usr/bin"
-+	$(INSTALL) $(installFiles) "$(DESTDIR)/usr/bin"
++	mkdir -p "$(DESTDIR)/usr/games"
++	$(INSTALL) $(installFiles) "$(DESTDIR)/usr/games"
  
  install-data-local:
 -	cp -r -t "$(prefix)/$(productID)" $(installData)
