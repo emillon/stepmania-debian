@@ -1,7 +1,8 @@
 Source: stepmania
 Section: games
 Priority: optional
-Maintainer: Etienne Millon <etienne.millon@gmail.com>
+Maintainer: Debian Games Team <pkg-games-devel@lists.alioth.debian.org>
+Uploaders: Etienne Millon <etienne.millon@gmail.com>
 Build-Depends:
  autotools-dev,
  debhelper (>= 9),
