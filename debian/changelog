@@ -2,6 +2,8 @@ stepmania (5.0~alpha3-1-1) UNRELEASED; urgency=low
 
   * The "Butterfly" release (initial release, Closes: #200715)
   * Patches :
+    - honor DESTDIR
     - fix a format string function called with a non-literal string
+    - fix several typos
 
  -- Etienne Millon <etienne.millon@gmail.com>  Sat, 18 Aug 2012 17:43:32 +0200

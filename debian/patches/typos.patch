@@ -1,0 +1,55 @@
+--- a/src/NotesLoaderSM.cpp
++++ b/src/NotesLoaderSM.cpp
+@@ -1009,7 +1009,7 @@
+ 		{
+ 			if( pSong == NULL )
+ 			{
+-				LOG->UserLog( "Edit file", sEditFilePath, "doesn't have a #SONG tag preceeding the first #NOTES tag." );
++				LOG->UserLog( "Edit file", sEditFilePath, "doesn't have a #SONG tag preceding the first #NOTES tag." );
+ 				return false;
+ 			}
+ 
+--- a/src/NotesLoaderSSC.cpp
++++ b/src/NotesLoaderSSC.cpp
+@@ -1009,7 +1009,7 @@
+ 			{
+ 				LOG->UserLog("Edit file",
+ 					     sEditFilePath,
+-					     "doesn't have a #SONG tag preceeding the first #NOTES tag." );
++					     "doesn't have a #SONG tag preceding the first #NOTES tag." );
+ 				return false;
+ 			}
+ 
+--- a/src/OptionRowHandler.cpp
++++ b/src/OptionRowHandler.cpp
+@@ -195,7 +195,7 @@
+ 				}
+ 				else
+ 				{
+-					RageException::Throw( "Unkown row flag \"%s\".", sName.c_str() );
++					RageException::Throw( "Unknown row flag \"%s\".", sName.c_str() );
+ 				}
+ 			}
+ 
+--- a/src/RageSurface_Load_GIF.cpp
++++ b/src/RageSurface_Load_GIF.cpp
+@@ -144,7 +144,7 @@
+ 			unsigned char label;
+ 			if( !ReadOK(f, &label, 1) )
+ 			{
+-				error = "EOF / read error on extention function code";
++				error = "EOF / read error on extension function code";
+ 				return RageSurfaceUtils::OPEN_FATAL_ERROR;
+ 			}
+ 
+--- a/src/InputMapper.cpp
++++ b/src/InputMapper.cpp
+@@ -108,7 +108,7 @@
+ 	AutoMappings(
+ 		"dance",
+ 		"GIC USB Joystick",
+-		"Boom USB convertor (black/gray)",
++		"Boom USB converter (black/gray)",
+ 		AutoMappingEntry( 0, JOY_BUTTON_16,     DANCE_BUTTON_LEFT,      false ),
+ 		AutoMappingEntry( 0, JOY_BUTTON_14,     DANCE_BUTTON_RIGHT,     false ),
+ 		AutoMappingEntry( 0, JOY_BUTTON_13,     DANCE_BUTTON_UP,	    false ),
