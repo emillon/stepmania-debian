@@ -295,7 +295,8 @@ License: BSD (3 clause)
 
 Files: *
 Copyright: TODO
- TODO. Art assets, etc
+License: TODO
+ Art assets, etc. Use licensecheck with -c . to detect missing files.
 
 Files: extern/zlib/*
 Copyright: 1995-2010 Jean-loup Gailly and Mark Adler
