@@ -107,7 +107,8 @@ void TimingWindowSecondsInit( size_t /*TimingWindow*/ i, RString &sNameOut, floa
 	sNameOut = "TimingWindowSeconds" + TimingWindowToString( (TimingWindow)i );
 	switch( i )
 	{
-	default:	ASSERT(0);
+	default:
+		FAIL_M(ssprintf("Invalid timing window: %i", i));
 	case TW_W1:	defaultValueOut = 0.0225f;	break;
 	case TW_W2:	defaultValueOut = 0.045f;	break;
 	case TW_W3:	defaultValueOut = 0.090f;	break;
@@ -415,12 +416,12 @@ void Player::Init(
 
 		if( GAMESTATE->IsCourseMode() )
 		{
-			ASSERT( GAMESTATE->m_pCurTrail[pn] );
+			ASSERT( GAMESTATE->m_pCurTrail[pn] != NULL );
 			GAMESTATE->m_pCurTrail[pn]->GetDisplayBpms( bpms );
 		}
 		else
 		{
-			ASSERT( GAMESTATE->m_pCurSong );
+			ASSERT( GAMESTATE->m_pCurSong != NULL );
 			GAMESTATE->m_pCurSong->GetDisplayBpms( bpms );
 		}
 
@@ -691,7 +692,7 @@ void Player::Load()
 					NoteDataUtil::Turn( m_NoteData, st, NoteDataUtil::right);
 					break;
 				default:
-					ASSERT(0);
+					FAIL_M(ssprintf("Count %i not in range 0-3", count));
 				}
 				count++;
 				count %= 4;
@@ -931,7 +932,7 @@ void Player::Update( float fDeltaTime )
 	ASSERT_M( iNumCols <= MAX_COLS_PER_PLAYER, ssprintf("%i > %i", iNumCols, MAX_COLS_PER_PLAYER) );
 	for( int col=0; col < iNumCols; ++col )
 	{
-		ASSERT( m_pPlayerState );
+		ASSERT( m_pPlayerState != NULL );
 
 		// TODO: Remove use of PlayerNumber.
 		GameInput GameI = GAMESTATE->GetCurrentStyle()->StyleInputToGameInput( col, m_pPlayerState->m_PlayerNumber );
@@ -1309,7 +1310,7 @@ void Player::UpdateHoldNotes( int iSongRow, float fDeltaTime, vector<TrackRowTap
 			break;
 		*/
 		default:
-			ASSERT(0);
+			FAIL_M(ssprintf("Invalid tap note subtype: %i", subType));
 		}
 	}
 
@@ -1697,7 +1698,7 @@ int Player::GetClosestNote( int col, int iNoteRow, int iMaxRowsAhead, int iMaxRo
 		return iNextIndex;
 }
 
-int Player::GetClosestNonEmptyRowDirectional( int iStartRow, int iEndRow, bool bAllowGraded, bool bForward ) const
+int Player::GetClosestNonEmptyRowDirectional( int iStartRow, int iEndRow, bool /* bAllowGraded */, bool bForward ) const
 {
 	if( bForward )
 	{
@@ -2110,10 +2111,7 @@ void Player::StepStrumHopo( int col, int row, const RageTimer &tm, bool bHeld, b
 	{
 		// TODO: remove use of PlayerNumber
 		PlayerNumber pn = m_pPlayerState->m_PlayerNumber;
-		int iWeightPounds = 120;
 		Profile *pProfile = PROFILEMAN->GetProfile( pn );
-		if( pProfile )
-			iWeightPounds = pProfile->GetCalculatedWeightPounds();
 
 		int iNumTracksHeld = 0;
 		for( int t=0; t<m_NoteData.GetNumTracks(); t++ )
@@ -2384,9 +2382,7 @@ void Player::StepStrumHopo( int col, int row, const RageTimer &tm, bool bHeld, b
 			break;
 		*/
 		default:
-			ASSERT(0);
-			score = TNS_None;
-			break;
+			FAIL_M(ssprintf("Invalid player controller type: %i", m_pPlayerState->m_PlayerController));
 		}
 
 		switch( pbt )
@@ -2861,7 +2857,7 @@ void Player::UpdateJudgedRows()
 
 				Attack attMineAttack;
 				attMineAttack.sModifiers = ApplyRandomAttack();
-				attMineAttack.fStartSecond = attMineAttack.ATTACK_STARTS_NOW;
+				attMineAttack.fStartSecond = attMineAttack.ATTACK_STARTS_NOW();
 				attMineAttack.fSecsRemaining = fAttackRunTime;
 
 				m_pPlayerState->LaunchAttack( attMineAttack );

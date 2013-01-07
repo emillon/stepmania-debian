@@ -410,6 +410,10 @@ static void AdjustForChangedSystemCapabilities()
 #include "RageDisplay_OGL.h"
 #endif
 
+#if defined(SUPPORT_GLES2)
+#include "RageDisplay_GLES2.h"
+#endif
+
 #include "RageDisplay_Null.h"
 
 
@@ -635,7 +639,7 @@ bool CheckVideoDefaultSettings()
 			goto found_defaults;
 		}
 	}
-	ASSERT( 0 ); // we must have matched at least one above
+	FAIL_M("Failed to match video driver");
 
 found_defaults:
 
@@ -739,6 +743,12 @@ RageDisplay *CreateDisplay()
 			pRet = new RageDisplay_Legacy;
 #endif
 		}
+		else if( sRenderer.CompareNoCase("gles2")==0 )
+		{
+#if defined(SUPPORT_GLES2)
+			pRet = new RageDisplay_GLES2;
+#endif
+		}
 		else if( sRenderer.CompareNoCase("d3d")==0 )
 		{
 // TODO: ANGLE/RageDisplay_Modern
@@ -798,10 +808,10 @@ static void SwitchToLastPlayedGame()
 
 void StepMania::ChangeCurrentGame( const Game* g )
 {
-	ASSERT( g );
-	ASSERT( GAMESTATE );
-	ASSERT( ANNOUNCER );
-	ASSERT( THEME );
+	ASSERT( g != NULL );
+	ASSERT( GAMESTATE != NULL );
+	ASSERT( ANNOUNCER != NULL );
+	ASSERT( THEME != NULL );
 
 	GAMESTATE->SetCurGame( g );
 
@@ -1062,7 +1072,7 @@ int main(int argc, char* argv[])
 				case Dialog::no:
 					break;
 				default:
-					ASSERT(0);
+					FAIL_M("Invalid response to Yes/No dialog");
 				}
 			}
 			else if( version_num < current_version )

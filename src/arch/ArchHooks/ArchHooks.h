@@ -37,9 +37,9 @@ public:
 
 	/* If this is a second instance, return true.
 	 * Optionally, give focus to the existing window. */
-	virtual bool CheckForMultipleInstances(int argc, char* argv[]) { return false; }
+	virtual bool CheckForMultipleInstances(int /* argc */, char* [] /* argv[] */) { return false; }
 
-	virtual void SetTime( tm newtime ) { }
+	virtual void SetTime( tm ) { }
 
 	virtual void BoostPriority() { }
 	virtual void UnBoostPriority() { }

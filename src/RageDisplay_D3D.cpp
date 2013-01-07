@@ -185,7 +185,7 @@ static LocalizedString D3D_NOT_INSTALLED ( "RageDisplay_D3D", "DirectX 8.1 or gr
 const RString D3D_URL = "http://www.microsoft.com/downloads/details.aspx?FamilyID=a19bed22-0b25-4e5d-a584-6389d8a3dad0&displaylang=en";
 static LocalizedString HARDWARE_ACCELERATION_NOT_AVAILABLE ( "RageDisplay_D3D", 
 	"Your system is reporting that Direct3D hardware acceleration is not available.  Please obtain an updated driver from your video card manufacturer." );
-RString RageDisplay_D3D::Init( const VideoModeParams &p, bool bAllowUnacceleratedRenderer )
+RString RageDisplay_D3D::Init( const VideoModeParams &p, bool /* bAllowUnacceleratedRenderer */ )
 {
 	GraphicsWindow::Initialize( true );
 
@@ -661,7 +661,7 @@ RageSurface* RageDisplay_D3D::CreateScreenshot()
 	}
 
 	RageSurface *surface = CreateSurfaceFromPixfmt( PixelFormat_RGBA8, lr.pBits, desc.Width, desc.Height, lr.Pitch);
-	ASSERT( surface );
+	ASSERT( surface != NULL );
 
 	// We need to make a copy, since lr.pBits will go away when we call UnlockRect().
 	RageSurface *SurfaceCopy = 
@@ -1166,7 +1166,7 @@ void RageDisplay_D3D::SetBlendMode( BlendMode mode )
 		g_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid BlendMode: %i", mode));
 	}
 }
 
@@ -1208,7 +1208,9 @@ void RageDisplay_D3D::SetZTestMode( ZTestMode mode )
 	case ZTEST_OFF:			dw = D3DCMP_ALWAYS;		break;
 	case ZTEST_WRITE_ON_PASS:	dw = D3DCMP_LESSEQUAL;	break;
 	case ZTEST_WRITE_ON_FAIL:	dw = D3DCMP_GREATER;	break;
-	default: ASSERT( 0 );
+	default:
+		dw = D3DCMP_NEVER;
+		FAIL_M(ssprintf("Invalid ZTestMode: %i", mode));
 	}
 	g_pd3dDevice->SetRenderState( D3DRS_ZFUNC, dw );
 }
@@ -1319,7 +1321,7 @@ void RageDisplay_D3D::SetCullMode( CullMode mode )
 		g_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid CullMode: %i", mode));
 	}
 }
 
@@ -1406,7 +1408,7 @@ void RageDisplay_D3D::UpdateTexture(
 	ASSERT( texpixfmt != NUM_PixelFormat );
 
 	RageSurface *Texture = CreateSurfaceFromPixfmt(PixelFormat(texpixfmt), lr.pBits, width, height, lr.Pitch);
-	ASSERT( Texture );
+	ASSERT( Texture != NULL );
 	RageSurfaceUtils::Blit( img, Texture, width, height );
 
 	delete Texture;

@@ -1032,7 +1032,7 @@ public:
 	void AddToSong();
 };
 
-BMSSongLoader::BMSSongLoader( RString songDir, Song *outSong ): song(outSong), dir(songDir)
+BMSSongLoader::BMSSongLoader( RString songDir, Song *outSong ): dir(songDir), song(outSong)
 {
 }
 
@@ -1268,7 +1268,7 @@ bool BMSLoader::LoadFromDir( const RString &sDir, Song &out )
 
 	/* We should have at least one; if we had none, we shouldn't have been
 	 * called to begin with. */
-	ASSERT( arrayBMSFileNames.size() );
+	ASSERT( arrayBMSFileNames.size() != 0 );
 
 	BMSSongLoader loader( sDir, &out );
 	for( unsigned i=0; i<arrayBMSFileNames.size(); i++ )

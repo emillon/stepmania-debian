@@ -93,10 +93,10 @@ protected:
 	/* This may be called before GetUSBStorageDevices; return false if the results of
 	 * GetUSBStorageDevices have not changed.  (This is an optimization.) */
 	virtual bool USBStorageDevicesChanged() { return true; }
-	virtual void GetUSBStorageDevices( vector<UsbStorageDevice>& vDevicesOut ) { }
+	virtual void GetUSBStorageDevices( vector<UsbStorageDevice>& /* vDevicesOut */ ) { }
 
 	/* Test the device.  On failure, call pDevice->SetError() appropriately, and return false. */
-	virtual bool TestWrite( UsbStorageDevice* pDevice ) { return true; }
+	virtual bool TestWrite( UsbStorageDevice* ) { return true; }
 
 private:
 	vector<UsbStorageDevice> m_vDevicesLastSeen;

@@ -35,7 +35,6 @@
 		<Function name='DeepCopy'/>
 		<Function name='EvalUsesCheckpointsWithJudgments'/>
 		<Function name='FailCombo'/>
-		<Function name='FinalizeScoreKeepers'/>
 		<Function name='FindSelection'/>
 		<Function name='FindValue'/>
 		<Function name='FormatNumSongsPlayed'/>
@@ -47,7 +46,6 @@
 		<Function name='GetCoursesToShowRanking'/>
 		<Function name='GetCustomDifficulty'/>
 		<Function name='GetDefaultOptionLines'/>
-		<Function name='GetDirectRadar'/>
 		<Function name='GetEditModeSubScreens'/>
 		<Function name='GetExtraColorThreshold'/>
 		<Function name='GetGamePref'/>
@@ -56,7 +54,6 @@
 		<Function name='GetGamePrefN'/>
 		<Function name='GetGradeFromPercent'/>
 		<Function name='GetLifeDifficulty'/>
-		<Function name='GetNumReadiedScoreKeepers'/>
 		<Function name='GetPlayerOrMachineProfile'/>
 		<Function name='GetProTiming'/>
 		<Function name='GetRandomSongBackground'/>
@@ -71,7 +68,6 @@
 		<Function name='GetTimingDifficulty'/>
 		<Function name='GetTitleSafeH'/>
 		<Function name='GetTitleSafeV'/>
-		<Function name='GetTotalItems'/>
 		<Function name='GetUnlockEntryIndexToCelebrate'/>
 		<Function name='GetUserPref'/>
 		<Function name='GetUserPrefB'/>
@@ -87,7 +83,6 @@
 		<Function name='Hour'/>
 		<Function name='Hue'/>
 		<Function name='InitGamePrefs'/>
-		<Function name='InitScoreKeepers'/>
 		<Function name='InitUserPrefs'/>
 		<Function name='IsArcade'/>
 		<Function name='IsFreePlay'/>
@@ -98,7 +93,6 @@
 		<Function name='IsRoutine'/>
 		<Function name='IsSMOnlineLoggedIn'/>
 		<Function name='IsUsingWideScreen'/>
-		<Function name='IsW1Allowed'/>
 		<Function name='JudgmentLineToColor'/>
 		<Function name='JudgmentLineToLocalizedString'/>
 		<Function name='JudgmentLineToStrokeColor'/>
@@ -188,8 +182,6 @@
 		<Function name='URLEncode'/>
 		<Function name='UndocumentedFeature'/>
 		<Function name='UnlockRewardTypeToLocalizedString'/>
-		<Function name='UpdateScoreKeepers'/>
-		<Function name='UserPrefScoringMode'/>
 		<Function name='Var'/>
 		<Function name='VersionDate'/>
 		<Function name='VersionTime'/>
@@ -202,6 +194,7 @@
 		<Function name='Year'/>
 		<Function name='assert'/>
 		<Function name='clamp'/>
+		<Function name='class'/>
 		<Function name='collectgarbage'/>
 		<Function name='color'/>
 		<Function name='dofile'/>
@@ -1142,8 +1135,6 @@
 			<Function name='GetTapNoteScores'/>
 			<Function name='IsDisqualified'/>
 			<Function name='MaxCombo'/>
-			<Function name='SetCurMaxScore'/>
-			<Function name='SetScore'/>
 		</Class>
 		<Class name='PlayerState'>
 			<Function name='GetCurrentPlayerOptions'/>
@@ -1172,6 +1163,7 @@
 			<Function name='GetCoursesPossible'/>
 			<Function name='GetDisplayName'/>
 			<Function name='GetDisplayTotalCaloriesBurned'/>
+			<Function name='GetGUID'/>
 			<Function name='GetGoalCalories'/>
 			<Function name='GetGoalSeconds'/>
 			<Function name='GetGoalType'/>
@@ -1214,19 +1206,26 @@
 		</Class>
 		<Class name='ProfileManager'>
 			<Function name='GetLocalProfile'/>
+			<Function name='GetLocalProfileDisplayNames'/>
 			<Function name='GetLocalProfileFromIndex'/>
 			<Function name='GetLocalProfileIDFromIndex'/>
+			<Function name='GetLocalProfileIDs'/>
 			<Function name='GetLocalProfileIndexFromID'/>
 			<Function name='GetMachineProfile'/>
 			<Function name='GetNumLocalProfiles'/>
 			<Function name='GetPlayerName'/>
 			<Function name='GetProfile'/>
 			<Function name='GetProfileDir'/>
+			<Function name='GetSongNumTimesPlayed'/>
 			<Function name='IsPersistentProfile'/>
 			<Function name='IsSongNew'/>
 			<Function name='LastLoadWasTamperedOrCorrupt'/>
+			<Function name='LocalProfileIDToDir'/>
+			<Function name='ProfileFromMemoryCardIsNew'/>
 			<Function name='ProfileWasLoadedFromMemoryCard'/>
+			<Function name='SaveLocalProfile'/>
 			<Function name='SaveMachineProfile'/>
+			<Function name='SaveProfile'/>
 		</Class>
 		<Class name='RadarValues'>
 			<Function name='GetValue'/>
@@ -1723,7 +1722,9 @@
 		<Namespace name='ActorUtil'>
 			<Function name='GetFileType'/>
 			<Function name='IsRegisteredClass'/>
+			<Function name='LoadAllCommands'/>
 			<Function name='LoadAllCommandsAndSetXY'/>
+			<Function name='LoadAllCommandsFromName'/>
 			<Function name='ResolvePath'/>
 		</Namespace>
 		<Namespace name='Enum'>
@@ -2354,6 +2355,6 @@
 		<Constant name='right' value='&apos;HorizAlign_Right&apos;'/>
 		<Constant name='top' value='&apos;VertAlign_Top&apos;'/>
 	</Constants>
-	<Version>StepMania v5.0 alpha 2</Version>
-	<Date>2012-07-09</Date>
+	<Version>StepMania v5.0 alpha 3</Version>
+	<Date>2012-11-22</Date>
 </Lua>

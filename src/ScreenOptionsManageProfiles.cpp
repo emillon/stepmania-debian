@@ -111,7 +111,7 @@ void ScreenOptionsManageProfiles::BeginScreen()
 	FOREACH_CONST( RString, m_vsLocalProfileID, s )
 	{
 		Profile *pProfile = PROFILEMAN->GetLocalProfile( *s );
-		ASSERT( pProfile );
+		ASSERT( pProfile != NULL );
 
 		RString sCommand = ssprintf( "gamecommand;screen,ScreenOptionsEditProfile;profileid,%s;name,dummy", s->c_str() );
 		OptionRowHandler *pHand = OptionRowHandlerUtil::Make( ParseCommands(sCommand) );
@@ -259,12 +259,12 @@ void ScreenOptionsManageProfiles::HandleScreenMessage( const ScreenMessage SM )
 		if( !ScreenMiniMenu::s_bCancelled )
 		{
 			Profile *pProfile = PROFILEMAN->GetLocalProfile( GAMESTATE->m_sEditLocalProfileID );
-			ASSERT( pProfile );
+			ASSERT( pProfile != NULL );
 
 			switch( ScreenMiniMenu::s_iLastRowCode )
 			{
 			default:
-				ASSERT(0);
+				FAIL_M(ssprintf("Last row code not a valid ProfileAction: %i", ScreenMiniMenu::s_iLastRowCode));
 			case ProfileAction_SetDefaultP1:
 			case ProfileAction_SetDefaultP2:
 				{
@@ -331,7 +331,7 @@ void ScreenOptionsManageProfiles::AfterChangeRow( PlayerNumber pn )
 	ScreenOptions::AfterChangeRow( pn );
 }
 
-void ScreenOptionsManageProfiles::ProcessMenuStart( const InputEventPlus &input )
+void ScreenOptionsManageProfiles::ProcessMenuStart( const InputEventPlus & )
 {
 	if( IsTransitioning() )
 		return;
@@ -392,12 +392,12 @@ void ScreenOptionsManageProfiles::ProcessMenuStart( const InputEventPlus &input 
 	}
 }
 
-void ScreenOptionsManageProfiles::ImportOptions( int iRow, const vector<PlayerNumber> &vpns )
+void ScreenOptionsManageProfiles::ImportOptions( int /* iRow */, const vector<PlayerNumber> & /* vpns */ )
 {
 
 }
 
-void ScreenOptionsManageProfiles::ExportOptions( int iRow, const vector<PlayerNumber> &vpns )
+void ScreenOptionsManageProfiles::ExportOptions( int /* iRow */, const vector<PlayerNumber> & /* vpns */ )
 {
 
 }

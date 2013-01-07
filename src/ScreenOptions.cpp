@@ -171,7 +171,7 @@ void ScreenOptions::Init()
 		m_frameContainer.AddChild( &m_textExplanationTogether );
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid InputMode: %i", m_InputMode));
 	}
 
 	if( SHOW_SCROLL_BAR )
@@ -494,6 +494,19 @@ void ScreenOptions::Update( float fDeltaTime )
 
 void ScreenOptions::Input( const InputEventPlus &input )
 {
+	// HACK: This screen eats mouse inputs if we don't check for them first.
+	bool mouse_evt = false;
+	for (int i = MOUSE_LEFT; i <= MOUSE_WHEELDOWN; i++)
+	{
+		if (input.DeviceI == DeviceInput( DEVICE_MOUSE, (DeviceButton)i ))
+			mouse_evt = true;
+	}
+	if (mouse_evt)	
+	{
+		ScreenWithMenuElements::Input(input);
+		return;
+	}
+
 	/* Allow input when transitioning in (m_In.IsTransitioning()), but ignore it
 	 * when we're transitioning out. */
 	if( m_Cancel.IsTransitioning() || m_Out.IsTransitioning() || m_fLockInputSecs > 0 )
@@ -640,7 +653,7 @@ void ScreenOptions::PositionRows( bool bTween )
 		else if( second_end < (int) Rows.size() )
 			second_end++;
 		else
-			ASSERT(0); // do we have room to grow or don't we?
+			FAIL_M("Do we have room to grow or don't we?");
 	}
 
 	int pos = 0;
@@ -649,9 +662,6 @@ void ScreenOptions::PositionRows( bool bTween )
 		OptionRow &row = *Rows[i];
 
 		float fPos = (float) pos;
-
-		LuaExpressionTransform *pExpr = NULL;
-		pExpr = &m_exprRowPositionTransformFunction;
 
 		if( i < first_start )				fPos = -0.5f;
 		else if( i >= first_end && i < second_start )	fPos = ((int)NUM_ROWS_SHOWN)/2-0.5f;
@@ -756,7 +766,7 @@ void ScreenOptions::AfterChangeValueOrRow( PlayerNumber pn )
 }
 
 
-void ScreenOptions::MenuBack( const InputEventPlus &input )
+void ScreenOptions::MenuBack( const InputEventPlus & )
 {
 	Cancel( SM_GoToPrevScreen );
 }
@@ -936,8 +946,7 @@ void ScreenOptions::ProcessMenuStart( const InputEventPlus &input )
 			break;
 		}
 		case NAV_THREE_KEY_MENU:
-			ASSERT(0); // unreachable
-			break;
+			FAIL_M("NAV_THREE_KEY_MENU should be unreachable");
 		case NAV_FIVE_KEY:
 			/* Jump to the exit row.  (If everyone's already on the exit row, then
 			 * we'll have already gone to the next screen above.) */
@@ -1138,7 +1147,7 @@ bool ScreenOptions::MoveRowRelative( PlayerNumber pn, int iDir, bool bRepeat )
 	//LOG->Trace( "MoveRowRelative(pn %i, dir %i, rep %i)", pn, iDir, bRepeat );
 
 	int iDest = -1;
-	ASSERT( m_pRows.size() );
+	ASSERT( m_pRows.size() != 0 );
 	for( int r=1; r<(int)m_pRows.size(); r++ )
 	{
 		int iDelta = r*iDir;

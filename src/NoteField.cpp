@@ -175,7 +175,7 @@ void NoteField::Load(
 	int iDrawDistanceAfterTargetsPixels, 
 	int iDrawDistanceBeforeTargetsPixels )
 {
-	ASSERT( pNoteData );
+	ASSERT( pNoteData != NULL );
 	m_pNoteData = pNoteData;
 	m_iDrawDistanceAfterTargetsPixels = iDrawDistanceAfterTargetsPixels;
 	m_iDrawDistanceBeforeTargetsPixels = iDrawDistanceBeforeTargetsPixels;
@@ -915,7 +915,7 @@ void NoteField::DrawPrimitives()
 
 	if( GAMESTATE->IsEditing() && pTiming != NULL )
 	{
-		ASSERT(GAMESTATE->m_pCurSong);
+		ASSERT(GAMESTATE->m_pCurSong != NULL);
 
 		const TimingData &timing = *pTiming;
 
@@ -1099,7 +1099,8 @@ void NoteField::DrawPrimitives()
 		if( !GAMESTATE->m_bIsUsingStepTiming )
 		{
 			// BGChange text
-			switch( GAMESTATE->m_EditMode )
+			EditMode mode = GAMESTATE->m_EditMode;
+			switch( mode )
 			{
 				case EditMode_Home:
 				case EditMode_CourseMods:
@@ -1161,7 +1162,7 @@ void NoteField::DrawPrimitives()
 					}
 					break;
 				default:
-					ASSERT(0);
+					FAIL_M(ssprintf("Invalid edit mode: %i", mode));
 			}
 		}
 

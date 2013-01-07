@@ -149,9 +149,9 @@ RString RageDisplay::GetStats() const
 
 	s = ssprintf( "%i FPS\n%i av FPS\n%i VPF", GetFPS(), GetCumFPS(), GetVPF() );
 
-	#if defined(_WINDOWS)
+//	#if defined(_WINDOWS)
 	s += "\n"+this->GetApiDescription();
-	#endif
+//	#endif
 
 	return s;
 }
@@ -639,7 +639,7 @@ RageSurface *RageDisplay::CreateSurfaceFromPixfmt( PixelFormat pixfmt,
 	return surf;
 }
 
-PixelFormat RageDisplay::FindPixelFormat( int iBPP, int iRmask, int iGmask, int iBmask, int iAmask, bool bRealtime )
+PixelFormat RageDisplay::FindPixelFormat( int iBPP, unsigned iRmask, unsigned iGmask, unsigned iBmask, unsigned iAmask, bool bRealtime )
 {
 	PixelFormatDesc tmp = { iBPP, { iRmask, iGmask, iBmask, iAmask } };
 

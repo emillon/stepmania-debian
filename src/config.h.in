@@ -224,6 +224,9 @@
 /* Unix */
 #undef UNIX
 
+/* OpenGL ES 2.0 support not available */
+#undef WITHOUT_GLES2
+
 /* Networking support not available */
 #undef WITHOUT_NETWORKING
 

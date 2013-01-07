@@ -2,14 +2,11 @@ local player = Var "Player"
 local blinkTime = 1.2
 local barWidth = 256;
 local barHeight = 32;
+local c;
+local LifeMeter, MaxLives, CurLives;
+local LifeRatio;
 
-local t = Def.ActorFrame{
-	Def.Quad{
-		InitCommand=cmd(diffuse,color("#666666");zoomto,barWidth,barHeight);
-	};
-	Def.Quad{
-		InitCommand=cmd(diffuse,color("#000000");zoomto,barWidth,barHeight;fadetop,1);
-	};
+local t = Def.ActorFrame {
 	LoadActor("_lives")..{
 		InitCommand=cmd(pause;horizalign,left;x,-(barWidth/2));
 		BeginCommand=function(self,param)
@@ -41,7 +38,6 @@ local t = Def.ActorFrame{
 		end;
 		FinishCommand=cmd(playcommand,"Start");
 	};
-	
 };
 
 return t;

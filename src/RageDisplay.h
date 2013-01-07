@@ -227,12 +227,12 @@ public:
 	virtual RageTextureLock *CreateTextureLock() { return NULL; }
 	virtual void ClearAllTextures() = 0;
 	virtual int GetNumTextureUnits() = 0;
-	virtual void SetTexture( TextureUnit tu, unsigned iTexture ) = 0;
-	virtual void SetTextureMode( TextureUnit tu, TextureMode tm ) = 0;
-	virtual void SetTextureWrapping( TextureUnit tu, bool b ) = 0;
+	virtual void SetTexture( TextureUnit, unsigned /* iTexture */ ) = 0;
+	virtual void SetTextureMode( TextureUnit, TextureMode ) = 0;
+	virtual void SetTextureWrapping( TextureUnit, bool ) = 0;
 	virtual int GetMaxTextureSize() const = 0;
-	virtual void SetTextureFiltering( TextureUnit tu, bool b ) = 0;
-	virtual void SetEffectMode( EffectMode effect ) { }
+	virtual void SetTextureFiltering( TextureUnit, bool ) = 0;
+	virtual void SetEffectMode( EffectMode ) { }
 	virtual bool IsEffectModeSupported( EffectMode effect ) { return effect == EffectMode_Normal; }
 
 	bool SupportsRenderToTexture() const { return false; }
@@ -242,7 +242,7 @@ public:
 	 * DeleteTexture. (UpdateTexture is not permitted.) Returns 0 if render-to-
 	 * texture is unsupported.
 	 */
-	virtual unsigned CreateRenderTarget( const RenderTargetParam &param, int &iTextureWidthOut, int &iTextureHeightOut ) { return 0; }
+	virtual unsigned CreateRenderTarget( const RenderTargetParam &, int & /* iTextureWidthOut */, int & /* iTextureHeightOut */ ) { return 0; }
 
 	/* Set the render target, or 0 to resume rendering to the framebuffer. An active render
 	 * target may not be used as a texture. If bPreserveTexture is true, the contents
@@ -250,13 +250,13 @@ public:
 	 * bPreserveTexture is true the first time a render target is used, behave as if
 	 * bPreserveTexture was false.
 	 */
-	virtual void SetRenderTarget( unsigned iHandle, bool bPreserveTexture = true ) { }
+	virtual void SetRenderTarget( unsigned /* iHandle */, bool /* bPreserveTexture */ = true ) { }
 
 	virtual bool IsZTestEnabled() const = 0;
 	virtual bool IsZWriteEnabled() const = 0;
-	virtual void SetZWrite( bool b ) = 0;
-	virtual void SetZTestMode( ZTestMode mode ) = 0;
-	virtual void SetZBias( float f ) = 0;
+	virtual void SetZWrite( bool ) = 0;
+	virtual void SetZTestMode( ZTestMode ) = 0;
+	virtual void SetZBias( float ) = 0;
 	virtual void ClearZBuffer() = 0;
 
 	virtual void SetCullMode( CullMode mode ) = 0;
@@ -299,8 +299,8 @@ public:
 	void DrawQuad( const RageSpriteVertex v[] ) { DrawQuads(v,4); } /* alias. upper-left, upper-right, lower-left, lower-right */
 
 	// hacks for cell-shaded models
-	virtual void SetPolygonMode( PolygonMode pm ) {}
-	virtual void SetLineWidth( float fWidth ) {}
+	virtual void SetPolygonMode( PolygonMode ) {}
+	virtual void SetLineWidth( float ) {}
 
 	enum GraphicsFileFormat
 	{
@@ -311,9 +311,9 @@ public:
 	};
 	bool SaveScreenshot( RString sPath, GraphicsFileFormat format );
 
-	virtual RString GetTextureDiagnostics( unsigned id ) const { return RString(); }
+	virtual RString GetTextureDiagnostics( unsigned /* id */ ) const { return RString(); }
 	virtual RageSurface* CreateScreenshot() = 0;	// allocates a surface.  Caller must delete it.
-	virtual RageSurface *GetTexture( unsigned iTexture ) { return NULL; } // allocates a surface.  Caller must delete it.
+	virtual RageSurface *GetTexture( unsigned /* iTexture */ ) { return NULL; } // allocates a surface.  Caller must delete it.
 
 protected:
 	virtual void DrawQuadsInternal( const RageSpriteVertex v[], int iNumVerts ) = 0;
@@ -380,7 +380,7 @@ public:
 	void ChangeCentering( int trans_x, int trans_y, int add_width, int add_height );
 
 	RageSurface *CreateSurfaceFromPixfmt( PixelFormat pixfmt, void *pixels, int width, int height, int pitch );
-	PixelFormat FindPixelFormat( int bpp, int Rmask, int Gmask, int Bmask, int Amask, bool realtime=false );
+	PixelFormat FindPixelFormat( int bpp, unsigned Rmask, unsigned Gmask, unsigned Bmask, unsigned Amask, bool realtime=false );
 
 	// Lua
 	void PushSelf( lua_State *L );

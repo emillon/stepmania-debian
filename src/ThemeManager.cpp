@@ -872,7 +872,7 @@ void ThemeManager::ReloadMetrics()
 
 RString ThemeManager::GetMetricsGroupFallback( const RString &sMetricsGroup )
 {
-	ASSERT( g_pLoadedThemeData );
+	ASSERT( g_pLoadedThemeData != NULL );
 
 	// always look in iniMetrics for "Fallback"
 	RString sFallback;
@@ -962,7 +962,7 @@ RString ThemeManager::GetMetricRaw( const IniFile &ini, const RString &sMetricsG
 					sDefaultMetricPath.c_str() );
 				return RString();
 			default:
-				ASSERT(0);
+				FAIL_M("Unexpected answer to Abort/Retry/Ignore dialog");
 		}
 	}
 }
@@ -1166,7 +1166,7 @@ RString ThemeManager::GetString( const RString &sMetricsGroup, const RString &sV
 	sValueName.Replace( "\r\n", "\\n" );
 	sValueName.Replace( "\n", "\\n" );
 
-	ASSERT( g_pLoadedThemeData );
+	ASSERT( g_pLoadedThemeData != NULL );
 	RString s = GetMetricRaw( g_pLoadedThemeData->iniStrings, sMetricsGroup, sValueName );
 	FontCharAliases::ReplaceMarkers( s );
 

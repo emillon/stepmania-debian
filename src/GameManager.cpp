@@ -59,6 +59,7 @@ static const StepsTypeInfo g_StepsTypeInfos[] = {
 	{ "pump-routine",	10,	true,	StepsTypeCategory_Routine },
 	// kb7
 	{ "kb7-single",		7,	true,	StepsTypeCategory_Single },
+	// { "kb7-small",		7,	true,	StepsTypeCategory_Single },
 	// ez2dancer
 	{ "ez2-single",		5,	true,	StepsTypeCategory_Single },	// Single: TL,LHH,D,RHH,TR
 	{ "ez2-double",		10,	true,	StepsTypeCategory_Double },	// Double: Single x2
@@ -955,6 +956,50 @@ static const Style g_Style_KB7_Single =
 	false, // m_bLockDifficulties
 };
 
+// ...
+/* static const int KB7_COL_SPACING_SMALL = 10;
+static const Style g_Style_KB7_Small =
+{	// STYLE_KB7_SMALL
+	true,				// m_bUsedForGameplay
+	true,				// m_bUsedForEdit
+	false,				// m_bUsedForDemonstration
+	true,				// m_bUsedForHowToPlay
+	"small",			// m_szName
+	StepsType_kb7_single,		// m_StepsType
+	StyleType_OnePlayerOneSide,		// m_StyleType
+	7,				// m_iColsPerPlayer
+	{	// m_ColumnInfo[NUM_PLAYERS][MAX_COLS_PER_PLAYER];
+		{	// PLAYER_1
+			{ TRACK_1,	-34, NULL },
+			{ TRACK_2,	-24, NULL },
+			{ TRACK_3,	-15, NULL },
+			{ TRACK_4,	0, NULL },
+			{ TRACK_5,	+15, NULL },
+			{ TRACK_6,	+24, NULL },
+			{ TRACK_7,	+34, NULL },
+		},
+		{	// PLAYER_2
+			{ TRACK_1,	-34, NULL },
+			{ TRACK_2,	-24, NULL },
+			{ TRACK_3,	-15, NULL },
+			{ TRACK_4,	0, NULL },
+			{ TRACK_5,	+15, NULL },
+			{ TRACK_6,	+24 NULL },
+			{ TRACK_7,	+34, NULL },
+		},
+	},
+	{	// m_iInputColumn[NUM_GameController][NUM_GameButton]
+		{ 0, 1, 2, 3, 4, 5, 6, Style::END_MAPPING },
+		{ 0, 1, 2, 3, 4, 5, 6, Style::END_MAPPING },
+	},
+	{	// m_iColumnDrawOrder[MAX_COLS_PER_PLAYER];
+		0,1,2,3,4,5,6 // doesn't work?
+	},
+	false, // m_bNeedsZoomOutWith2Players
+	false, // m_bCanUseBeginnerHelper
+	false, // m_bLockDifficulties
+}; */
+
 static const Style g_Style_KB7_Versus =
 {	// STYLE_KB7_VERSUS
 	true,				// m_bUsedForGameplay
@@ -1000,6 +1045,7 @@ static const Style g_Style_KB7_Versus =
 static const Style *g_apGame_KB7_Styles[] =
 {
 	&g_Style_KB7_Single,
+	// &g_Style_KB7_Small,
 	&g_Style_KB7_Versus,
 	NULL
 };
@@ -2920,8 +2966,7 @@ const Style* GameManager::GetHowToPlayStyleForGame( const Game *pGame )
 			return style;
 	}
 
-	ASSERT(0);	// this Game is missing a Style that can be used with HowToPlay
-	return NULL;
+	FAIL_M(ssprintf("Game has no Style that can be used with HowToPlay: %s", pGame->m_szName));
 }
 
 void GameManager::GetCompatibleStyles( const Game *pGame, int iNumPlayers, vector<const Style*> &vpStylesOut )
@@ -3006,8 +3051,7 @@ int GameManager::GetIndexFromGame( const Game* pGame )
 		if( g_Games[g] == pGame )
 			return g;
 	}
-	ASSERT(0);
-	return 0;
+	FAIL_M(ssprintf("Game not found: %s", pGame->m_szName));
 }
 
 const Game* GameManager::GetGameFromIndex( int index )

@@ -165,7 +165,7 @@ static RString TransferStatsMemoryCardToMachine()
 		s = ssprintf(PROFILE_CORRUPT.GetValue(),pn+1);
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid profile load result: %i", lr));
 	}
 
 	MEMCARDMAN->UnmountCard(pn);
@@ -425,7 +425,7 @@ void ScreenServiceAction::BeginScreen()
 		else if( *s == "SyncEditsMachineToMemoryCard" )		pfn = SyncEditsMachineToMemoryCard;
 		else if( *s == "ResetPreferences" )			pfn = ResetPreferences;
 		
-		ASSERT_M( pfn, *s );
+		ASSERT_M( pfn != NULL, *s );
 		
 		RString sResult = pfn();
 		vsResults.push_back( sResult );

@@ -278,7 +278,7 @@ void GameState::Reset()
 	FOREACH_PlayerNumber( pn )
 		UnjoinPlayer( pn );
 
-	ASSERT( THEME );
+	ASSERT( THEME != NULL );
 
 	m_timeGameStarted.SetZero();
 	SetCurrentStyle( NULL );
@@ -339,7 +339,7 @@ void GameState::Reset()
 			m_pCurCharacters[p] = CHARMAN->GetRandomCharacter();
 		else
 			m_pCurCharacters[p] = CHARMAN->GetDefaultCharacter();
-		ASSERT( m_pCurCharacters[p] );
+		ASSERT( m_pCurCharacters[p] != NULL );
 	}
 
 	m_bTemporaryEventMode = false;
@@ -626,7 +626,7 @@ int GameState::GetNumStagesMultiplierForSong( const Song* pSong )
 {
 	int iNumStages = 1;
 
-	ASSERT( pSong );
+	ASSERT( pSong != NULL );
 	if( pSong->IsMarathon() )
 		iNumStages *= 3;
 	if( pSong->IsLong() )
@@ -912,6 +912,8 @@ const float GameState::MUSIC_SECONDS_INVALID = -5000.0f;
 void GameState::ResetMusicStatistics()
 {
 	m_Position.Reset();
+	m_LastPositionTimer.Touch();
+	m_LastPositionSeconds = 0.0f;
 
 	Actor::SetBGMTime( 0, 0, 0, 0 );
 
@@ -960,7 +962,21 @@ void GameState::ResetStageStatistics()
 
 void GameState::UpdateSongPosition( float fPositionSeconds, const TimingData &timing, const RageTimer &timestamp, bool bUpdatePlayers )
 {
-	
+	/* It's not uncommon to get a lot of duplicated positions from the sound
+	 * driver, like so: 13.120953,13.130975,13.130975,13.130975,13.140998,...
+	 * This causes visual stuttering of the arrows. To compensate, keep a
+	 * RageTimer since the last change. */
+	if (fPositionSeconds == m_LastPositionSeconds)
+		fPositionSeconds += m_LastPositionTimer.Ago();
+	else
+	{
+		//LOG->Info("Time difference: %+f",
+		//	m_LastPositionTimer.Ago() - (fPositionSeconds - m_LastPositionSeconds)
+		//);
+		m_LastPositionTimer.Touch();
+		m_LastPositionSeconds = fPositionSeconds;
+	}
+
 	m_Position.UpdateSongPosition( fPositionSeconds, timing, timestamp );
 
 	if( bUpdatePlayers )
@@ -1202,7 +1218,8 @@ bool GameState::IsHumanPlayer( PlayerNumber pn ) const
 			return true;	// if we can't join, then we're on a screen like MusicScroll or GameOver
 	}
 
-	switch( GetCurrentStyle()->m_StyleType )
+	StyleType type = GetCurrentStyle()->m_StyleType;
+	switch( type )
 	{
 	case StyleType_TwoPlayersTwoSides:
 	case StyleType_TwoPlayersSharedSides:
@@ -1211,8 +1228,7 @@ bool GameState::IsHumanPlayer( PlayerNumber pn ) const
 	case StyleType_OnePlayerTwoSides:
 		return pn == this->GetMasterPlayerNumber();
 	default:
-		ASSERT(0);		// invalid style type
-		return false;
+		FAIL_M(ssprintf("Invalid style type: %i", type));
 	}
 }
 
@@ -1442,7 +1458,7 @@ void GameState::GetAllUsedNoteSkins( vector<RString> &out ) const
 		if( IsCourseMode() )
 		{
 			const Trail *pTrail = m_pCurTrail[pn];
-			ASSERT( pTrail );
+			ASSERT( pTrail != NULL );
 
 			FOREACH_CONST( TrailEntry, pTrail->m_vEntries, e )
 			{
@@ -1528,12 +1544,14 @@ PlayerOptions::FailType GameState::GetPlayerFailType( const PlayerState *pPlayer
 
 bool GameState::ShowW1() const
 {
-	switch( PREFSMAN->m_AllowW1 )
+	AllowW1 pref = PREFSMAN->m_AllowW1;
+	switch( pref )
 	{
 	case ALLOW_W1_NEVER:		return false;
 	case ALLOW_W1_COURSES_ONLY:	return IsCourseMode();
 	case ALLOW_W1_EVERYWHERE:	return true;
-	default:	ASSERT(0);
+	default:
+		FAIL_M(ssprintf("Invalid AllowW1 preference: %i", pref));
 	}
 }
 
@@ -1571,11 +1589,11 @@ void GameState::GetRankingFeats( PlayerNumber pn, vector<RankingFeat> &asFeatsOu
 				SongAndSteps sas;
 				ASSERT( !STATSMAN->m_vPlayedStageStats[i].m_vpPlayedSongs.empty() );
 				sas.pSong = STATSMAN->m_vPlayedStageStats[i].m_vpPlayedSongs[0];
-				ASSERT( sas.pSong );
+				ASSERT( sas.pSong != NULL );
 				if( STATSMAN->m_vPlayedStageStats[i].m_player[pn].m_vpPossibleSteps.empty() )
 					continue;
 				sas.pSteps = STATSMAN->m_vPlayedStageStats[i].m_player[pn].m_vpPossibleSteps[0];
-				ASSERT( sas.pSteps );
+				ASSERT( sas.pSteps != NULL );
 				vSongAndSteps.push_back( sas );
 			}
 			CHECKPOINT;
@@ -1713,9 +1731,9 @@ void GameState::GetRankingFeats( PlayerNumber pn, vector<RankingFeat> &asFeatsOu
 		{
 			CHECKPOINT;
 			Course* pCourse = m_pCurCourse;
-			ASSERT( pCourse );
+			ASSERT( pCourse != NULL );
 			Trail *pTrail = m_pCurTrail[pn];
-			ASSERT( pTrail );
+			ASSERT( pTrail != NULL );
 			CourseDifficulty cd = pTrail->m_CourseDifficulty;
 
 			// Find Machine Records
@@ -1770,7 +1788,7 @@ void GameState::GetRankingFeats( PlayerNumber pn, vector<RankingFeat> &asFeatsOu
 		}
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid play mode: %i", m_PlayMode));
 	}
 }
 
@@ -2070,7 +2088,7 @@ float GameState::GetGoalPercentComplete( PlayerNumber pn )
 	case GoalType_None:
 		return 0;	// never complete
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid GoalType: %i", pProfile->m_GoalType));
 	}
 	if( fGoal == 0 )
 		return 0;
@@ -2408,7 +2426,7 @@ public:
 		LuaHelpers::CreateTableFromArray( vHP, L );
 		return 1;
 	}
-  static int GetEnabledPlayers(T* p, lua_State *L )
+  static int GetEnabledPlayers(T* , lua_State *L )
   {
     vector<PlayerNumber> vEP;
     FOREACH_EnabledPlayer( pn )
@@ -2422,7 +2440,7 @@ public:
 		LuaHelpers::Push( L, pStyle );
 		return 1;
 	}
-	static int IsAnyHumanPlayerUsingMemoryCard( T* p, lua_State *L )
+	static int IsAnyHumanPlayerUsingMemoryCard( T* , lua_State *L )
 	{
 		bool bUsingMemoryCard = false;
 		FOREACH_HumanPlayer( pn )
@@ -2433,7 +2451,11 @@ public:
 		lua_pushboolean(L, bUsingMemoryCard );
 		return 1;
 	}
-	static int GetNumStagesForCurrentSongAndStepsOrCourse( T* p, lua_State *L ) { lua_pushnumber(L, GAMESTATE->GetNumStagesForCurrentSongAndStepsOrCourse() ); return 1; }
+	static int GetNumStagesForCurrentSongAndStepsOrCourse( T* , lua_State *L )
+	{ 
+		lua_pushnumber(L, GAMESTATE->GetNumStagesForCurrentSongAndStepsOrCourse() );
+		return 1; 
+	}
 	static int GetNumStagesLeft( T* p, lua_State *L )
 	{
 		PlayerNumber pn = Enum::Check<PlayerNumber>(L, 1);

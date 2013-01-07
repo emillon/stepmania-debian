@@ -114,12 +114,12 @@ void ProfileManager::Init()
 		{
 			RString sCharacterID = FIXED_PROFILE_CHARACTER_ID( i );
 			Character *pCharacter = CHARMAN->GetCharacterFromID( sCharacterID );
-			ASSERT_M( pCharacter, sCharacterID );
+			ASSERT_M( pCharacter != NULL, sCharacterID );
 			RString sProfileID;
 			bool b = CreateLocalProfile( pCharacter->GetDisplayName(), sProfileID );
 			ASSERT( b );
 			Profile* pProfile = GetLocalProfile( sProfileID );
-			ASSERT_M( pProfile, sProfileID );
+			ASSERT_M( pProfile != NULL, sProfileID );
 			pProfile->m_sCharacterID = sCharacterID;
 			SaveLocalProfile( sProfileID );
 		}
@@ -473,7 +473,7 @@ bool ProfileManager::RenameLocalProfile( RString sProfileID, RString sNewName )
 	ASSERT( !sProfileID.empty() );
 
 	Profile *pProfile = ProfileManager::GetLocalProfile( sProfileID );
-	ASSERT( pProfile );
+	ASSERT( pProfile != NULL );
 	pProfile->m_sDisplayName = sNewName;
 
 	RString sProfileDir = LocalProfileIDToDir( sProfileID );
@@ -483,7 +483,7 @@ bool ProfileManager::RenameLocalProfile( RString sProfileID, RString sNewName )
 bool ProfileManager::DeleteLocalProfile( RString sProfileID )
 {
 	Profile *pProfile = ProfileManager::GetLocalProfile( sProfileID );
-	ASSERT( pProfile );
+	ASSERT( pProfile != NULL );
 	RString sProfileDir = LocalProfileIDToDir( sProfileID );
 
 	// flush directory cache in an attempt to get this working
@@ -580,7 +580,7 @@ const RString& ProfileManager::GetProfileDir( ProfileSlot slot ) const
 	case ProfileSlot_Machine:
 		return MACHINE_PROFILE_DIR;
 	default:
-		ASSERT(0);
+		FAIL_M("Invalid profile slot chosen: unable to get the directory!");
 	}
 }
 
@@ -594,7 +594,7 @@ RString ProfileManager::GetProfileDirImportedFrom( ProfileSlot slot ) const
 	case ProfileSlot_Machine:
 		return RString();
 	default:
-		ASSERT(0);
+		FAIL_M("Invalid profile slot chosen: unable to get the directory!");
 	}
 }
 
@@ -608,7 +608,7 @@ const Profile* ProfileManager::GetProfile( ProfileSlot slot ) const
 	case ProfileSlot_Machine:
 		return m_pMachineProfile;
 	default:
-		ASSERT(0);
+		FAIL_M("Invalid profile slot chosen: unable to get the profile!");
 	}
 }
 
@@ -763,8 +763,7 @@ bool ProfileManager::IsPersistentProfile( ProfileSlot slot ) const
 	case ProfileSlot_Machine:
 		return true;
 	default:
-		ASSERT(0);
-		return false;
+		FAIL_M("Invalid profile slot chosen: unable to get profile info!");
 	}
 }
 
@@ -820,9 +819,9 @@ class LunaProfileManager: public Luna<ProfileManager>
 {
 public:
 	static int IsPersistentProfile( T* p, lua_State *L )	{ lua_pushboolean(L, p->IsPersistentProfile(Enum::Check<PlayerNumber>(L, 1)) ); return 1; }
-	static int GetProfile( T* p, lua_State *L )				{ PlayerNumber pn = Enum::Check<PlayerNumber>(L, 1); Profile* pP = p->GetProfile(pn); ASSERT(pP); pP->PushSelf(L); return 1; }
+	static int GetProfile( T* p, lua_State *L )				{ PlayerNumber pn = Enum::Check<PlayerNumber>(L, 1); Profile* pP = p->GetProfile(pn); ASSERT(pP != NULL); pP->PushSelf(L); return 1; }
 	static int GetMachineProfile( T* p, lua_State *L )		{ p->GetMachineProfile()->PushSelf(L); return 1; }
-	static int SaveMachineProfile( T* p, lua_State *L )		{ p->SaveMachineProfile(); return 0; }
+	static int SaveMachineProfile( T* p, lua_State * )		{ p->SaveMachineProfile(); return 0; }
 	static int GetLocalProfile( T* p, lua_State *L )
 	{
 		Profile *pProfile = p->GetLocalProfile(SArg(1));
@@ -832,7 +831,7 @@ public:
 			lua_pushnil(L);
 		return 1;
 	}
-	static int GetLocalProfileFromIndex( T* p, lua_State *L ) { Profile *pProfile = p->GetLocalProfileFromIndex(IArg(1)); ASSERT(pProfile); pProfile->PushSelf(L); return 1; }
+	static int GetLocalProfileFromIndex( T* p, lua_State *L ) { Profile *pProfile = p->GetLocalProfileFromIndex(IArg(1)); ASSERT(pProfile != NULL); pProfile->PushSelf(L); return 1; }
 	static int GetLocalProfileIDFromIndex( T* p, lua_State *L )	{ lua_pushstring(L, p->GetLocalProfileIDFromIndex(IArg(1)) ); return 1; }
 	static int GetLocalProfileIndexFromID( T* p, lua_State *L )	{ lua_pushnumber(L, p->GetLocalProfileIndexFromID(SArg(1)) ); return 1; }
 	static int GetNumLocalProfiles( T* p, lua_State *L )	{ lua_pushnumber(L, p->GetNumLocalProfiles() ); return 1; }
@@ -841,6 +840,35 @@ public:
 	static int ProfileWasLoadedFromMemoryCard( T* p, lua_State *L )	{ lua_pushboolean(L, p->ProfileWasLoadedFromMemoryCard(Enum::Check<PlayerNumber>(L, 1)) ); return 1; }
 	static int LastLoadWasTamperedOrCorrupt( T* p, lua_State *L ) { lua_pushboolean(L, p->LastLoadWasTamperedOrCorrupt(Enum::Check<PlayerNumber>(L, 1)) ); return 1; }
 	static int GetPlayerName( T* p, lua_State *L )				{ PlayerNumber pn = Enum::Check<PlayerNumber>(L, 1); lua_pushstring(L, p->GetPlayerName(pn)); return 1; }
+
+	static int LocalProfileIDToDir( T* , lua_State *L )
+	{
+		RString dir = USER_PROFILES_DIR + SArg(1) + "/";
+		lua_pushstring( L, dir );
+		return 1;
+	}
+	static int SaveProfile( T* p, lua_State *L ) { lua_pushboolean( L, p->SaveProfile(Enum::Check<PlayerNumber>(L, 1)) ); return 1; }
+	static int SaveLocalProfile( T* p, lua_State *L ) { lua_pushboolean( L, p->SaveLocalProfile(SArg(1)) ); return 1; }
+	static int ProfileFromMemoryCardIsNew( T* p, lua_State *L ) { lua_pushboolean( L, p->ProfileFromMemoryCardIsNew(Enum::Check<PlayerNumber>(L, 1)) ); return 1; }
+	static int GetSongNumTimesPlayed( T* p, lua_State *L )
+	{
+		lua_pushnumber(L, p->GetSongNumTimesPlayed(Luna<Song>::check(L,1),Enum::Check<ProfileSlot>(L, 2)) );
+		return 1;
+	}
+	static int GetLocalProfileIDs( T* p, lua_State *L )
+	{
+		vector<RString> vsProfileIDs;
+		p->GetLocalProfileIDs(vsProfileIDs);
+		LuaHelpers::CreateTableFromArray<RString>( vsProfileIDs, L );
+		return 1;
+	}
+	static int GetLocalProfileDisplayNames( T* p, lua_State *L )
+	{
+		vector<RString> vsProfileNames;
+		p->GetLocalProfileDisplayNames(vsProfileNames);
+		LuaHelpers::CreateTableFromArray<RString>( vsProfileNames, L );
+		return 1;
+	}
 
 	LunaProfileManager()
 	{
@@ -858,6 +886,14 @@ public:
 		ADD_METHOD( ProfileWasLoadedFromMemoryCard );
 		ADD_METHOD( LastLoadWasTamperedOrCorrupt );
 		ADD_METHOD( GetPlayerName );
+		//
+		ADD_METHOD( SaveProfile );
+		ADD_METHOD( SaveLocalProfile );
+		ADD_METHOD( ProfileFromMemoryCardIsNew );
+		ADD_METHOD( GetSongNumTimesPlayed );
+		ADD_METHOD( GetLocalProfileIDs );
+		ADD_METHOD( GetLocalProfileDisplayNames );
+		ADD_METHOD( LocalProfileIDToDir );
 	}
 };
 

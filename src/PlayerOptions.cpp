@@ -233,7 +233,8 @@ void PlayerOptions::GetMods( vector<RString> &AddTo, bool bForceNoteSkin ) const
 	case FAIL_IMMEDIATE_CONTINUE:		AddTo.push_back("FailImmediateContinue");	break;
 	case FAIL_AT_END:			AddTo.push_back("FailAtEnd");	break;
 	case FAIL_OFF:				AddTo.push_back("FailOff");	break;
-	default:		ASSERT(0);
+	default:
+		FAIL_M(ssprintf("Invalid FailType: %i", m_FailType));
 	}
 
 	if( m_fSkew==0 && m_fPerspectiveTilt==0 )		{ if( m_bSetTiltOrSkew ) AddTo.push_back( "Overhead" ); }
@@ -281,7 +282,7 @@ void PlayerOptions::FromString( const RString &sMultipleMods )
 
 bool PlayerOptions::FromOneModString( const RString &sOneMod, RString &sErrorOut )
 {
-	ASSERT_M( NOTESKIN, "The Noteskin Manager must be loaded in order to process mods." );
+	ASSERT_M( NOTESKIN != NULL, "The Noteskin Manager must be loaded in order to process mods." );
 
 	RString sBit = sOneMod;
 	sBit.MakeLower();
@@ -763,8 +764,8 @@ bool PlayerOptions::IsEasierForSongAndSteps( Song* pSong, Steps* pSteps, PlayerN
 
 bool PlayerOptions::IsEasierForCourseAndTrail( Course* pCourse, Trail* pTrail ) const
 {
-	ASSERT( pCourse );
-	ASSERT( pTrail );
+	ASSERT( pCourse != NULL );
+	ASSERT( pTrail != NULL );
 
 	FOREACH_CONST( TrailEntry, pTrail->m_vEntries, e )
 	{
