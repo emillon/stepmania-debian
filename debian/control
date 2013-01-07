@@ -5,6 +5,7 @@ Maintainer: Debian Games Team <pkg-games-devel@lists.alioth.debian.org>
 Uploaders: Etienne Millon <etienne.millon@gmail.com>
 Build-Depends:
  autoconf,
+ automake,
  autotools-dev,
  debhelper (>= 9),
  libbz2-dev,
