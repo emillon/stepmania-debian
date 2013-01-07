@@ -3,6 +3,13 @@
 %:
 	dh $@  --with autotools-dev
 
+override_dh_auto_configure:
+	./autogen.sh
+	./Utils/build.sh --configure
+
+override_dh_auto_build:
+	./Utils/build.sh --stepmania
+
 override_dh_clean:
 	dh_clean -X'Themes/_themekit-piu/Scripts/02 ini read.lua.bak'
 
