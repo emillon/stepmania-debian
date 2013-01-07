@@ -273,8 +273,7 @@ void WheelBase::UpdateSwitch()
 	case STATE_LOCKED:
 		break;
 	default:
-		ASSERT(0);	// all state changes should be handled explicitly
-		break;
+		FAIL_M(ssprintf("Invalid wheel state: %i", m_WheelState));
 	}
 }
 
@@ -459,7 +458,7 @@ void WheelBase::RebuildWheelItems( int iDist )
 	// find the first wheel item shown
 	iFirstVisibleIndex -= NUM_WHEEL_ITEMS/2;
 
-	ASSERT(data.size());
+	ASSERT(data.size() != 0);
 	wrap( iFirstVisibleIndex, data.size() );
 
 	// iIndex is now the index of the lowest WheelItem to draw
@@ -527,6 +526,7 @@ int WheelBase::FirstVisibleIndex()
 class LunaWheelBase: public Luna<WheelBase>
 {
 public:
+	static int Move( T* p, lua_State *L ){ p->Move( IArg(1) ); return 0; }
 	static int GetWheelItem( T* p, lua_State *L )
 	{
 		int iItem = IArg(1);
@@ -554,6 +554,7 @@ public:
 
 	LunaWheelBase()
 	{
+		ADD_METHOD( Move );
 		ADD_METHOD( GetWheelItem );
 		ADD_METHOD( IsSettled );
 		ADD_METHOD( IsLocked );

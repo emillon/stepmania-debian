@@ -763,7 +763,7 @@ public:
 		return 0;
 	}
   
-	static int FailPlayer( T* p, lua_State *L )
+	static int FailPlayer( T* p, lua_State * )
 	{
 		p->m_bFailed = true;
 		return 0;

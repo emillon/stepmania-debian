@@ -141,7 +141,7 @@ public:
 		const Command &command = cmds.v[0];
 		RString sParam = command.GetArg(1).s;
 		ASSERT( command.m_vsArgs.size() == 2 );
-		ASSERT( sParam.size() );
+		ASSERT( sParam.size() != 0 );
 
 		m_bUseModNameForIcon = true;
 
@@ -373,7 +373,7 @@ static void SortNoteSkins( vector<RString> &asSkinNames )
 
 class OptionRowHandlerListNoteSkins : public OptionRowHandlerList
 {
-	virtual void LoadInternal( const Commands &cmds )
+	virtual void LoadInternal( const Commands & )
 	{
 		m_Def.m_sName = "NoteSkins";
 		m_Def.m_bOneChoiceForAllPlayers = false;
@@ -399,7 +399,7 @@ class OptionRowHandlerListNoteSkins : public OptionRowHandlerList
 // XXX: very similar to OptionRowHandlerSteps
 class OptionRowHandlerListSteps : public OptionRowHandlerList
 {
-	virtual void LoadInternal( const Commands &cmds )
+	virtual void LoadInternal( const Commands & )
 	{
 		m_Def.m_sName = "Steps";
 		m_Def.m_bAllowThemeItems = false;	// we theme the text ourself
@@ -526,7 +526,7 @@ public:
 		const Command &command = cmds.v[0];
 		RString sParam = command.GetArg(1).s;
 		ASSERT( command.m_vsArgs.size() == 2 );
-		ASSERT( sParam.size() );
+		ASSERT( sParam.size() != 0 );
 
 		if( sParam == "EditSteps" )
 		{
@@ -666,7 +666,7 @@ public:
 
 class OptionRowHandlerListCharacters: public OptionRowHandlerList
 {
-	virtual void LoadInternal( const Commands &cmds )
+	virtual void LoadInternal( const Commands & )
 	{
 		m_Def.m_bOneChoiceForAllPlayers = false;
 		m_Def.m_bAllowThemeItems = false;
@@ -699,7 +699,7 @@ class OptionRowHandlerListCharacters: public OptionRowHandlerList
 
 class OptionRowHandlerListStyles: public OptionRowHandlerList
 {
-	virtual void LoadInternal( const Commands &cmds )
+	virtual void LoadInternal( const Commands & )
 	{
 		m_Def.m_bOneChoiceForAllPlayers = true;
 		m_Def.m_sName = "Style";
@@ -707,7 +707,7 @@ class OptionRowHandlerListStyles: public OptionRowHandlerList
 
 		vector<const Style*> vStyles;
 		GAMEMAN->GetStylesForGame( GAMESTATE->m_pCurGame, vStyles );
-		ASSERT( vStyles.size() );
+		ASSERT( vStyles.size() != 0 );
 		FOREACH_CONST( const Style*, vStyles, s )
 		{
 			m_Def.m_vsChoices.push_back( GAMEMAN->StyleToLocalizedString(*s) ); 
@@ -722,7 +722,7 @@ class OptionRowHandlerListStyles: public OptionRowHandlerList
 
 class OptionRowHandlerListGroups: public OptionRowHandlerList
 {
-	virtual void LoadInternal( const Commands &cmds )
+	virtual void LoadInternal( const Commands & )
 	{
 		m_Def.m_bOneChoiceForAllPlayers = true;
 		m_Def.m_bAllowThemeItems = false;	// we theme the text ourself
@@ -731,7 +731,7 @@ class OptionRowHandlerListGroups: public OptionRowHandlerList
 
 		vector<RString> vSongGroups;
 		SONGMAN->GetSongGroupNames( vSongGroups );
-		ASSERT( vSongGroups.size() );
+		ASSERT( vSongGroups.size() != 0 );
 
 		{
 			m_Def.m_vsChoices.push_back( "AllGroups" );
@@ -752,7 +752,7 @@ class OptionRowHandlerListGroups: public OptionRowHandlerList
 
 class OptionRowHandlerListDifficulties: public OptionRowHandlerList
 {
-	virtual void LoadInternal( const Commands &cmds )
+	virtual void LoadInternal( const Commands & )
 	{
 		m_Def.m_bOneChoiceForAllPlayers = true;
 		m_Def.m_sName = "Difficulty";
@@ -783,7 +783,7 @@ class OptionRowHandlerListDifficulties: public OptionRowHandlerList
 // XXX: very similar to OptionRowHandlerSongChoices
 class OptionRowHandlerListSongsInCurrentSongGroup: public OptionRowHandlerList
 {
-	virtual void LoadInternal( const Commands &cmds )
+	virtual void LoadInternal( const Commands & )
 	{
 		const vector<Song*> &vpSongs = SONGMAN->GetSongs( GAMESTATE->m_sPreferredSongGroup );
 
@@ -861,7 +861,7 @@ public:
 		const Command &command = cmds.v[0];
 		ASSERT( command.m_vsArgs.size() == 2 );
 		RString sLuaFunction = command.m_vsArgs[1];
-		ASSERT( sLuaFunction.size() );
+		ASSERT( sLuaFunction.size() != 0 );
 
 		m_Def.m_bAllowThemeItems = false;	// Lua options are always dynamic and can theme themselves.
 
@@ -1115,7 +1115,7 @@ public:
 		const Command &command = cmds.v[0];
 		RString sParam = command.GetArg(1).s;
 		ASSERT( command.m_vsArgs.size() == 2 );
-		ASSERT( sParam.size() );
+		ASSERT( sParam.size() != 0 );
 
 		Init();
 
@@ -1139,7 +1139,7 @@ public:
 
 		m_Def.m_sName = m_pOpt->name;
 	}
-	virtual void ImportOption( OptionRow *pRow, const vector<PlayerNumber> &vpns, vector<bool> vbSelectedOut[NUM_PLAYERS] ) const
+	virtual void ImportOption( OptionRow *, const vector<PlayerNumber> &vpns, vector<bool> vbSelectedOut[NUM_PLAYERS] ) const
 	{
 		FOREACH_CONST( PlayerNumber, vpns, pn )
 		{
@@ -1199,7 +1199,7 @@ public:
 		const Command &command = cmds.v[0];
 		RString sParam = command.GetArg(1).s;
 		ASSERT( command.m_vsArgs.size() == 2 );
-		ASSERT( sParam.size() );
+		ASSERT( sParam.size() != 0 );
 
 		if( sParam == "EditStepsType" )
 		{

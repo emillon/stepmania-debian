@@ -100,7 +100,7 @@ void ScreenEditMenu::HandleScreenMessage( const ScreenMessage SM )
 	ScreenWithMenuElements::HandleScreenMessage( SM );
 }
 
-void ScreenEditMenu::MenuUp( const InputEventPlus &input )
+void ScreenEditMenu::MenuUp( const InputEventPlus & )
 {
 	if( m_Selector.CanGoUp() )
 	{
@@ -109,7 +109,7 @@ void ScreenEditMenu::MenuUp( const InputEventPlus &input )
 	}
 }
 
-void ScreenEditMenu::MenuDown( const InputEventPlus &input )
+void ScreenEditMenu::MenuDown( const InputEventPlus & )
 {
 	if( m_Selector.CanGoDown() )
 	{
@@ -118,7 +118,7 @@ void ScreenEditMenu::MenuDown( const InputEventPlus &input )
 	}
 }
 
-void ScreenEditMenu::MenuLeft( const InputEventPlus &input )
+void ScreenEditMenu::MenuLeft( const InputEventPlus & )
 {
 	if( m_Selector.CanGoLeft() )
 	{
@@ -126,7 +126,7 @@ void ScreenEditMenu::MenuLeft( const InputEventPlus &input )
 	}
 }
 
-void ScreenEditMenu::MenuRight( const InputEventPlus &input )
+void ScreenEditMenu::MenuRight( const InputEventPlus & )
 {
 	if( m_Selector.CanGoRight() )
 	{
@@ -157,7 +157,8 @@ static LocalizedString DELETED_AUTOGEN_STEPS	( "ScreenEditMenu", "These steps ar
 static LocalizedString STEPS_WILL_BE_LOST	( "ScreenEditMenu", "These steps will be lost permanently." );
 static LocalizedString CONTINUE_WITH_DELETE	( "ScreenEditMenu", "Continue with delete?" );
 static LocalizedString ENTER_EDIT_DESCRIPTION	( "ScreenEditMenu", "Enter a description for this edit.");
-void ScreenEditMenu::MenuStart( const InputEventPlus &input )
+
+void ScreenEditMenu::MenuStart( const InputEventPlus & )
 {
 	if( IsTransitioning() )
 		return;
@@ -215,7 +216,7 @@ void ScreenEditMenu::MenuStart( const InputEventPlus &input )
 	{
 		case EditMenuAction_Delete:
 		{
-			ASSERT( pSteps );
+			ASSERT( pSteps != NULL );
 			if( pSteps->IsAutogen() )
 			{
 				SCREENMAN->PlayInvalidSound();
@@ -233,7 +234,7 @@ void ScreenEditMenu::MenuStart( const InputEventPlus &input )
 	case EditMenuAction_Practice:
 		break;
 	case EditMenuAction_Delete:
-		ASSERT( pSteps );
+		ASSERT( pSteps != NULL );
 		ScreenPrompt::Prompt( SM_None, STEPS_WILL_BE_LOST.GetValue() + "\n\n" + CONTINUE_WITH_DELETE.GetValue(),
 		                      PROMPT_YES_NO, ANSWER_NO );
 		break;
@@ -242,18 +243,18 @@ void ScreenEditMenu::MenuStart( const InputEventPlus &input )
 		{
 			pSteps = pSong->CreateSteps();
 
-			switch( m_Selector.EDIT_MODE )
+			EditMode mode = m_Selector.EDIT_MODE;
+			switch( mode )
 			{
 			default:
-				ASSERT(0);
+				FAIL_M(ssprintf("Invalid EditMode: %i", mode));
 			case EditMode_Full:
 				break;
 			case EditMode_Home:
 				pSteps->SetLoadedFromProfile( ProfileSlot_Machine );
 				break;
 			case EditMode_Practice:
-				ASSERT(0);
-				break;
+				FAIL_M("Cannot create steps in EditMode_Practice");
 			}
 
 			RString sEditName;
@@ -282,7 +283,7 @@ void ScreenEditMenu::MenuStart( const InputEventPlus &input )
 		}
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid edit menu action: %i", action));
 	}
 
 	// Go to the next screen.
@@ -293,7 +294,7 @@ void ScreenEditMenu::MenuStart( const InputEventPlus &input )
 	case EditMenuAction_Practice:
 		{
 			// Prepare for ScreenEdit
-			ASSERT( pSteps );
+			ASSERT( pSteps != NULL );
 			bool bPromptToNameSteps = (action == EditMenuAction_Create && dc == Difficulty_Edit);
 			if( bPromptToNameSteps )
 			{
@@ -317,7 +318,7 @@ void ScreenEditMenu::MenuStart( const InputEventPlus &input )
 	case EditMenuAction_Delete:
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid edit menu action: %i", action));
 	}
 }
 

@@ -236,7 +236,8 @@ static void FixLittleEndian()
 			{
 			case 24: m = Swap24(m); break;
 			case 32: m = Swap32(m); break;
-			default: ASSERT(0);
+			default:
+				 FAIL_M(ssprintf("Unsupported BPP value: %i", pf.bpp));
 			}
 			pf.masks[mask] = m;
 		}
@@ -282,9 +283,13 @@ RString GetInfoLog( GLhandleARB h )
 
 GLhandleARB CompileShader( GLenum ShaderType, RString sFile, vector<RString> asDefines )
 {
-	if (!glewIsSupported("GL_ARB_fragment_shader"))
+	/* XXX: This would not be necessary if it wasn't for the special case for Cel. */
+	if (ShaderType == GL_FRAGMENT_SHADER_ARB && !glewIsSupported("GL_VERSION_2_0"))
+	{
+		LOG->Warn("Fragment shaders not supported by driver. Some effects will not be available.");
 		return 0;
-
+	}
+		
 	RString sBuffer;
 	{
 		RageFile file;
@@ -339,11 +344,18 @@ GLhandleARB CompileShader( GLenum ShaderType, RString sFile, vector<RString> asD
 
 GLhandleARB LoadShader( GLenum ShaderType, RString sFile, vector<RString> asDefines )
 {
-	// Don't do anything here if not the hardware/driver can't do it!
-	if (!GLEW_ARB_fragment_program && GLEW_ARB_shading_language_100 && ShaderType == GL_FRAGMENT_SHADER_ARB)
+	/* Vertex shaders are supported by more hardware than fragment shaders.
+	 * If this causes any trouble I will have to up the requirement for both
+	 * of them to at least GL 2.0. Regardless we need basic GLSL support.
+	 * -Colby */
+	if (!glewIsSupported("GL_ARB_shading_language_100 GL_ARB_shader_objects") ||
+		(ShaderType == GL_FRAGMENT_SHADER_ARB && !glewIsSupported("GL_VERSION_2_0")) ||
+		(ShaderType == GL_VERTEX_SHADER_ARB && !glewIsSupported("GL_ARB_vertex_shader")))
+	{
+		LOG->Warn("%s shaders not supported by driver. Some effects will not be available.",
+			(ShaderType == GL_FRAGMENT_SHADER_ARB) ? "Fragment" : "Vertex");
 		return 0;
-	if (!GLEW_ARB_vertex_shader && ShaderType == GL_VERTEX_SHADER_ARB)
-		return 0;
+	}
 
 	// XXX: dumb, but I don't feel like refactoring ragedisplay for this. -Colby
 	GLhandleARB secondaryShader = 0;
@@ -1347,7 +1359,7 @@ void RageCompiledGeometryHWOGL::Draw( int iMeshIndex ) const
 
 #define BUFFER_OFFSET(o) ((char*)(o))
 
-	ASSERT( glDrawRangeElements);
+	ASSERT( glDrawRangeElements != NULL );
 	glDrawRangeElements( 
 		GL_TRIANGLES, 
 		meshInfo.iVertexStart,	// minimum array index contained in indices
@@ -1775,7 +1787,7 @@ void RageDisplay_Legacy::SetBlendMode( BlendMode mode )
 		break;
 	case BLEND_NO_EFFECT:
 		iSourceRGB = GL_ZERO; iDestRGB = GL_ONE;
-		iSourceAlpha = GL_ZERO; iSourceAlpha = GL_ONE;
+		iSourceAlpha = GL_ZERO; iDestAlpha = GL_ONE;
 		break;
 	DEFAULT_FAIL( mode );
 	}
@@ -1829,7 +1841,8 @@ void RageDisplay_Legacy::SetZTestMode( ZTestMode mode )
 	case ZTEST_OFF:			glDepthFunc( GL_ALWAYS );	break;
 	case ZTEST_WRITE_ON_PASS:	glDepthFunc( GL_LEQUAL );	break;
 	case ZTEST_WRITE_ON_FAIL:	glDepthFunc( GL_GREATER );	break;
-	default:	ASSERT( 0 );
+	default:
+		FAIL_M(ssprintf("Invalid ZTestMode: %i", mode));
 	}
 }
 
@@ -1930,7 +1943,7 @@ void RageDisplay_Legacy::SetCullMode( CullMode mode )
 		glDisable( GL_CULL_FACE );
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid CullMode: %i", mode));
 	}
 }
 
@@ -2098,7 +2111,7 @@ unsigned RageDisplay_Legacy::CreateTexture(
 	// allocate OpenGL texture resource
 	unsigned int iTexHandle;
 	glGenTextures( 1, reinterpret_cast<GLuint*>(&iTexHandle) );
-	ASSERT( iTexHandle );
+	ASSERT( iTexHandle != 0 );
 	
 	glBindTexture( GL_TEXTURE_2D, iTexHandle );
 
@@ -2349,7 +2362,7 @@ void RenderTarget_FramebufferObject::Create( const RenderTargetParam &param, int
 	
 	// Allocate OpenGL texture resource
 	glGenTextures( 1, reinterpret_cast<GLuint*>(&m_iTexHandle) );
-	ASSERT( m_iTexHandle );
+	ASSERT( m_iTexHandle != 0 );
 
 	int iTextureWidth = power_of_two( param.iWidth );
 	int iTextureHeight = power_of_two( param.iHeight );
@@ -2376,7 +2389,7 @@ void RenderTarget_FramebufferObject::Create( const RenderTargetParam &param, int
 
 	/* Create the framebuffer object. */
 	glGenFramebuffersEXT( 1, reinterpret_cast<GLuint*>(&m_iFrameBufferHandle) );
-	ASSERT( m_iFrameBufferHandle );
+	ASSERT( m_iFrameBufferHandle != 0 );
 
 	/* Attach the texture to it. */
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, m_iFrameBufferHandle );
@@ -2387,7 +2400,7 @@ void RenderTarget_FramebufferObject::Create( const RenderTargetParam &param, int
 	if (param.bWithDepthBuffer)
 	{
 		glGenRenderbuffersEXT( 1, reinterpret_cast<GLuint*>(&m_iDepthBufferHandle) );
-		ASSERT( m_iDepthBufferHandle );
+		ASSERT( m_iDepthBufferHandle != 0 );
 
 		glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT16, iTextureWidth, iTextureHeight );
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_iDepthBufferHandle );
@@ -2408,7 +2421,7 @@ void RenderTarget_FramebufferObject::Create( const RenderTargetParam &param, int
 	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT: FAIL_M( "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT" ); break;
 	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT: FAIL_M( "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT" ); break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Unexpected GL framebuffer status: %i", status));
 	}
 
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
@@ -2520,7 +2533,8 @@ void RageDisplay_Legacy::SetPolygonMode(PolygonMode pm)
 	{
 	case POLYGON_FILL:	m = GL_FILL; break;
 	case POLYGON_LINE:	m = GL_LINE; break;
-	default:		ASSERT(0);	return;
+	default:
+		FAIL_M(ssprintf("Invalid PolygonMode: %i", pm));
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, m);
 }

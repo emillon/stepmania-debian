@@ -144,7 +144,8 @@ bool RageFileDriverDirect::Remove( const RString &sPath_ )
 {
 	RString sPath = sPath_;
 	FDB->ResolvePath( sPath );
-	switch( this->GetFileType(sPath) )
+	RageFileManager::FileType type = this->GetFileType(sPath);
+	switch( type )
 	{
 	case RageFileManager::TYPE_FILE:
 		TRACE( ssprintf("remove '%s'", (m_sRoot + sPath).c_str()) );
@@ -166,8 +167,11 @@ bool RageFileDriverDirect::Remove( const RString &sPath_ )
 		FDB->DelFile( sPath );
 		return true;
 
-	case RageFileManager::TYPE_NONE: return false;
-	default: ASSERT(0); return false;
+	case RageFileManager::TYPE_NONE:
+		return false;
+
+	default:
+		FAIL_M(ssprintf("Invalid FileType: %i", type));
 	}
 }
 
@@ -208,8 +212,8 @@ RageFileBasic *RageFileDriverDirectReadOnly::Open( const RString &sPath, int iMo
 
 	return RageFileDriverDirect::Open( sPath, iMode, iError );
 }
-bool RageFileDriverDirectReadOnly::Move( const RString &sOldPath, const RString &sNewPath ) { return false; }
-bool RageFileDriverDirectReadOnly::Remove( const RString &sPath ) { return false; }
+bool RageFileDriverDirectReadOnly::Move( const RString & /* sOldPath */, const RString & /* sNewPath */ ) { return false; }
+bool RageFileDriverDirectReadOnly::Remove( const RString & /* sPath */ ) { return false; }
 
 static const unsigned int BUFSIZE = 1024*64;
 RageFileObjDirect::RageFileObjDirect( const RString &sPath, int iFD, int iMode )
@@ -248,7 +252,7 @@ namespace
 		return true;
 	}
 #else
-	bool FlushDir( RString sPath, RString &sError )
+	bool FlushDir( RString /* sPath */, RString & /* sError */ )
 	{
 		return true;
 	}

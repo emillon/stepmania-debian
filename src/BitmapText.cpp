@@ -363,7 +363,7 @@ void BitmapText::DrawChars( bool bUseStrokeTexture )
  * in sAlternateText, too, just use sText. */
 void BitmapText::SetText( const RString& _sText, const RString& _sAlternateText, int iWrapWidthPixels )
 {
-	ASSERT( m_pFont );
+	ASSERT( m_pFont != NULL );
 
 	RString sNewText = StringWillUseAlternate(_sText,_sAlternateText) ? _sAlternateText : _sText;
 
@@ -505,7 +505,7 @@ void BitmapText::UpdateBaseZoom()
 
 bool BitmapText::StringWillUseAlternate( const RString& sText, const RString& sAlternateText ) const
 {
-	ASSERT( m_pFont );
+	ASSERT( m_pFont != NULL );
 
 	// Can't use the alternate if there isn't one.
 	if( !sAlternateText.size() )
@@ -711,7 +711,7 @@ void BitmapText::SetHorizAlign( float f )
 
 void BitmapText::SetWrapWidthPixels( int iWrapWidthPixels )
 {
-	ASSERT( m_pFont ); // always load a font first
+	ASSERT( m_pFont != NULL ); // always load a font first
 	if( m_iWrapWidthPixels == iWrapWidthPixels )
 		return;
 	m_iWrapWidthPixels = iWrapWidthPixels;
@@ -837,7 +837,7 @@ public:
 		p->AddAttribute( iPos, attr );
 		return 0;
 	}
-	static int ClearAttributes( T* p, lua_State *L )	{ p->ClearAttributes(); return 0; }
+	static int ClearAttributes( T* p, lua_State * )	{ p->ClearAttributes(); return 0; }
 	static int strokecolor( T* p, lua_State *L )		{ RageColor c; c.FromStackCompat( L, 1 ); p->SetStrokeColor( c ); return 0; }
 	static int uppercase( T* p, lua_State *L )		{ p->SetUppercase( BArg(1) ); return 0; }
 	static int textglowmode( T* p, lua_State *L )	{ p->SetTextGlowMode( Enum::Check<TextGlowMode>(L, 1) ); return 0; }

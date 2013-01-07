@@ -216,7 +216,7 @@ RString OptionRow::GetRowTitle() const
 				const Course *pCourse = GAMESTATE->m_pCurCourse;
 				StepsType st = GAMESTATE->GetCurrentStyle()->m_StepsType;
 				const Trail* pTrail = pCourse->GetTrail( st );
-				ASSERT( pTrail );
+				ASSERT( pTrail != NULL );
 				pTrail->GetDisplayBpms( bpms );
 			}
 
@@ -350,10 +350,11 @@ void OptionRow::InitText( RowType type )
 				// init text
 				BitmapText *bt = new BitmapText( m_pParentType->m_textItem );
 				m_textItems.push_back( bt );
-				RString sText = GetThemedItemText( c );
-				bt->SetText( sText );
 				bt->SetBaseZoomX( fBaseZoom );
 				bt->PlayCommand( "On" );
+				// Set text after running OnCommand so e.g. uppercase,true works -aj
+				RString sText = GetThemedItemText( c );
+				bt->SetText( sText );
 
 				// set the X position of each item in the line
 				float fItemWidth = bt->GetZoomedWidth();
@@ -378,7 +379,7 @@ void OptionRow::InitText( RowType type )
 		break;
 
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid option row layout: %i", m_pHand->m_Def.m_layoutType));
 	}
 
 	for( unsigned c=0; c<m_textItems.size(); c++ )
@@ -631,7 +632,7 @@ void OptionRow::UpdateEnabledDisabled()
 		}
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid option row layout: %i", m_pHand->m_Def.m_layoutType));
 	}
 }
 
@@ -670,7 +671,7 @@ const BitmapText &OptionRow::GetTextItemForRow( PlayerNumber pn, int iChoiceOnRo
 		index = iChoiceOnRow;
 		break;
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid option row layout: %i", m_pHand->m_Def.m_layoutType));
 	}
 
 	ASSERT_M( index < (int)m_textItems.size(), ssprintf("%i < %i", index, (int)m_textItems.size() ) );

@@ -394,6 +394,18 @@ void ScreenSelectMusic::Update( float fDeltaTime )
 }
 void ScreenSelectMusic::Input( const InputEventPlus &input )
 {
+	// HACK: This screen eats mouse inputs if we don't check for them first.
+	bool mouse_evt = false;
+	for (int i = MOUSE_LEFT; i <= MOUSE_WHEELDOWN; i++)
+	{
+		if (input.DeviceI == DeviceInput( DEVICE_MOUSE, (DeviceButton)i ))
+			mouse_evt = true;
+	}
+	if (mouse_evt)	
+	{
+		ScreenWithMenuElements::Input(input);
+		return;
+	}
 //	LOG->Trace( "ScreenSelectMusic::Input()" );
 
 	// reset announcer timer
@@ -504,23 +516,6 @@ void ScreenSelectMusic::Input( const InputEventPlus &input )
 	if( m_SelectionState == SelectionState_Finalized  ||
 		m_bStepsChosen[input.pn] )
 		return; // ignore
-
-	// todo: Allow mousewheel to scroll MusicWheel -aj
-	/*
-	if( input.DeviceI.device == DEVICE_MOUSE )
-	{
-		if( input.DeviceI.button == MOUSE_WHEELUP )
-		{
-			MESSAGEMAN->Broadcast( "PreviousSong" );
-			m_MusicWheel.Move( -1 );
-		}
-		else if( input.DeviceI.button == MOUSE_WHEELDOWN )
-		{
-			MESSAGEMAN->Broadcast( "NextSong" );
-			m_MusicWheel.Move( +1 );
-		}
-	}
-	*/
 
 	if( USE_PLAYER_SELECT_MENU )
 	{
@@ -654,7 +649,7 @@ void ScreenSelectMusic::Input( const InputEventPlus &input )
 			}
 			else
 			{
-				ASSERT(0);
+				FAIL_M("Logic bug: L/R keys in an impossible state?");
 			}
 
 			// Reset the repeat timer when the button is released.
@@ -845,13 +840,16 @@ void ScreenSelectMusic::Input( const InputEventPlus &input )
 				else
 				{
 					// XXX: should this be called "TwoPartCancelled"?
-					Message msg("SongUnchosen");
-					msg.SetParam( "Player", input.pn );
-					MESSAGEMAN->Broadcast( msg );
-					// unset all steps
-					FOREACH_ENUM( PlayerNumber , p )
-						m_bStepsChosen[p] = false;
-					m_SelectionState = SelectionState_SelectingSong;
+                    float fSeconds = m_MenuTimer->GetSeconds();
+                    if( fSeconds > 10 ) {
+                        Message msg("SongUnchosen");
+                        msg.SetParam( "Player", input.pn );
+                        MESSAGEMAN->Broadcast( msg );
+                        // unset all steps
+                        FOREACH_ENUM( PlayerNumber , p )
+                            m_bStepsChosen[p] = false;
+                        m_SelectionState = SelectionState_SelectingSong;
+                    }
 				}
 			}
 		}
@@ -1245,7 +1243,7 @@ void ScreenSelectMusic::MenuStart( const InputEventPlus &input )
 			SOUND->PlayOnceFromAnnouncer( "select course comment general" );
 
 			Course *pCourse = m_MusicWheel.GetSelectedCourse();
-			ASSERT( pCourse );
+			ASSERT( pCourse != NULL );
 			GAMESTATE->m_PlayMode.Set( pCourse->GetPlayMode() );
 
 			// apply #LIVES
@@ -1320,7 +1318,7 @@ void ScreenSelectMusic::MenuStart( const InputEventPlus &input )
 					{
 						/* Since m_vpSteps is sorted by Difficulty, the first
 						 * entry should be the easiest. */
-						ASSERT( m_vpSteps.size() );
+						ASSERT( m_vpSteps.size() != 0 );
 						Steps *pSteps = m_vpSteps[0];
 
 						FOREACH_PlayerNumber( p )
@@ -1435,12 +1433,12 @@ void ScreenSelectMusic::MenuStart( const InputEventPlus &input )
 				PlayerNumber pn = GAMESTATE->GetMasterPlayerNumber();
 				if( GAMESTATE->IsCourseMode() )
 				{
-					ASSERT( GAMESTATE->m_pCurTrail[pn] );
+					ASSERT( GAMESTATE->m_pCurTrail[pn] != NULL );
 					stCurrent = GAMESTATE->m_pCurTrail[pn]->m_StepsType;
 				}
 				else
 				{
-					ASSERT( GAMESTATE->m_pCurSteps[pn] );
+					ASSERT( GAMESTATE->m_pCurSteps[pn] != NULL );
 					stCurrent = GAMESTATE->m_pCurSteps[pn]->m_StepsType;
 				}
 				vector<StepsType> vst;
@@ -1490,7 +1488,7 @@ void ScreenSelectMusic::MenuStart( const InputEventPlus &input )
 }
 
 
-void ScreenSelectMusic::MenuBack( const InputEventPlus &input )
+void ScreenSelectMusic::MenuBack( const InputEventPlus & /* input */ )
 {
 	// Handle unselect song (ffff)
 	// todo: this isn't right at all. -aj
@@ -1698,7 +1696,9 @@ void ScreenSelectMusic::AfterMusicChange()
 		s_lastSortOrder = GAMESTATE->m_SortOrder;
 	}
 
-	switch( m_MusicWheel.GetSelectedType() )
+	WheelItemDataType wtype = m_MusicWheel.GetSelectedType();
+	SampleMusicPreviewMode pmode;
+	switch( wtype )
 	{
 	case WheelItemDataType_Section:
 	case WheelItemDataType_Sort:
@@ -1725,7 +1725,7 @@ void ScreenSelectMusic::AfterMusicChange()
 			m_fSampleLengthSeconds = -1;
 		}
 
-		switch( m_MusicWheel.GetSelectedType() )
+		switch( wtype )
 		{
 			case WheelItemDataType_Section:
 				// reduce scope
@@ -1773,7 +1773,7 @@ void ScreenSelectMusic::AfterMusicChange()
 				}
 				break;
 			default:
-				ASSERT(0);
+				FAIL_M(ssprintf("Invalid WheelItemDataType: %i", wtype));
 		}
 		// override this if the sample music mode wants to.
 		/*
@@ -1789,7 +1789,8 @@ void ScreenSelectMusic::AfterMusicChange()
 	case WheelItemDataType_Song:
 	case WheelItemDataType_Portal:
 		// check SampleMusicPreviewMode here.
-		switch( SAMPLE_MUSIC_PREVIEW_MODE )
+		pmode = SAMPLE_MUSIC_PREVIEW_MODE;
+		switch( pmode )
 		{
 			case SampleMusicPreviewMode_ScreenMusic:
 				// play the screen music
@@ -1809,7 +1810,7 @@ void ScreenSelectMusic::AfterMusicChange()
 				m_fSampleLengthSeconds = pSong->m_fMusicSampleLengthSeconds;
 				break;
 			default:
-				ASSERT(0);
+				FAIL_M(ssprintf("Invalid preview mode: %i", pmode));
 		}
 
 		SongUtil::GetPlayableSteps( pSong, m_vpSteps );
@@ -1845,7 +1846,7 @@ void ScreenSelectMusic::AfterMusicChange()
 		break;
 	}
 	default:
-		ASSERT(0);
+		FAIL_M(ssprintf("Invalid WheelItemDataType: %i", wtype));
 	}
 
 	m_sprCDTitleFront.UnloadTexture();

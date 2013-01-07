@@ -481,7 +481,13 @@ RageColor SongManager::GetSongGroupColor( const RString &sSongGroup ) const
 
 RageColor SongManager::GetSongColor( const Song* pSong ) const
 {
-	ASSERT( pSong );
+	ASSERT( pSong != NULL );
+
+	// protected by royal freem corporation. any modification/removal of
+	// this code will result in prosecution.
+	if( pSong->m_sMainTitle == "DVNO")
+		return RageColor(1.0f,0.8f,0.0f,1.0f);
+	// end royal freem protection
 
 	// Use unlock color if applicable
 	const UnlockEntry *pUE = UNLOCKMAN->FindSong( pSong );
@@ -536,14 +542,8 @@ RageColor SongManager::GetSongColor( const Song* pSong ) const
 			if( pSteps->GetMeter() >= EXTRA_COLOR_METER )
 				return (RageColor)EXTRA_COLOR;
 		}
-		if( pSong->m_sMainTitle == "DVNO") // XXX: What IS this? An easter egg? -Wolfman2000
-		{
-			return RageColor(1.0f,0.8f,0.0f,1.0f);
-		}
-		else 
-		{
-			return GetSongGroupColor( pSong->m_sGroupName );
-		}
+
+		return GetSongGroupColor( pSong->m_sGroupName );
 	}
 }
 
@@ -1129,7 +1129,7 @@ void SongManager::GetStepsLoadedFromProfile( vector<Steps*> &AddTo, ProfileSlot 
 
 Song *SongManager::GetSongFromSteps( Steps *pSteps ) const
 {
-	ASSERT( pSteps );
+	ASSERT( pSteps != NULL );
 	const vector<Song*> &vSongs = GetAllSongs();
 	FOREACH_CONST( Song*, vSongs, song )
 	{
@@ -1144,8 +1144,7 @@ Song *SongManager::GetSongFromSteps( Steps *pSteps ) const
 			}
 		}
 	}
-	ASSERT(0);
-	return NULL;
+	FAIL_M("No song found for steps");
 }
 
 void SongManager::DeleteSteps( Steps *pSteps )
@@ -1512,7 +1511,7 @@ void SongManager::UpdateShuffled()
 
 void SongManager::UpdatePreferredSort(RString sPreferredSongs, RString sPreferredCourses)
 {
-	ASSERT( UNLOCKMAN );
+	ASSERT( UNLOCKMAN != NULL );
 
 	{
 		m_vPreferredSongSort.clear();
@@ -1545,7 +1544,7 @@ void SongManager::UpdatePreferredSort(RString sPreferredSongs, RString sPreferre
 			}
 			else
 			{
-				/* if the line ends in "/*", check if the section exists,
+				/* if the line ends in slash-star, check if the section exists,
 				 * and if it does, add all the songs in that group to the list. */
 				if( EndsWith(sLine,"/*") )
 				{
@@ -1615,7 +1614,7 @@ void SongManager::UpdatePreferredSort(RString sPreferredSongs, RString sPreferre
 
 		FOREACH( PreferredSortSection, m_vPreferredSongSort, i )
 			FOREACH( Song*, i->vpSongs, j )
-				ASSERT( *j );
+				ASSERT( *j != NULL );
 	}
 
 	{
@@ -1689,7 +1688,7 @@ void SongManager::UpdatePreferredSort(RString sPreferredSongs, RString sPreferre
 
 		FOREACH( CoursePointerVector, m_vPreferredCourseSort, i )
 			FOREACH( Course*, *i, j )
-				ASSERT( *j );
+				ASSERT( *j != NULL );
 	}
 }
 

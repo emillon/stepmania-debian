@@ -74,7 +74,7 @@ RageDisplay_Null::RageDisplay_Null()
 	LOG->MapLog("renderer", "Current renderer: null");
 }
 
-RString RageDisplay_Null::Init( const VideoModeParams &p, bool bAllowUnacceleratedRenderer )
+RString RageDisplay_Null::Init( const VideoModeParams &p, bool /* bAllowUnacceleratedRenderer */ )
 {
 	bool bIgnore = false;
 	SetVideoMode( p, bIgnore );
@@ -128,8 +128,8 @@ class RageCompiledGeometryNull : public RageCompiledGeometry
 {
 public:
 	
-	void Allocate( const vector<msMesh> &vMeshes ) {}
-	void Change( const vector<msMesh> &vMeshes ) {}
+	void Allocate( const vector<msMesh> & ) {}
+	void Change( const vector<msMesh> & ) {}
 	void Draw( int iMeshIndex ) const {}
 };
 

@@ -140,7 +140,7 @@ void ScreenOptionsManageEditSteps::HandleScreenMessage( const ScreenMessage SM )
 		else	// a Steps
 		{
 			Steps *pSteps = GAMESTATE->m_pCurSteps[PLAYER_1];
-			ASSERT( pSteps );
+			ASSERT( pSteps != NULL );
 			const Style *pStyle = GAMEMAN->GetEditorStyleForStepsType( pSteps->m_StepsType );
 			GAMESTATE->SetCurrentStyle( pStyle );
 			// do base behavior
@@ -240,7 +240,7 @@ void ScreenOptionsManageEditSteps::AfterChangeRow( PlayerNumber pn )
 
 static LocalizedString YOU_HAVE_MAX_STEP_EDITS( "ScreenOptionsManageEditSteps", "You have %d step edits, the maximum number allowed." );
 static LocalizedString YOU_MUST_DELETE( "ScreenOptionsManageEditSteps", "You must delete an existing steps edit before creating a new steps edit." );
-void ScreenOptionsManageEditSteps::ProcessMenuStart( const InputEventPlus &input )
+void ScreenOptionsManageEditSteps::ProcessMenuStart( const InputEventPlus & )
 {
 	if( IsTransitioning() )
 		return;

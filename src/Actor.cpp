@@ -442,7 +442,7 @@ void Actor::BeginDraw()		// set the world matrix and calculate actor properties
 			}
 			break;
 		default:
-			ASSERT(0);	// invalid Effect
+			FAIL_M(ssprintf("Invalid effect: %i", m_Effect));
 		}
 	}
 
@@ -856,13 +856,10 @@ void Actor::SetEffectClockString( const RString &s )
 	else
 	{
 		CabinetLight cl = StringToCabinetLight( s );
-		if( cl != CabinetLight_Invalid )
-		{
-			this->SetEffectClock( (EffectClock) (cl + CLOCK_LIGHT_1) );
-			return;
-		}
-		else
-			ASSERT(0);
+		if( cl == CabinetLight_Invalid )
+			FAIL_M(ssprintf("Invalid cabinet light: %s", s.c_str()));
+
+		this->SetEffectClock( (EffectClock) (cl + CLOCK_LIGHT_1) );
 	}
 }
 
@@ -1344,8 +1341,8 @@ public:
 		p->BeginTweening( FArg(1), pTween );
 		return 0;
 	}
-	static int stoptweening( T* p, lua_State *L )		{ p->StopTweening(); return 0; }
-	static int finishtweening( T* p, lua_State *L )		{ p->FinishTweening(); return 0; }
+	static int stoptweening( T* p, lua_State * )		{ p->StopTweening(); return 0; }
+	static int finishtweening( T* p, lua_State * )		{ p->FinishTweening(); return 0; }
 	static int hurrytweening( T* p, lua_State *L )		{ p->HurryTweening(FArg(1)); return 0; }
 	static int GetTweenTimeLeft( T* p, lua_State *L )	{ lua_pushnumber( L, p->GetTweenTimeLeft() ); return 1; }
 	static int x( T* p, lua_State *L )			{ p->SetX(FArg(1)); return 0; }
@@ -1416,20 +1413,20 @@ public:
 	static int vertalign( T* p, lua_State *L )		{ p->SetVertAlign(Enum::Check<VertAlign>(L, 1)); return 0; }
 	static int halign( T* p, lua_State *L )			{ p->SetHorizAlign(FArg(1)); return 0; }
 	static int valign( T* p, lua_State *L )			{ p->SetVertAlign(FArg(1)); return 0; }
-	static int diffuseblink( T* p, lua_State *L )		{ p->SetEffectDiffuseBlink(); return 0; }
-	static int diffuseshift( T* p, lua_State *L )		{ p->SetEffectDiffuseShift(); return 0; }
-	static int diffuseramp( T* p, lua_State *L )		{ p->SetEffectDiffuseRamp(); return 0; }
-	static int glowblink( T* p, lua_State *L )		{ p->SetEffectGlowBlink(); return 0; }
-	static int glowshift( T* p, lua_State *L )		{ p->SetEffectGlowShift(); return 0; }
-	static int glowramp( T* p, lua_State *L )		{ p->SetEffectGlowRamp(); return 0; }
-	static int rainbow( T* p, lua_State *L )		{ p->SetEffectRainbow(); return 0; }
-	static int wag( T* p, lua_State *L )			{ p->SetEffectWag(); return 0; }
-	static int bounce( T* p, lua_State *L )			{ p->SetEffectBounce(); return 0; }
-	static int bob( T* p, lua_State *L )			{ p->SetEffectBob(); return 0; }
-	static int pulse( T* p, lua_State *L )			{ p->SetEffectPulse(); return 0; }
-	static int spin( T* p, lua_State *L )			{ p->SetEffectSpin(); return 0; }
-	static int vibrate( T* p, lua_State *L )		{ p->SetEffectVibrate(); return 0; }
-	static int stopeffect( T* p, lua_State *L )		{ p->StopEffect(); return 0; }
+	static int diffuseblink( T* p, lua_State * )		{ p->SetEffectDiffuseBlink(); return 0; }
+	static int diffuseshift( T* p, lua_State * )		{ p->SetEffectDiffuseShift(); return 0; }
+	static int diffuseramp( T* p, lua_State * )		{ p->SetEffectDiffuseRamp(); return 0; }
+	static int glowblink( T* p, lua_State * )		{ p->SetEffectGlowBlink(); return 0; }
+	static int glowshift( T* p, lua_State * )		{ p->SetEffectGlowShift(); return 0; }
+	static int glowramp( T* p, lua_State * )		{ p->SetEffectGlowRamp(); return 0; }
+	static int rainbow( T* p, lua_State * )		{ p->SetEffectRainbow(); return 0; }
+	static int wag( T* p, lua_State * )			{ p->SetEffectWag(); return 0; }
+	static int bounce( T* p, lua_State * )			{ p->SetEffectBounce(); return 0; }
+	static int bob( T* p, lua_State * )			{ p->SetEffectBob(); return 0; }
+	static int pulse( T* p, lua_State * )			{ p->SetEffectPulse(); return 0; }
+	static int spin( T* p, lua_State * )			{ p->SetEffectSpin(); return 0; }
+	static int vibrate( T* p, lua_State * )		{ p->SetEffectVibrate(); return 0; }
+	static int stopeffect( T* p, lua_State * )		{ p->StopEffect(); return 0; }
 	static int effectcolor1( T* p, lua_State *L )		{ RageColor c; c.FromStackCompat( L, 1 ); p->SetEffectColor1( c ); return 0; }
 	static int effectcolor2( T* p, lua_State *L )		{ RageColor c; c.FromStackCompat( L, 1 ); p->SetEffectColor2( c ); return 0; }
 	static int effectperiod( T* p, lua_State *L )		{ p->SetEffectPeriod(FArg(1)); return 0; }
@@ -1441,8 +1438,8 @@ public:
 	static int scaletocover( T* p, lua_State *L )		{ p->ScaleToCover( RectF(FArg(1), FArg(2), FArg(3), FArg(4)) ); return 0; }
 	static int scaletofit( T* p, lua_State *L )		{ p->ScaleToFitInside( RectF(FArg(1), FArg(2), FArg(3), FArg(4)) ); return 0; }
 	static int animate( T* p, lua_State *L )		{ p->EnableAnimation(BIArg(1)); return 0; }
-	static int play( T* p, lua_State *L )			{ p->EnableAnimation(true); return 0; }
-	static int pause( T* p, lua_State *L )			{ p->EnableAnimation(false); return 0; }
+	static int play( T* p, lua_State * )			{ p->EnableAnimation(true); return 0; }
+	static int pause( T* p, lua_State * )			{ p->EnableAnimation(false); return 0; }
 	static int setstate( T* p, lua_State *L )		{ p->SetState(IArg(1)); return 0; }
 	static int GetNumStates( T* p, lua_State *L )		{ LuaHelpers::Push( L, p->GetNumStates() ); return 1; }
 	static int texturewrapping( T* p, lua_State *L )	{ p->SetTextureWrapping(BIArg(1)); return 0; }

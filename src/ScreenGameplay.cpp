@@ -121,7 +121,8 @@ void PlayerInfo::Load( PlayerNumber pn, MultiPlayer mp, bool bShowNoteField, int
 
 	if( !IsMultiPlayer() )
 	{
-		switch( GAMESTATE->m_PlayMode )
+		PlayMode mode = GAMESTATE->m_PlayMode;
+		switch( mode )
 		{
 		case PLAY_MODE_REGULAR:
 		case PLAY_MODE_NONSTOP:
@@ -140,7 +141,7 @@ void PlayerInfo::Load( PlayerNumber pn, MultiPlayer mp, bool bShowNoteField, int
 				m_pPrimaryScoreDisplay = new ScoreDisplayOni;
 			break;
 		default:
-			ASSERT(0);
+			FAIL_M(ssprintf("Invalid PlayMode: %i", mode));
 		}
 	}
 
@@ -245,8 +246,7 @@ bool PlayerInfo::IsEnabled()
 		return GAMESTATE->IsMultiPlayerEnabled( m_mp );
 	else if( m_bIsDummy )
 		return true;
-	ASSERT( 0 );
-	return false;
+	FAIL_M("Invalid non-dummy player.");
 }
 
 vector<PlayerInfo>::iterator 
@@ -428,7 +428,7 @@ void ScreenGameplay::Init()
 			GAMESTATE->m_pCurSteps[p].Set( GAMESTATE->m_pCurSteps[ GAMESTATE->GetFirstHumanPlayer() ] );
 
 		FOREACH_EnabledPlayer(p)
-			ASSERT( GAMESTATE->m_pCurSteps[p].Get() );
+			ASSERT( GAMESTATE->m_pCurSteps[p].Get() != NULL );
 	}
 
 	/* Increment the course play count. */
@@ -814,28 +814,28 @@ void ScreenGameplay::InitSongQueues()
 	if( GAMESTATE->IsCourseMode() )
 	{
 		Course* pCourse = GAMESTATE->m_pCurCourse;
-		ASSERT( pCourse );
+		ASSERT( pCourse != NULL );
 
 		m_apSongsQueue.clear();
 		PlayerNumber pnMaster = GAMESTATE->GetMasterPlayerNumber();
 		Trail *pTrail = GAMESTATE->m_pCurTrail[pnMaster];
-		ASSERT( pTrail );
+		ASSERT( pTrail != NULL );
 		FOREACH_CONST( TrailEntry, pTrail->m_vEntries, e )
 		{
-			ASSERT( e->pSong );
+			ASSERT( e->pSong != NULL );
 			m_apSongsQueue.push_back( e->pSong );
 		}
 
 		FOREACH_EnabledPlayerInfo( m_vPlayerInfo, pi )
 		{
 			Trail *lTrail = GAMESTATE->m_pCurTrail[ pi->GetStepsAndTrailIndex() ];
-			ASSERT( lTrail );
+			ASSERT( lTrail != NULL );
 
 			pi->m_vpStepsQueue.clear();
 			pi->m_asModifiersQueue.clear();
 			FOREACH_CONST( TrailEntry, lTrail->m_vEntries, e )
 			{
-				ASSERT( e->pSteps );
+				ASSERT( e->pSteps != NULL );
 				pi->m_vpStepsQueue.push_back( e->pSteps );
 				AttackArray a;
 				e->GetAttackArray( a );
@@ -979,7 +979,7 @@ void ScreenGameplay::SetupSong( int iSongIndex )
 			Attack a = pi->m_asModifiersQueue[iSongIndex][i];
 			if( a.fStartSecond != 0 )
 				continue;
-			a.fStartSecond = a.ATTACK_STARTS_NOW;	// now
+			a.fStartSecond = a.ATTACK_STARTS_NOW();	// now
 
 			PlayerOptions po;
 			po.FromString( a.sModifiers );
@@ -1029,7 +1029,7 @@ void ScreenGameplay::SetupSong( int iSongIndex )
 		{
 			Attack a = pi->m_asModifiersQueue[iSongIndex][i];
 			if( a.fStartSecond == 0 )
-				a.fStartSecond = a.ATTACK_STARTS_NOW;	// now
+				a.fStartSecond = a.ATTACK_STARTS_NOW();	// now
 			
 			pi->GetPlayerState()->LaunchAttack( a );
 			GAMESTATE->m_SongOptions.FromString( ModsLevel_Song, a.sModifiers );
@@ -1094,7 +1094,7 @@ void ScreenGameplay::LoadNextSong()
 		Steps* pSteps = GAMESTATE->m_pCurSteps[ pi->GetStepsAndTrailIndex() ];
 		++pi->GetPlayerStageStats()->m_iStepsPlayed;
 
-		ASSERT( GAMESTATE->m_pCurSteps[ pi->GetStepsAndTrailIndex() ] );
+		ASSERT( GAMESTATE->m_pCurSteps[ pi->GetStepsAndTrailIndex() ] != NULL );
 		if( pi->m_ptextStepsDescription )
 			pi->m_ptextStepsDescription->SetText( pSteps->GetDescription() );
 
@@ -1285,7 +1285,7 @@ void ScreenGameplay::LoadLights()
 
 	// First, check if the song has explicit lights
 	m_CabinetLightsNoteData.Init();
-	ASSERT( GAMESTATE->m_pCurSong );
+	ASSERT( GAMESTATE->m_pCurSong != NULL );
 
 	const Steps *pSteps = SongUtil::GetClosestNotes( GAMESTATE->m_pCurSong, StepsType_lights_cabinet, Difficulty_Medium );
 	if( pSteps != NULL )
@@ -1332,29 +1332,6 @@ void ScreenGameplay::LoadLights()
 
 	NoteData TapNoteData1;
 	pSteps->GetNoteData( TapNoteData1 );
-
-	if( asDifficulties.size() > 1 )
-	{
-		Difficulty d2 = Difficulty_Invalid;
-
-		// We've also specified for Player 2 to be based off current difficulty
-		if( asDifficulties[1].CompareNoCase("selected") == 0 && GAMESTATE->GetNumPlayersEnabled() > 1 )
-		{
-			// Base lights off current difficulty of active player
-			// Only do this for P2 in a two-player situation, since P1 is taken care of above
-			FOREACH_EnabledPlayerNumberInfo( m_vPlayerInfo, pi )
-			{
-				PlayerNumber pn = pi->GetStepsAndTrailIndex();
-
-				if( pn == PLAYER_2 )
-					d2 = GAMESTATE->m_pCurSteps[pn]->GetDifficulty();
-			}
-		}
-		else
-			d2 = StringToDifficulty( asDifficulties[1] );
-
-		/* fall through */
-	}
 
 	NoteDataUtil::LoadTransformedLights( TapNoteData1, m_CabinetLightsNoteData, GAMEMAN->GetStepsTypeInfo(StepsType_lights_cabinet).iNumTracks );
 }
@@ -1872,7 +1849,8 @@ void ScreenGameplay::Update( float fDeltaTime )
 			// Check to see if it's time to play a ScreenGameplay comment
 			m_fTimeSinceLastDancingComment += fDeltaTime;
 
-			switch( GAMESTATE->m_PlayMode )
+			PlayMode mode = GAMESTATE->m_PlayMode;
+			switch( mode )
 			{
 				case PLAY_MODE_REGULAR:
 				case PLAY_MODE_BATTLE:
@@ -1890,9 +1868,9 @@ void ScreenGameplay::Update( float fDeltaTime )
 					PlayAnnouncer( "gameplay comment oni", SECONDS_BETWEEN_COMMENTS );
 					break;
 				default:
-					ASSERT(0);
+					FAIL_M(ssprintf("Invalid PlayMode: %i", mode));
 			}
-	}
+		}
 		default: break;
 	}
 
@@ -1986,17 +1964,11 @@ void ScreenGameplay::UpdateLights()
 	bool bBlinkGameButton[NUM_GameController][NUM_GameButton];
 	ZERO( bBlinkCabinetLight );
 	ZERO( bBlinkGameButton );
-	bool bCrossedABeat = false;
 	{
 		const float fSongBeat = GAMESTATE->m_Position.m_fLightSongBeat;
 		const int iSongRow = BeatToNoteRowNotRounded( fSongBeat );
 
 		static int iRowLastCrossed = 0;
-
-		float fBeatLast = roundf(NoteRowToBeat(iRowLastCrossed));
-		float fBeatNow = roundf(NoteRowToBeat(iSongRow));
-
-		bCrossedABeat = fBeatLast != fBeatNow;
 
 		FOREACH_CabinetLight( cl )
 		{
