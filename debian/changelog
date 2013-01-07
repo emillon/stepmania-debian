@@ -1,4 +1,4 @@
-stepmania (5.0~alpha3-1-1) UNRELEASED; urgency=low
+stepmania (5.0~beta1a-1) UNRELEASED; urgency=low
 
   * The "Butterfly" release (initial release, Closes: #200715)
   * Patches :
@@ -6,4 +6,4 @@ stepmania (5.0~alpha3-1-1) UNRELEASED; urgency=low
     - fix a format string function called with a non-literal string
     - fix several typos
 
- -- Etienne Millon <etienne.millon@gmail.com>  Sat, 18 Aug 2012 17:43:32 +0200
+ -- Etienne Millon <etienne.millon@gmail.com>  Mon, 07 Jan 2013 10:49:43 +0100
