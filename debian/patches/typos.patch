@@ -1,6 +1,6 @@
 --- a/src/NotesLoaderSM.cpp
 +++ b/src/NotesLoaderSM.cpp
-@@ -1009,7 +1009,7 @@
+@@ -1178,7 +1178,7 @@
  		{
  			if( pSong == NULL )
  			{
@@ -11,7 +11,7 @@
  
 --- a/src/NotesLoaderSSC.cpp
 +++ b/src/NotesLoaderSSC.cpp
-@@ -1009,7 +1009,7 @@
+@@ -1086,7 +1086,7 @@
  			{
  				LOG->UserLog("Edit file",
  					     sEditFilePath,
@@ -44,7 +44,7 @@
  
 --- a/src/InputMapper.cpp
 +++ b/src/InputMapper.cpp
-@@ -108,7 +108,7 @@
+@@ -107,7 +107,7 @@
  	AutoMappings(
  		"dance",
  		"GIC USB Joystick",
