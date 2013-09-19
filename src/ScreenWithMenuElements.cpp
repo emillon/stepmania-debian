@@ -134,14 +134,6 @@ void ScreenWithMenuElements::BeginScreen()
 
 	/* Evaluate FirstUpdateCommand. */
 	this->PlayCommand( "FirstUpdate" );
-
-	/* If AutoJoin and a player is already joined, then try to join a player.  (If no players
-	 * are joined, they'll join on the first JoinInput.) */
-	if( GAMESTATE->GetCoinMode() == CoinMode_Pay && GAMESTATE->m_bAutoJoin.Get() )
-	{
-		if( GAMESTATE->GetNumSidesJoined() > 0 && GAMESTATE->JoinPlayers() )
-			SCREENMAN->PlayStartSound();
-	}
 }
 
 void ScreenWithMenuElements::HandleScreenMessage( const ScreenMessage SM )
@@ -347,24 +339,26 @@ void ScreenWithMenuElements::StopTimer()
 
 REGISTER_SCREEN_CLASS( ScreenWithMenuElementsSimple );
 
-void ScreenWithMenuElementsSimple::MenuStart( const InputEventPlus &input )
+bool ScreenWithMenuElementsSimple::MenuStart( const InputEventPlus &input )
 {
 	if( IsTransitioning() )
-		return;
+		return false;
 	if( m_fLockInputSecs > 0 )
-		return;
+		return false;
 
 	StartTransitioningScreen( SM_GoToNextScreen );
+	return true;
 }
 
-void ScreenWithMenuElementsSimple::MenuBack( const InputEventPlus &input )
+bool ScreenWithMenuElementsSimple::MenuBack( const InputEventPlus &input )
 {
 	if( IsTransitioning() )
-		return;
+		return false;
 	if( m_fLockInputSecs > 0 )
-		return;
+		return false;
 
 	Cancel( SM_GoToPrevScreen );
+	return true;
 }
 
 // lua start

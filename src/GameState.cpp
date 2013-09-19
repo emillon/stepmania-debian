@@ -3,7 +3,6 @@
 #include "Actor.h"
 #include "AdjustSync.h"
 #include "AnnouncerManager.h"
-#include "Bookkeeper.h"
 #include "Character.h"
 #include "CharacterManager.h"
 #include "CommonMetrics.h"
@@ -111,7 +110,6 @@ GameState::GameState() :
 	m_pCurGame(				Message_CurrentGameChanged ),
 	m_pCurStyle(			Message_CurrentStyleChanged ),
 	m_PlayMode(				Message_PlayModeChanged ),
-	m_iCoins(				Message_CoinsChanged ),
 	m_sPreferredSongGroup(	Message_PreferredSongGroupChanged ),
 	m_sPreferredCourseGroup(	Message_PreferredCourseGroupChanged ),
 	m_PreferredStepsType(	Message_PreferredStepsTypeChanged ),
@@ -138,7 +136,6 @@ GameState::GameState() :
 	SetCurrentStyle( NULL );
 
 	m_pCurGame.Set( NULL );
-	m_iCoins.Set( 0 );
 	m_timeGameStarted.SetZero();
 	m_bDemonstrationOrJukebox = false;
 
@@ -286,7 +283,6 @@ void GameState::Reset()
 		m_MultiPlayerStatus[p] = MultiPlayerStatus_NotJoined;
 	FOREACH_PlayerNumber( pn )
 		MEMCARDMAN->UnlockCard( pn );
-	//m_iCoins = 0;	// don't reset coin count!
 	m_bMultiplayer = false;
 	m_iNumMultiplayerNoteFields = 1;
 	*m_Environment = LuaTable();
@@ -361,13 +357,7 @@ void GameState::Reset()
 
 void GameState::JoinPlayer( PlayerNumber pn )
 {
-	/* If joint premium and we're not taking away a credit for the 2nd join,
-	 * give the new player the same number of stage tokens that the old player
-	 * has. */
-	if( GetCoinMode() == CoinMode_Pay && GetPremium() == Premium_2PlayersFor1Credit && GetNumSidesJoined() == 1 )
-		m_iPlayerStageTokens[pn] = m_iPlayerStageTokens[this->GetMasterPlayerNumber()];
-	else
-		m_iPlayerStageTokens[pn] = PREFSMAN->m_iSongsPerPlay;
+	m_iPlayerStageTokens[pn] = PREFSMAN->m_iSongsPerPlay;
 
 	m_bSideIsJoined[pn] = true;
 
@@ -451,14 +441,6 @@ namespace
 		if( GAMESTATE->m_bSideIsJoined[pn] )
 			return false;
 
-		// subtract coins
-		int iCoinsNeededToJoin = GAMESTATE->GetCoinsNeededToJoin();
-
-		if( GAMESTATE->m_iCoins < iCoinsNeededToJoin )
-			return false;	// not enough coins
-
-		GAMESTATE->m_iCoins.Set( GAMESTATE->m_iCoins - iCoinsNeededToJoin );
-
 		GAMESTATE->JoinPlayer( pn );
 
 		return true;
@@ -485,21 +467,6 @@ bool GameState::JoinPlayers()
 			bJoined = true;
 	}
 	return bJoined;
-}
-
-int GameState::GetCoinsNeededToJoin() const
-{
-	int iCoinsToCharge = 0;
-
-	if( GetCoinMode() == CoinMode_Pay )
-		iCoinsToCharge = PREFSMAN->m_iCoinsPerCredit;
-
-	// If joint premium, don't take away a credit for the second join.
-	if( GetPremium() == Premium_2PlayersFor1Credit  &&
-		GetNumSidesJoined() == 1 )
-		iCoinsToCharge = 0;
-
-	return iCoinsToCharge;
 }
 
 /* Game flow:
@@ -618,7 +585,6 @@ bool GameState::HaveProfileToSave()
 
 void GameState::SaveLocalData()
 {
-	BOOKKEEPER->WriteToDisk();
 	PROFILEMAN->SaveMachineProfile();
 }
 
@@ -985,7 +951,7 @@ void GameState::UpdateSongPosition( float fPositionSeconds, const TimingData &ti
 		{
 			if( m_pCurSteps[pn] )
 			{
-				m_pPlayerState[pn]->m_Position.UpdateSongPosition( fPositionSeconds, m_pCurSteps[pn]->m_Timing, timestamp );
+				m_pPlayerState[pn]->m_Position.UpdateSongPosition( fPositionSeconds, *m_pCurSteps[pn]->GetTimingData(), timestamp );
 				Actor::SetPlayerBGMBeat( pn, m_pPlayerState[pn]->m_Position.m_fSongBeatVisible, m_pPlayerState[pn]->m_Position.m_fSongBeatNoOffset );
 			}
 		}
@@ -1788,7 +1754,7 @@ void GameState::GetRankingFeats( PlayerNumber pn, vector<RankingFeat> &asFeatsOu
 		}
 		break;
 	default:
-		FAIL_M(ssprintf("Invalid play mode: %i", m_PlayMode));
+		FAIL_M(ssprintf("Invalid play mode: %i", int(m_PlayMode)));
 	}
 }
 
@@ -2055,10 +2021,7 @@ bool GameState::IsEventMode() const
 
 CoinMode GameState::GetCoinMode() const
 {
-	if( IsEventMode() && GamePreferences::m_CoinMode == CoinMode_Pay )
-		return CoinMode_Free;
-	else
-		return GamePreferences::m_CoinMode;
+	return GamePreferences::m_CoinMode;
 }
 
 ThemeMetric<bool> DISABLE_PREMIUM_IN_EVENT_MODE("GameState","DisablePremiumInEventMode");
@@ -2223,7 +2186,7 @@ public:
 		PlayerNumber pn = Enum::Check<PlayerNumber>(L, 1);
 		if( lua_isnil(L,2) )	{ p->m_pCurSteps[pn].Set( NULL ); }
 		else					{ Steps *pS = Luna<Steps>::check(L,2); p->m_pCurSteps[pn].Set( pS ); }
-		GAMESTATE->SetCurrentStyle( GAMEMAN->GetFirstCompatibleStyle( GAMESTATE->m_pCurGame, GAMESTATE->GetNumSidesJoined(), p->m_pCurSteps[pn]->m_StepsType ));
+		ASSERT(p->m_pCurSteps[pn]->m_StepsType == p->m_pCurStyle->m_StepsType);
 
 		// Why Broadcast again?  This is double-broadcasting. -Chris
 		MESSAGEMAN->Broadcast( (MessageID)(Message_CurrentStepsP1Changed+pn) );
@@ -2309,10 +2272,7 @@ public:
 		return 1;
 	}
 	DEFINE_METHOD( GetGameplayLeadIn,		m_bGameplayLeadIn )
-	DEFINE_METHOD( GetCoins,			m_iCoins )
 	DEFINE_METHOD( IsSideJoined,			m_bSideIsJoined[Enum::Check<PlayerNumber>(L, 1)] )
-	DEFINE_METHOD( GetCoinsNeededToJoin,		GetCoinsNeededToJoin() )
-	DEFINE_METHOD( EnoughCreditsToJoin,		EnoughCreditsToJoin() )
 	DEFINE_METHOD( PlayersCanJoin,			PlayersCanJoin() )
 	DEFINE_METHOD( GetNumSidesJoined,		GetNumSidesJoined() )
 	DEFINE_METHOD( GetCoinMode,			GetCoinMode() )
@@ -2565,10 +2525,7 @@ public:
 		ADD_METHOD( GetSongDelay );*/
 		ADD_METHOD( GetSongPosition );
 		ADD_METHOD( GetGameplayLeadIn );
-		ADD_METHOD( GetCoins );
 		ADD_METHOD( IsSideJoined );
-		ADD_METHOD( GetCoinsNeededToJoin );
-		ADD_METHOD( EnoughCreditsToJoin );
 		ADD_METHOD( PlayersCanJoin );
 		ADD_METHOD( GetNumSidesJoined );
 		ADD_METHOD( GetCoinMode );

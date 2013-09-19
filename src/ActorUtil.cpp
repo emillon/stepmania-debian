@@ -34,7 +34,6 @@ void ActorUtil::Register( const RString& sClassName, CreateActorFn pfn )
 
 bool ActorUtil::ResolvePath( RString &sPath, const RString &sName )
 {
-retry:
 	CollapsePath( sPath );
 
 	// If we know this is an exact match, don't bother with the GetDirListing,
@@ -55,7 +54,7 @@ retry:
 				break;
 			case Dialog::retry:
 				FILEMAN->FlushDirCache();
-				goto retry;
+				return ResolvePath( sPath, sName );
 			case Dialog::ignore:
 				return false;
 			default:
@@ -76,7 +75,7 @@ retry:
 				break;
 			case Dialog::retry:
 				FILEMAN->FlushDirCache();
-				goto retry;
+				return ResolvePath( sPath, sName );
 			case Dialog::ignore:
 				asPaths.erase( asPaths.begin()+1, asPaths.end() );
 				break;
@@ -401,7 +400,12 @@ FileType ActorUtil::GetFileType( const RString &sPath )
 	else if( 
 		sExt=="ogv" || 
 		sExt=="avi" || 
-		sExt=="mpeg" || 
+		sExt=="mpeg" ||
+		sExt=="mp4"	||
+		sExt=="mkv"	||
+		sExt=="mov" ||
+		sExt=="flv" ||
+		sExt=="f4v" ||			
 		sExt=="mpg" )		return FT_Movie;
 	else if( 
 		sExt=="txt" )		return FT_Model;

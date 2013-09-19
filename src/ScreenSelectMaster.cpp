@@ -390,37 +390,36 @@ bool ScreenSelectMaster::Move( PlayerNumber pn, MenuDir dir )
 
 	int iSwitchToIndex = m_iChoice[pn];
 	set<int> seen;
-try_again:
 
-	map<int,int>::const_iterator iter = m_mapCurrentChoiceToNextChoice[dir].find( iSwitchToIndex );
-	if( iter != m_mapCurrentChoiceToNextChoice[dir].end() )
-		iSwitchToIndex = iter->second;
+	do
+	{
+		map<int,int>::const_iterator iter = m_mapCurrentChoiceToNextChoice[dir].find( iSwitchToIndex );
+		if( iter != m_mapCurrentChoiceToNextChoice[dir].end() )
+			iSwitchToIndex = iter->second;
 
-	if( iSwitchToIndex < 0 || iSwitchToIndex >= (int) m_aGameCommands.size() ) // out of choice range
-		return false; // can't go that way
-	if( seen.find(iSwitchToIndex) != seen.end() )
-		return false; // went full circle and none found
-	seen.insert( iSwitchToIndex );
-
-	if( !m_aGameCommands[iSwitchToIndex].IsPlayable() && !DO_SWITCH_ANYWAYS )
-		goto try_again;
+		if( iSwitchToIndex < 0 || iSwitchToIndex >= (int) m_aGameCommands.size() ) // out of choice range
+			return false; // can't go that way
+		if( seen.find(iSwitchToIndex) != seen.end() )
+			return false; // went full circle and none found
+		seen.insert( iSwitchToIndex );
+	} while( !m_aGameCommands[iSwitchToIndex].IsPlayable() && !DO_SWITCH_ANYWAYS );
 
 	return ChangeSelection( pn, dir, iSwitchToIndex );
 }
 
-void ScreenSelectMaster::MenuLeft( const InputEventPlus &input )
+bool ScreenSelectMaster::MenuLeft( const InputEventPlus &input )
 {
 	PlayerNumber pn = input.pn;
 	if( m_fLockInputSecs > 0 || m_bChosen[pn] )
-		return;
+		return false;
 	if( input.type == IET_RELEASE )
-		return;
+		return false;
 	if( input.type != IET_FIRST_PRESS )
 	{
 		if( !ALLOW_REPEATING_INPUT )
-			return;
+			return false;
 		if( m_TrackingRepeatingInput != input.MenuI )
-			return;
+			return false;
 	}
 	if( Move(pn, MenuDir_Left) )
 	{
@@ -434,22 +433,24 @@ void ScreenSelectMaster::MenuLeft( const InputEventPlus &input )
 		{
 			m_bDoubleChoice[pn] = false;	// player has cancelled their selection
 		}
+		return true;
 	}
+	return false;
 }
 
-void ScreenSelectMaster::MenuRight( const InputEventPlus &input )
+bool ScreenSelectMaster::MenuRight( const InputEventPlus &input )
 {
 	PlayerNumber pn = input.pn;
 	if( m_fLockInputSecs > 0 || m_bChosen[pn] )
-		return;
+		return false;
 	if( input.type == IET_RELEASE )
-		return;
+		return false;
 	if( input.type != IET_FIRST_PRESS )
 	{
 		if( !ALLOW_REPEATING_INPUT )
-			return;
+			return false;
 		if( m_TrackingRepeatingInput != input.MenuI )
-			return;
+			return false;
 	}
 	if( Move(pn, MenuDir_Right) )
 	{
@@ -463,22 +464,24 @@ void ScreenSelectMaster::MenuRight( const InputEventPlus &input )
 		{
 			m_bDoubleChoice[pn] = false;	// player has cancelled their selection
 		}
+		return true;
 	}
+	return false;
 }
 
-void ScreenSelectMaster::MenuUp( const InputEventPlus &input )
+bool ScreenSelectMaster::MenuUp( const InputEventPlus &input )
 {
 	PlayerNumber pn = input.pn;
 	if( m_fLockInputSecs > 0 || m_bChosen[pn] )
-		return;
+		return false;
 	if( input.type == IET_RELEASE )
-		return;
+		return false;
 	if( input.type != IET_FIRST_PRESS )
 	{
 		if( !ALLOW_REPEATING_INPUT )
-			return;
+			return false;
 		if( m_TrackingRepeatingInput != input.MenuI )
-			return;
+			return false;
 	}
 	if( Move(pn, MenuDir_Up) )
 	{
@@ -492,22 +495,24 @@ void ScreenSelectMaster::MenuUp( const InputEventPlus &input )
 		{
 			m_bDoubleChoice[pn] = false;	// player has cancelled their selection
 		}
+		return true;
 	}
+	return false;
 }
 
-void ScreenSelectMaster::MenuDown( const InputEventPlus &input )
+bool ScreenSelectMaster::MenuDown( const InputEventPlus &input )
 {
 	PlayerNumber pn = input.pn;
 	if( m_fLockInputSecs > 0 || m_bChosen[pn] )
-		return;
+		return false;
 	if( input.type == IET_RELEASE )
-		return;
+		return false;
 	if( input.type != IET_FIRST_PRESS )
 	{
 		if( !ALLOW_REPEATING_INPUT )
-			return;
+			return false;
 		if( m_TrackingRepeatingInput != input.MenuI )
-			return;
+			return false;
 	}
 	if( Move(pn, MenuDir_Down) )
 	{
@@ -521,7 +526,9 @@ void ScreenSelectMaster::MenuDown( const InputEventPlus &input )
 		{
 			m_bDoubleChoice[pn] = false;	// player has cancelled their selection
 		}
+		return true;
 	}
+	return false;
 }
 
 bool ScreenSelectMaster::ChangePage( int iNewChoice )
@@ -775,19 +782,29 @@ float ScreenSelectMaster::DoMenuStart( PlayerNumber pn )
 	return fSecs;
 }
 
-void ScreenSelectMaster::MenuStart( const InputEventPlus &input )
+bool ScreenSelectMaster::MenuStart( const InputEventPlus &input )
 {
 	if( input.type != IET_FIRST_PRESS )
-		return;
+		return false;
 	PlayerNumber pn = input.pn;
 
 	if( m_fLockInputSecs > 0 )
-		return;
-	if( m_bChosen[pn] )
-		return;
+		return false;
+	if( SHARED_SELECTION || GetCurrentPage() == PAGE_2 )
+	{
+		// Return if any player has chosen
+		FOREACH_EnabledPlayer( p )
+		{
+			if( m_bChosen[p] )
+				return false;
+		}
+	}
+	else if( m_bChosen[pn] )
+		// Return if this player has already chosen
+		return false;
 
 	if( !ProcessMenuStart( pn ) )
-		return;
+		return false;
 
 	// double press is enabled and the player hasn't made their first press
 	if(DOUBLE_PRESS_TO_SELECT && !m_bDoubleChoice[pn])
@@ -801,7 +818,7 @@ void ScreenSelectMaster::MenuStart( const InputEventPlus &input )
 			vScroll[m_iChoice[pn]]->PlayCommand( "InitialSelection" );
 		}
 
-		return;
+		return true;
 	}
 
 	const GameCommand &mc = m_aGameCommands[m_iChoice[pn]];
@@ -809,7 +826,7 @@ void ScreenSelectMaster::MenuStart( const InputEventPlus &input )
 	/* If no options are playable, then we're just waiting for one to become available.
 	 * If any options are playable, then the selection must be playable. */
 	if( !AnyOptionsArePlayable() )
-		return;
+		return false;
 
 	SOUND->PlayOnceFromDir( ANNOUNCER->GetPathTo(ssprintf("%s comment %s",m_sName.c_str(), mc.m_sName.c_str())) );
 
@@ -825,7 +842,7 @@ void ScreenSelectMaster::MenuStart( const InputEventPlus &input )
 		Message msg( MessageIDToString((MessageID)(Message_MenuStartP1+pn)) );
 		msg.SetParam( "ScreenEmpty", true );
 		MESSAGEMAN->Broadcast( msg );
-		return;
+		return true;
 	}
 
 	float fSecs = 0;
@@ -853,6 +870,7 @@ void ScreenSelectMaster::MenuStart( const InputEventPlus &input )
 		MESSAGEMAN->Broadcast( (MessageID)(Message_MenuStartP1+pn) );
 		this->PostScreenMessage( SM_BeginFadingOut, fSecs );// tell our owner it's time to move on
 	}
+	return true;
 }
 
 /* We want all items to always run OnCommand and either GainFocus or LoseFocus

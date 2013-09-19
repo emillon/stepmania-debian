@@ -210,17 +210,11 @@ void SMLoader::ProcessInstrumentTracks( Song &out, const RString &sParam )
 	}
 }
 
-bool SMLoader::ProcessBPMs( TimingData &out, const RString line, const int rowsPerBeat )
+void SMLoader::ParseBPMs( vector< pair<float, float> > &out, const RString line, const int rowsPerBeat )
 {
 	vector<RString> arrayBPMChangeExpressions;
 	split( line, ",", arrayBPMChangeExpressions );
-	
-	// prepare storage variables for negative BPMs -> Warps.
-	float negBeat = -1;
-	float negBPM = 1;
-	float highspeedBeat = -1;
-	bool bNotEmpty = false;
-	
+
 	for( unsigned b=0; b<arrayBPMChangeExpressions.size(); b++ )
 	{
 		vector<RString> arrayBPMChangeValues;
@@ -234,59 +228,23 @@ bool SMLoader::ProcessBPMs( TimingData &out, const RString line, const int rowsP
 			continue;
 		}
 
-		bNotEmpty = true;
-
 		const float fBeat = RowToBeat( arrayBPMChangeValues[0], rowsPerBeat );
 		const float fNewBPM = StringToFloat( arrayBPMChangeValues[1] );
-
-		if( fNewBPM < 0.0f )
-		{
-			negBeat = fBeat;
-			negBPM = fNewBPM;
+		if( fNewBPM == 0 ) {
+			LOG->UserLog("Song file", this->GetSongTitle(),
+				     "has a zero BPM; ignored.");
+			continue;
 		}
-		else if( fNewBPM > 0.0f )
-		{
-			// add in a warp.
-			if( negBPM < 0 )
-			{
-				float endBeat = fBeat + (fNewBPM / -negBPM) * (fBeat - negBeat);
-				out.AddSegment( WarpSegment(BeatToNoteRow(negBeat), endBeat - negBeat) );
 
-				negBeat = -1;
-				negBPM = 1;
-			}
-			// too fast. make it a warp.
-			if( fNewBPM > FAST_BPM_WARP )
-			{
-				highspeedBeat = fBeat;
-			}
-			else
-			{
-				// add in a warp.
-				if( highspeedBeat > 0 )
-				{
-					out.AddSegment( WarpSegment(BeatToNoteRow(highspeedBeat), fBeat - highspeedBeat) );
-					highspeedBeat = -1;
-				}
-				{
-					out.AddSegment( BPMSegment(BeatToNoteRow(fBeat), fNewBPM) );
-				}
-			}
-		}
+		out.push_back( make_pair(fBeat, fNewBPM) );
 	}
-
-	return bNotEmpty;
 }
 
-void SMLoader::ProcessStops( TimingData &out, const RString line, const int rowsPerBeat )
+void SMLoader::ParseStops( vector< pair<float, float> > &out, const RString line, const int rowsPerBeat )
 {
 	vector<RString> arrayFreezeExpressions;
 	split( line, ",", arrayFreezeExpressions );
 	
-	// Prepare variables for negative stop conversion.
-	float negBeat = -1;
-	float negPause = 0;
-
 	for( unsigned f=0; f<arrayFreezeExpressions.size(); f++ )
 	{
 		vector<RString> arrayFreezeValues;
@@ -302,42 +260,249 @@ void SMLoader::ProcessStops( TimingData &out, const RString line, const int rows
 
 		const float fFreezeBeat = RowToBeat( arrayFreezeValues[0], rowsPerBeat );
 		const float fFreezeSeconds = StringToFloat( arrayFreezeValues[1] );
-
-		// Process the prior stop.
-		if( negPause > 0 )
-		{
-			float oldBPM = out.GetBPMAtRow(BeatToNoteRow(negBeat));
-			float fSecondsPerBeat = 60 / oldBPM;
-			float fSkipBeats = negPause / fSecondsPerBeat;
-
-			if( negBeat + fSkipBeats > fFreezeBeat )
-				fSkipBeats = fFreezeBeat - negBeat;
-
-			out.AddSegment( WarpSegment(BeatToNoteRow(negBeat), fSkipBeats));
-
-			negBeat = -1;
-			negPause = 0;
+		if( fFreezeSeconds == 0 ) {
+			LOG->UserLog("Song file", this->GetSongTitle(),
+				     "has a zero-length stop; ignored.");
+			continue;
 		}
 
-		if( fFreezeSeconds < 0.0f )
+		out.push_back( make_pair(fFreezeBeat, fFreezeSeconds) );
+	}
+}
+
+// Utility function for sorting timing change data
+namespace {
+	bool compare_first(pair<float, float> a, pair<float, float> b) {
+		return a.first < b.first;
+	}
+}
+
+// Precondition: no BPM change or stop has 0 for its value (change.second).
+//     (The ParseBPMs and ParseStops functions make sure of this.)
+// Postcondition: all BPM changes, stops, and warps are added to the out
+//     parameter, already sorted by beat.
+void SMLoader::ProcessBPMsAndStops(TimingData &out,
+		vector< pair<float, float> > &vBPMs,
+		vector< pair<float, float> > &vStops)
+{
+	vector< pair<float, float> >::const_iterator ibpm, ibpmend;
+	vector< pair<float, float> >::const_iterator istop, istopend;
+
+	// Current BPM (positive or negative)
+	float bpm = 0;
+	// Beat at which the previous timing change occurred
+	float prevbeat = 0;
+	// Start/end of current warp (-1 if not currently warping)
+	float warpstart = -1;
+	float warpend = -1;
+	// BPM prior to current warp, to detect if it has changed
+	float prewarpbpm = 0;
+	// How far off we have gotten due to negative changes
+	float timeofs = 0;
+
+	// Sort BPM changes and stops by beat.  Order matters.
+	// TODO: Make sorted lists a precondition rather than sorting them here.
+	// The caller may know that the lists are sorted already (e.g. if
+	// loaded from cache).
+	stable_sort(vBPMs.begin(), vBPMs.end(), compare_first);
+	stable_sort(vStops.begin(), vStops.end(), compare_first);
+
+	// Convert stops that come before beat 0.  All these really do is affect
+	// where the arrows are with respect to the music, i.e. the song offset.
+	// Positive stops subtract from the offset, and negative add to it.
+	istop = vStops.begin();
+	istopend = vStops.end();
+	for (/* istop */; istop != istopend && istop->first < 0; istop++)
+	{
+		out.m_fBeat0OffsetInSeconds -= istop->second;
+	}
+
+	// Get rid of BPM changes that come before beat 0.  Positive BPMs before
+	// the chart don't really do anything, so we just ignore them.  Negative
+	// BPMs cause unpredictable behavior, so ignore them as well and issue a
+	// warning.
+	ibpm = vBPMs.begin();
+	ibpmend = vBPMs.end();
+	for (/* ibpm */; ibpm != ibpmend && ibpm->first <= 0; ibpm++)
+	{
+		bpm = ibpm->second;
+		if (bpm < 0 && ibpm->first < 0)
 		{
-			negBeat = fFreezeBeat;
-			negPause = -fFreezeSeconds;
-		}
-		else if( fFreezeSeconds > 0.0f )
-		{
-			out.AddSegment( StopSegment(BeatToNoteRow(fFreezeBeat), fFreezeSeconds) );
+			LOG->UserLog("Song file", this->GetSongTitle(),
+					"has a negative BPM prior to beat 0.  "
+					"These cause problems; ignoring.");
 		}
 	}
 
-	// Process the prior stop if there was one.
-	if( negPause > 0 )
+	// It's beat 0.  Do you know where your BPMs are?
+	if (bpm == 0)
 	{
-		float oldBPM = out.GetBPMAtBeat(negBeat);
-		float fSecondsPerBeat = 60 / oldBPM;
-		float fSkipBeats = negPause / fSecondsPerBeat;
+		// Nope.  Can we just use the next BPM value?
+		if (ibpm == ibpmend)
+		{
+			// Nope.
+			bpm = 60;
+			LOG->UserLog("Song file", this->GetSongTitle(),
+					"has no valid BPMs.  Defaulting to 60.");
+		}
+		else
+		{
+			// Yep.  Get the next BPM.
+			ibpm++;
+			bpm = ibpm->second;
+			LOG->UserLog("Song file", this->GetSongTitle(),
+					"does not establish a BPM before beat 0.  "
+					"Using the value from the next BPM change.");
+		}
+	}
+	// We always want to have an initial BPM.  If we start out warping, this
+	// BPM will be added later.  If we start with a regular BPM, add it now.
+	if (bpm > 0 && bpm <= FAST_BPM_WARP)
+	{
+		out.AddSegment(BPMSegment(BeatToNoteRow(0), bpm));
+	}
 
-		out.AddSegment( WarpSegment(BeatToNoteRow(negBeat), fSkipBeats) );
+	// Iterate over all BPMs and stops in tandem
+	while (ibpm != ibpmend || istop != istopend)
+	{
+		// Get the next change in order, with BPMs taking precedence
+		// when they fall on the same beat.
+		bool changeIsBpm = istop == istopend || (ibpm != ibpmend && ibpm->first <= istop->first);
+		const pair<float, float> & change = changeIsBpm ? *ibpm : *istop;
+
+		// Calculate the effects of time at the current BPM.  "Infinite"
+		// BPMs (SM4 warps) imply that zero time passes, so skip this
+		// step in that case.
+		if (bpm <= FAST_BPM_WARP)
+		{
+			timeofs += (change.first - prevbeat) * 60/bpm;
+
+			// If we were in a warp and it finished during this
+			// timeframe, create the warp segment.
+			if (warpstart >= 0 && bpm > 0 && timeofs > 0)
+			{
+				// timeofs represents how far past the end we are
+				warpend = change.first - (timeofs * bpm/60);
+				out.AddSegment(WarpSegment(BeatToNoteRow(warpstart),
+							warpend - warpstart));
+
+				// If the BPM changed during the warp, put that
+				// change at the beginning of the warp.
+				if (bpm != prewarpbpm)
+				{
+					out.AddSegment(BPMSegment(BeatToNoteRow(warpstart), bpm));
+				}
+				// No longer warping
+				warpstart = -1;
+			}
+		}
+
+		// Save the current beat for the next round of calculations
+		prevbeat = change.first;
+
+		// Now handle the timing changes themselves
+		if (changeIsBpm)
+		{
+			// Does this BPM change start a new warp?
+			if (warpstart < 0 && (change.second < 0 || change.second > FAST_BPM_WARP))
+			{
+				// Yes.
+				warpstart = change.first;
+				prewarpbpm = bpm;
+				timeofs = 0;
+			}
+			else if (warpstart < 0)
+			{
+				// No, and we aren't currently warping either.
+				// Just a normal BPM change.
+				out.AddSegment(BPMSegment(BeatToNoteRow(change.first), change.second));
+			}
+			bpm = change.second;
+			ibpm++;
+		}
+		else
+		{
+			// Does this stop start a new warp?
+			if (warpstart < 0 && change.second < 0)
+			{
+				// Yes.
+				warpstart = change.first;
+				prewarpbpm = bpm;
+				timeofs = change.second;
+			}
+			else if (warpstart < 0)
+			{
+				// No, and we aren't currently warping either.
+				// Just a normal stop.
+				out.AddSegment(StopSegment(BeatToNoteRow(change.first), change.second));
+			}
+			else
+			{
+				// We're warping already.  Stops affect the time
+				// offset directly.
+				timeofs += change.second;
+
+				// If a stop overcompensates for the time
+				// deficit, the warp ends and we stop for the
+				// amount it goes over.
+				if (change.second > 0 && timeofs > 0)
+				{
+					warpend = change.first;
+					out.AddSegment(WarpSegment(BeatToNoteRow(warpstart),
+								warpend - warpstart));
+					out.AddSegment(StopSegment(BeatToNoteRow(change.first), timeofs));
+
+					// Now, are we still warping because of
+					// the BPM value?
+					if (bpm < 0 || bpm > FAST_BPM_WARP)
+					{
+						// Yep.
+						warpstart = change.first;
+						// prewarpbpm remains the same
+						timeofs = 0;
+					}
+					else
+					{
+						// Nope, warp is done.  Add any
+						// BPM change that happened in
+						// the meantime.
+						if (bpm != prewarpbpm)
+						{
+							out.AddSegment(BPMSegment(BeatToNoteRow(warpstart), bpm));
+						}
+						warpstart = -1;
+					}
+				}
+			}
+			istop++;
+		}
+	}
+
+	// If we are still warping, we now have to consider the time remaining
+	// after the last timing change.
+	if (warpstart >= 0)
+	{
+		// Will this warp ever end?
+		if (bpm < 0 || bpm > FAST_BPM_WARP)
+		{
+			// No, so it ends the entire chart immediately.
+			// XXX There must be a less hacky and more accurate way
+			// to do this.
+			warpend = 99999999.0f;
+		}
+		else
+		{
+			// Yes.  Figure out when it will end.
+			warpend = prevbeat - (timeofs * bpm/60);
+		}
+		out.AddSegment(WarpSegment(BeatToNoteRow(warpstart),
+					warpend - warpstart));
+
+		// As usual, record any BPM change that happened during the warp
+		if (bpm != prewarpbpm)
+		{
+			out.AddSegment(BPMSegment(BeatToNoteRow(warpstart), bpm));
+		}
 	}
 }
 
@@ -715,6 +880,7 @@ bool SMLoader::LoadFromSimfile( const RString &sPath, Song &out, bool bFromCache
 		return false;
 	}
 
+	vector< pair<float, float> > vBPMChanges, vStops;
 	out.m_SongTiming.m_sFile = sPath;
 	out.m_sSongFileName = sPath;
 
@@ -777,12 +943,14 @@ bool SMLoader::LoadFromSimfile( const RString &sPath, Song &out, bool bFromCache
 		}
 		else if( sValueName=="BPMS" )
 		{
-			ProcessBPMs(out.m_SongTiming, sParams[1]);
+			vBPMChanges.clear();
+			ParseBPMs(vBPMChanges, sParams[1]);
 		}
 
 		else if( sValueName=="STOPS" || sValueName=="FREEZES" )
 		{
-			ProcessStops(out.m_SongTiming, sParams[1]);
+			vStops.clear();
+			ParseStops(vStops, sParams[1]);
 		}
 
 		else if( sValueName=="DELAYS" )
@@ -933,8 +1101,9 @@ bool SMLoader::LoadFromSimfile( const RString &sPath, Song &out, bool bFromCache
 			LOG->UserLog( "Song file", sPath, "has an unexpected value named \"%s\".", sValueName.c_str() );
 	}
 
-	// Ensure all warps from negative time changes are in order.
-	out.m_SongTiming.SortSegments( SEGMENT_WARP );
+	// Turn negative time changes into warps
+	ProcessBPMsAndStops(out.m_SongTiming, vBPMChanges, vStops);
+
 	TidyUpData( out, bFromCache );
 	return true;
 }
@@ -1047,8 +1216,8 @@ bool SMLoader::LoadEditFromMsd( const MsdFile &msd, const RString &sEditFilePath
 		}
 	}
 
-	return true;
-
+	// Edit had no valid #NOTES sections
+	return false;
 }
 
 void SMLoader::GetApplicableFiles( const RString &sPath, vector<RString> &out )

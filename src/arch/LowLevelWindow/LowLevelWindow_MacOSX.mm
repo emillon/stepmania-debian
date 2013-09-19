@@ -3,7 +3,7 @@
 #import "DisplayResolutions.h"
 #import "RageUtil.h"
 #import "RageThreads.h"
-#import "RageDisplay_Legacy_Helpers.h"
+#import "RageDisplay_OGL_Helpers.h"
 #import "arch/ArchHooks/ArchHooks.h"
 
 #import <Cocoa/Cocoa.h>
@@ -257,7 +257,7 @@ void RenderTarget_MacOSX::Create( const RenderTargetParam &param, int &iTextureW
 		      iTextureWidth, iTextureHeight, 0, param.bWithAlpha? GL_RGBA:GL_RGB,
 		      GL_UNSIGNED_BYTE, NULL );
 	GLenum error = glGetError();
-	ASSERT_M( error == GL_NO_ERROR, RageDisplay_Legacy_Helpers::GLToString(error) );
+	ASSERT_M(error == GL_NO_ERROR, RageDisplay_Legacy_Helpers::GLToString(error));
 	
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -502,6 +502,25 @@ int LowLevelWindow_MacOSX::ChangeDisplayMode( const VideoModeParams& p )
 	return 0;
 }
 
+// http://lukassen.wordpress.com/2010/01/18/taming-snow-leopard-cgdisplaybitsperpixel-deprication/
+static size_t GetDisplayBitsPerPixel( CGDirectDisplayID displayId )
+{
+	
+	CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displayId);
+	size_t depth = 0;
+	
+	CFStringRef pixEnc = CGDisplayModeCopyPixelEncoding(mode);
+	if(CFStringCompare(pixEnc, CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+		depth = 32;
+	else if(CFStringCompare(pixEnc, CFSTR(IO16BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+		depth = 16;
+	else if(CFStringCompare(pixEnc, CFSTR(IO8BitIndexedPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+		depth = 8;
+	
+	return depth;
+
+}
+
 void LowLevelWindow_MacOSX::SetActualParamsFromMode( CFDictionaryRef mode )
 {
 	SInt32 rate;
@@ -528,7 +547,7 @@ void LowLevelWindow_MacOSX::SetActualParamsFromMode( CFDictionaryRef mode )
 		m_CurrentParams.height = int(size.height);
 	}
 
-	m_CurrentParams.bpp = CGDisplayBitsPerPixel( kCGDirectMainDisplay );
+	m_CurrentParams.bpp = GetDisplayBitsPerPixel( kCGDirectMainDisplay );
 }
 
 static int GetIntValue( CFTypeRef r )

@@ -202,11 +202,11 @@ public:
 	virtual ~ScreenEdit();
 	virtual void Update( float fDeltaTime );
 	virtual void DrawPrimitives();
-	virtual void Input( const InputEventPlus &input );
-	void InputEdit( const InputEventPlus &input, EditButton EditB );
-	void InputRecord( const InputEventPlus &input, EditButton EditB );
-	void InputRecordPaused( const InputEventPlus &input, EditButton EditB );
-	void InputPlay( const InputEventPlus &input, EditButton EditB );
+	virtual bool Input( const InputEventPlus &input );
+	bool InputEdit( const InputEventPlus &input, EditButton EditB );
+	bool InputRecord( const InputEventPlus &input, EditButton EditB );
+	bool InputRecordPaused( const InputEventPlus &input, EditButton EditB );
+	bool InputPlay( const InputEventPlus &input, EditButton EditB );
 	virtual void HandleMessage( const Message &msg );
 	virtual void HandleScreenMessage( const ScreenMessage SM );
 
@@ -682,7 +682,10 @@ private:
 	/**
 	 * @brief Retrieve the appropriate TimingData based on GAMESTATE.
 	 * @return the proper TimingData. */
-	TimingData & GetAppropriateTiming() const;
+	const TimingData & GetAppropriateTiming() const;
+	/**
+	 * @brief Retrieve the appropriate TimingData to use for updating. */
+	TimingData & GetAppropriateTimingForUpdate();
 	/**
 	 * @brief Retrieve the appropriate SongPosition data based on GAMESTATE.
 	 * @return the proper SongPosition. */

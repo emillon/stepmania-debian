@@ -113,12 +113,8 @@ void PaneDisplay::LoadFromNode( const XNode *pNode )
 	ActorFrame::LoadFromNode( pNode );
 }
 
-void PaneDisplay::SetContent( PaneCategory c )
+void PaneDisplay::GetPaneTextAndLevel( PaneCategory c, RString & sTextOut, float & fLevelOut )
 {
-	// these get filled in later:
-	RString str = NULL_COUNT_STRING;
-	float val = 0;
-
 	const Song *pSong = GAMESTATE->m_pCurSong;
 	const Steps *pSteps = GAMESTATE->m_pCurSteps[m_PlayerNumber];
 	const Course *pCourse = GAMESTATE->m_pCurCourse;
@@ -126,55 +122,59 @@ void PaneDisplay::SetContent( PaneCategory c )
 	const Profile *pProfile = PROFILEMAN->IsPersistentProfile(m_PlayerNumber) ? PROFILEMAN->GetProfile(m_PlayerNumber) : NULL;
 	bool bIsPlayerEdit = pSteps && pSteps->IsAPlayerEdit();
 
+	// Defaults, will be filled in later
+	sTextOut = NULL_COUNT_STRING;
+	fLevelOut = 0;
+
 	if(GAMESTATE->IsCourseMode() && !pTrail)
 	{
 		if( (g_Contents[c].req&NEED_PROFILE) )
-			str = NOT_AVAILABLE;
+			sTextOut = NOT_AVAILABLE;
 
 		{
 			switch( c )
 			{
 				case PaneCategory_MachineHighName:
-					str = EMPTY_MACHINE_HIGH_SCORE_NAME;
+					sTextOut = EMPTY_MACHINE_HIGH_SCORE_NAME;
 					break;
 				case PaneCategory_MachineHighScore:
 				case PaneCategory_ProfileHighScore:
-					str = NOT_AVAILABLE;
+					sTextOut = NOT_AVAILABLE;
 					break;
 				default: break;
 			}
 		}
 
-		goto done;
+		return;
 	}
 	else if(!GAMESTATE->IsCourseMode() && !pSong)
 	{
 		if( (g_Contents[c].req&NEED_PROFILE) )
-			str = NOT_AVAILABLE;
+			sTextOut = NOT_AVAILABLE;
 
 		{
 			switch( c )
 			{
 				case PaneCategory_MachineHighName:
-					str = EMPTY_MACHINE_HIGH_SCORE_NAME;
+					sTextOut = EMPTY_MACHINE_HIGH_SCORE_NAME;
 					break;
 				case PaneCategory_MachineHighScore:
 				case PaneCategory_ProfileHighScore:
-					str = NOT_AVAILABLE;
+					sTextOut = NOT_AVAILABLE;
 					break;
 				default: break;
 			}
 		}
 
-		goto done;
+		return;
 	}
 
 	if( (g_Contents[c].req&NEED_NOTES) && !pSteps && !pTrail )
-		goto done;
+		return;
 	if( (g_Contents[c].req&NEED_PROFILE) && !pProfile )
 	{
-		str = NOT_AVAILABLE;
-		goto done;
+		sTextOut = NOT_AVAILABLE;
+		return;
 	}
 
 	{
@@ -201,46 +201,46 @@ void PaneDisplay::SetContent( PaneCategory c )
 
 		switch( c )
 		{
-			case PaneCategory_NumSteps:	val = rv[RadarCategory_TapsAndHolds]; break;
-			case PaneCategory_Jumps:		val = rv[RadarCategory_Jumps]; break;
-			case PaneCategory_Holds:		val = rv[RadarCategory_Holds]; break;
-			case PaneCategory_Rolls:		val = rv[RadarCategory_Rolls]; break;
-			case PaneCategory_Mines:		val = rv[RadarCategory_Mines]; break;
-			case PaneCategory_Hands:		val = rv[RadarCategory_Hands]; break;
-			case PaneCategory_Lifts:		val = rv[RadarCategory_Lifts]; break;
-			case PaneCategory_Fakes:		val = rv[RadarCategory_Fakes]; break;
+			case PaneCategory_NumSteps:	fLevelOut = rv[RadarCategory_TapsAndHolds]; break;
+			case PaneCategory_Jumps:		fLevelOut = rv[RadarCategory_Jumps]; break;
+			case PaneCategory_Holds:		fLevelOut = rv[RadarCategory_Holds]; break;
+			case PaneCategory_Rolls:		fLevelOut = rv[RadarCategory_Rolls]; break;
+			case PaneCategory_Mines:		fLevelOut = rv[RadarCategory_Mines]; break;
+			case PaneCategory_Hands:		fLevelOut = rv[RadarCategory_Hands]; break;
+			case PaneCategory_Lifts:		fLevelOut = rv[RadarCategory_Lifts]; break;
+			case PaneCategory_Fakes:		fLevelOut = rv[RadarCategory_Fakes]; break;
 			case PaneCategory_ProfileHighScore:
-			case PaneCategory_MachineHighName: // set val for color
+			case PaneCategory_MachineHighName: // set fLevelOut for color
 			case PaneCategory_MachineHighScore:
 				CHECKPOINT;
-				val = pHSL->GetTopScore().GetPercentDP();
+				fLevelOut = pHSL->GetTopScore().GetPercentDP();
 				break;
 			default: break;
 		};
 
-		if( val != RADAR_VAL_UNKNOWN )
+		if( fLevelOut != RADAR_VAL_UNKNOWN )
 		{
 			switch( c )
 			{
 				case PaneCategory_MachineHighName:
 					if( pHSL->vHighScores.empty() )
 					{
-						str = EMPTY_MACHINE_HIGH_SCORE_NAME;
+						sTextOut = EMPTY_MACHINE_HIGH_SCORE_NAME;
 					}
 					else
 					{
-						str = pHSL->GetTopScore().GetName();
-						if( str.empty() )
-							str = "????";
+						sTextOut = pHSL->GetTopScore().GetName();
+						if( sTextOut.empty() )
+							sTextOut = "????";
 					}
 					break;
 				case PaneCategory_MachineHighScore:
 				case PaneCategory_ProfileHighScore:
 					// Don't show or save machine high scores for edits loaded from a player profile.
 					if( bIsPlayerEdit )
-						str = NOT_AVAILABLE;
+						sTextOut = NOT_AVAILABLE;
 					else
-						str = PlayerStageStats::FormatPercentScore( val );
+						sTextOut = PlayerStageStats::FormatPercentScore( fLevelOut );
 					break;
 				case PaneCategory_NumSteps:
 				case PaneCategory_Jumps:
@@ -250,14 +250,21 @@ void PaneDisplay::SetContent( PaneCategory c )
 				case PaneCategory_Hands:
 				case PaneCategory_Lifts:
 				case PaneCategory_Fakes:
-					str = ssprintf( COUNT_FORMAT.GetValue(), val );
+					sTextOut = ssprintf( COUNT_FORMAT.GetValue(), fLevelOut );
 					break;
 				default: break;
 			}
 		}
 	}
+}
 
-done:
+void PaneDisplay::SetContent( PaneCategory c )
+{
+	// these get filled in later:
+	RString str;
+	float val;
+
+	GetPaneTextAndLevel( c, str, val );
 	m_textContents[c].SetText( str );
 
 	Lua *L = LUA->Get();
