@@ -1,15 +1,13 @@
 #!/usr/bin/make -f
 
 %:
-	dh $@  --with autotools-dev
+	dh $@
 
 override_dh_auto_configure:
-	chmod +x autogen.sh Utils/build.sh
-	./autogen.sh
-	./Utils/build.sh --configure
+	sh autogen.sh
 
 override_dh_auto_build:
-	./Utils/build.sh --stepmania
+	bash Utils/build.sh --verbose
 
 override_dh_clean:
 	dh_clean -X'Themes/_themekit-piu/Scripts/02 ini read.lua.bak'
