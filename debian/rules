@@ -4,6 +4,7 @@
 	dh $@  --with autotools-dev
 
 override_dh_auto_configure:
+	chmod +x autogen.sh Utils/build.sh
 	./autogen.sh
 	./Utils/build.sh --configure
 
