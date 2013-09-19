@@ -157,8 +157,8 @@ int TimingData::GetSegmentIndexAtRow(TimingSegmentType tst, int iRow ) const
 		}
 	}
 	
-	return INVALID_INDEX; // this should not be reached. :(
-
+	// iRow is before the first segment of type tst
+	return INVALID_INDEX;
 }
 
 struct ts_less : binary_function <TimingSegment*, TimingSegment*, bool>
@@ -218,6 +218,10 @@ bool TimingData::IsWarpAtRow( int iNoteRow ) const
 		return false;
 
 	int i = GetSegmentIndexAtRow( SEGMENT_WARP, iNoteRow );
+	if (i == -1)
+	{
+		return false;
+	}
 	const WarpSegment *s = ToWarp(warps[i]);
 	float beatRow = NoteRowToBeat(iNoteRow);
 	if( s->GetBeat() <= beatRow && beatRow < (s->GetBeat() + s->GetLength() ) )
@@ -243,6 +247,10 @@ bool TimingData::IsFakeAtRow( int iNoteRow ) const
 		return false;
 
 	int i = GetSegmentIndexAtRow( SEGMENT_FAKE, iNoteRow );
+	if (i == -1)
+	{
+		return false;
+	}
 	const FakeSegment *s = ToFake(fakes[i]);
 	float beatRow = NoteRowToBeat(iNoteRow);
 	if( s->GetBeat() <= beatRow && beatRow < ( s->GetBeat() + s->GetLength() ) )
@@ -307,9 +315,9 @@ const TimingSegment* TimingData::GetSegmentAtRow( int iNoteRow, TimingSegmentTyp
 	FAIL_M("Could not find timing segment for row");
 }
 
-TimingSegment* GetSegmentAtRow( int iNoteRow, TimingSegmentType tst )
+TimingSegment* TimingData::GetSegmentAtRow( int iNoteRow, TimingSegmentType tst )
 {
-	return const_cast<TimingSegment*>( GetSegmentAtRow(iNoteRow, tst) );
+	return const_cast<TimingSegment*>( static_cast<const TimingData*>(this)->GetSegmentAtRow(iNoteRow, tst) );
 }
 
 static void EraseSegment( vector<TimingSegment*> &vSegs, int index, TimingSegment *cur )
@@ -863,8 +871,13 @@ float TimingData::GetDisplayedSpeedPercent( float fSongBeat, float fMusicSeconds
 
 }
 
-void TimingData::TidyUpData()
+void TimingData::TidyUpData(bool allowEmpty)
 {
+	// Empty TimingData is used to implement steps with no timing of their
+	// own.  Don't override this.
+	if( allowEmpty && empty() )
+		return;
+
 	// If there are no BPM segments, provide a default.
 	vector<TimingSegment *> *segs = m_avpTimingSegments;
 	if( segs[SEGMENT_BPM].empty() )

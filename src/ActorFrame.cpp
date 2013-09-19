@@ -247,12 +247,20 @@ void ActorFrame::DrawPrimitives()
 		vector<Actor*> subs = m_SubActors;
 		ActorUtil::SortByZPosition( subs );
 		for( unsigned i=0; i<subs.size(); i++ )
+		{
+			subs[i]->SetInternalDiffuse(m_pTempState->diffuse[0]);
+			subs[i]->SetInternalGlow(m_pTempState->glow);
 			subs[i]->Draw();
+		}
 	}
 	else
 	{
 		for( unsigned i=0; i<m_SubActors.size(); i++ )
+		{
+			m_SubActors[i]->SetInternalDiffuse(m_pTempState->diffuse[0]);
+			m_SubActors[i]->SetInternalGlow(m_pTempState->glow);
 			m_SubActors[i]->Draw();
+		}
 	}
 }
 
@@ -368,12 +376,9 @@ void ActorFrame::UpdateInternal( float fDeltaTime )
 	}
 
 PropagateActorFrameCommand( FinishTweening )
-PropagateActorFrameCommand1Param( SetDiffuse,		RageColor )
 PropagateActorFrameCommand1Param( SetZTestMode,		ZTestMode )
 PropagateActorFrameCommand1Param( SetZWrite,		bool )
 PropagateActorFrameCommand1Param( HurryTweening,	float )
-PropagateActorFrameCommand1Param( SetDiffuseAlpha,	float )
-PropagateActorFrameCommand1Param( SetBaseAlpha,		float )
 
 
 float ActorFrame::GetTweenTimeLeft() const

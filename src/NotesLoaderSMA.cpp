@@ -163,8 +163,8 @@ bool SMALoader::LoadFromSimfile( const RString &sPath, Song &out, bool bFromCach
 	
 	int state = SMA_GETTING_SONG_INFO;
 	Steps* pNewNotes = NULL;
-	TimingData stepsTiming;
 	int iRowsPerBeat = -1; // Start with an invalid value: needed for checking.
+	vector< pair<float, float> > vBPMChanges, vStops;
 	
 	for( unsigned i=0; i<msd.GetNumValues(); i++ )
 	{
@@ -301,8 +301,13 @@ bool SMALoader::LoadFromSimfile( const RString &sPath, Song &out, bool bFromCach
 			}
 			else
 			{
+				// This should generally return song timing
+				TimingData &timing = (state == SMA_GETTING_STEP_INFO
+						? pNewNotes->m_Timing : out.m_SongTiming);
+				ProcessBPMsAndStops(timing, vBPMChanges, vStops);
+
 				state = SMA_GETTING_STEP_INFO;
-				pNewNotes = new Steps;
+				pNewNotes = new Steps(&out);
 			}
 		}
 		
@@ -364,16 +369,14 @@ bool SMALoader::LoadFromSimfile( const RString &sPath, Song &out, bool bFromCach
 
 		else if( sValueName=="BPMS" )
 		{
-			TimingData &timing = (state == SMA_GETTING_STEP_INFO
-					      ? pNewNotes->m_Timing : out.m_SongTiming);
-			ProcessBPMs( timing, sParams[1], iRowsPerBeat );
+			vBPMChanges.clear();
+			ParseBPMs( vBPMChanges, sParams[1], iRowsPerBeat );
 		}
 
 		else if( sValueName=="STOPS" || sValueName=="FREEZES" )
 		{
-			TimingData &timing = (state == SMA_GETTING_STEP_INFO
-					      ? pNewNotes->m_Timing : out.m_SongTiming);
-			ProcessStops( timing, sParams[1], iRowsPerBeat );
+			vStops.clear();
+			ParseStops( vStops, sParams[1], iRowsPerBeat );
 		}
 
 		else if( sValueName=="DELAYS" )
@@ -451,6 +454,11 @@ bool SMALoader::LoadFromSimfile( const RString &sPath, Song &out, bool bFromCach
 					 *pNewNotes );
 			pNewNotes->SetFilename(sPath);
 			out.AddSteps( pNewNotes );
+
+			// Handle timing changes and convert negative bpms/stops
+			TimingData &timing = (state == SMA_GETTING_STEP_INFO
+					      ? pNewNotes->m_Timing : out.m_SongTiming);
+			ProcessBPMsAndStops(timing, vBPMChanges, vStops);
 		}
 		else if( sValueName=="TIMESIGNATURES" || sValueName=="LEADTRACK"  )
 			;

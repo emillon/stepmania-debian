@@ -15,7 +15,7 @@
 #include "CommonMetrics.h"
 #include "Style.h"
 
-const RString DEFAULT_LIGHTS_DRIVER = "PIUIO,SystemMessage,Export";
+const RString DEFAULT_LIGHTS_DRIVER = "SystemMessage,Export";
 static Preference<RString> g_sLightsDriver( "LightsDriver", "" ); // "" == DEFAULT_LIGHTS_DRIVER
 Preference<float>	g_fLightsFalloffSeconds( "LightsFalloffSeconds", 0.1f );
 Preference<float>	g_fLightsAheadSeconds( "LightsAheadSeconds", 0.05f );
@@ -417,18 +417,6 @@ void LightsManager::Update( float fDeltaTime )
 			}
 
 			break;
-		}
-	}
-
-	// If not joined, has enough credits, and not too late to join, then
-	// blink the menu buttons rapidly so they'll press Start
-	{
-		int iBeat = (int)(GAMESTATE->m_Position.m_fLightSongBeat*4);
-		bool bBlinkOn = (iBeat%2)==0;
-		FOREACH_PlayerNumber( pn )
-		{
-			if( !GAMESTATE->m_bSideIsJoined[pn] && GAMESTATE->PlayersCanJoin() && GAMESTATE->EnoughCreditsToJoin() )
-				m_LightsState.m_bGameButtonLights[pn][GAME_BUTTON_START] = bBlinkOn;
 		}
 	}
 

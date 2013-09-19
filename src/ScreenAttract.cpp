@@ -36,13 +36,15 @@ void ScreenAttract::BeginScreen()
 	ScreenWithMenuElements::BeginScreen();
 }
 
-void ScreenAttract::Input( const InputEventPlus &input )
+bool ScreenAttract::Input( const InputEventPlus &input )
 {
+	bool handled;
 //	LOG->Trace( "ScreenAttract::Input()" );
 
-	AttractInput( input, this );
+	handled = AttractInput( input, this );
 
-	ScreenWithMenuElements::Input( input );
+	// Always run both AttractInput and ScreenWithMenuElements::Input
+	return ScreenWithMenuElements::Input( input ) || handled;
 }
 
 void ScreenAttract::SetAttractVolume( bool bInAttract )
@@ -68,10 +70,10 @@ void ScreenAttract::Cancel( ScreenMessage smSendWhenDone )
 	ScreenWithMenuElements::Cancel( smSendWhenDone );
 }
 
-void ScreenAttract::AttractInput( const InputEventPlus &input, ScreenWithMenuElements *pScreen )
+bool ScreenAttract::AttractInput( const InputEventPlus &input, ScreenWithMenuElements *pScreen )
 {
 	if( input.type != IET_FIRST_PRESS ) 
-		return; // don't care
+		return false; // don't care
 
 	switch( input.MenuI )
 	{
@@ -80,46 +82,32 @@ void ScreenAttract::AttractInput( const InputEventPlus &input, ScreenWithMenuEle
 				break;
 			// fall through
 		case GAME_BUTTON_START:
-		case GAME_BUTTON_COIN:
 			switch( GAMESTATE->GetCoinMode() )
 			{
-				case CoinMode_Pay:
-					LOG->Trace("ScreenAttract::AttractInput: COIN_PAY (%i/%i, %i)",
-							   GAMESTATE->m_iCoins.Get(),
-							   PREFSMAN->m_iCoinsPerCredit.Get(),
-							   GAMESTATE->GetNumSidesJoined() );
-					if( GAMESTATE->m_iCoins < PREFSMAN->m_iCoinsPerCredit && GAMESTATE->GetNumSidesJoined() == 0 )
-						break;	// don't fall through
-					// fall through
 				case CoinMode_Home:
 				case CoinMode_Free:
 					if( pScreen->IsTransitioning() )
-						return;
-
-					// HandleGlobalInputs() already played the coin sound. Don't play it again.
-					if( input.MenuI != GAME_BUTTON_COIN )
-						SCREENMAN->PlayStartSound();
+						return false;
 
 					pScreen->Cancel( SM_GoToStartScreen );
-					break;
+					return true;
 				default: FAIL_M("Invalid Coin Mode! Aborting...");
 			}
 		default: break;
 	}
 
 	if( pScreen->IsTransitioning() )
-		return;
+		return false;
 
 	switch( input.MenuI )
 	{
 		case GAME_BUTTON_LEFT:
 		case GAME_BUTTON_RIGHT:
 			SCREENMAN->PostMessageToTopScreen( SM_BeginFadingOut, 0 );
+			return true;
 		default:
-			break;
+			return false;
 	}
-
-//	Screen::Input( input );
 }
 
 void ScreenAttract::StartPlayingMusic()

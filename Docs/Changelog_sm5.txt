@@ -5,6 +5,53 @@ from StepMania 4 alpha 5 to sm-ssc v1.2.5, see Changelog_sm-ssc.txt.
 ________________________________________________________________________________
 
 ================================================================================
+StepMania 5.0 beta 2 | 20130???
+--------------------------------------------------------------------------------
+
+2013/05/20
+----------
+* [NotesLoaderSM] New algorithm for converting negative BPMs and stops to
+  warps, more closely matching the behavior of old StepManias.
+
+2013/03/24
+----------
+* [MusicWheel] Add the ChangeSort method to the Lua interface to allow the
+  theme to switch sorting methods.
+
+2013/02/04
+----------
+* [Player] Add a "Column" parameter to the StepMessage to allow the theme or
+  chart to discover which column is being triggered.
+* [ArchHooks] Unix: Move UserPackages to Packages in the per-user directory,
+  and remove Data from the per-user directory.  Users who have installed
+  packages to UserPackages will need to migrate them to Packages instead.
+
+2013/02/03
+----------
+* [Player] Fix a stutter that can take place when mines are skipped during
+  warp segments. [phantom, wolfman2000]
+
+2013/01/23
+----------
+* [TimingData, ScreenEdit] Fixed behavior in the editor whereby making changes
+  to Song Timing would unexpectedly change all charts to Steps Timing.
+  (Thanks to DJ OMiY for reporting and isolating the problem.)
+
+2013/01/11
+----------
+* [Screen] Allow overlay screens to accept codes.
+
+2013/01/06
+----------
+* [TimingChanges, ScreenEdit] Fix a bug in the editor where adding BPM changes
+  that differ by a very small amount from the previous BPM change were not
+  added at all. [vulture/wolfman2000]
+
+2013/01/03
+----------
+* [ScreenGameplayShared] Fix routine mode. [djpohly/FSX/shakesoda/wolfman2000]
+
+================================================================================
 StepMania 5.0 beta 1a | 20121228
 --------------------------------------------------------------------------------
 

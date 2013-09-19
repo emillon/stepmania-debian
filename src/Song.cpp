@@ -42,7 +42,7 @@
  * @brief The internal version of the cache for StepMania.
  *
  * Increment this value to invalidate the current cache. */
-const int FILE_CACHE_VERSION = 208;
+const int FILE_CACHE_VERSION = 215;
 
 /** @brief How long does a song sample last by default? */
 const float DEFAULT_MUSIC_SAMPLE_LENGTH = 12.f;
@@ -191,14 +191,14 @@ void Song::AddLyricSegment( LyricSegment seg )
 
 Steps *Song::CreateSteps()
 {
-	Steps *pSteps = new Steps;
+	Steps *pSteps = new Steps(this);
 	InitSteps( pSteps );
 	return pSteps;
 }
 
 void Song::InitSteps(Steps *pSteps)
 {
-	pSteps->m_Timing = this->m_SongTiming;
+	// TimingData is initially empty (i.e. defaults to song timing)
 	pSteps->m_sAttackString = this->m_sAttackString;
 	pSteps->m_Attacks = this->m_Attacks;
 	pSteps->SetDisplayBPM(this->m_DisplayBPMType);
@@ -415,7 +415,7 @@ bool Song::ReloadFromSongDir( RString sDir )
 	// The leftovers in the map are steps that didn't exist before we reverted
 	for( map<StepsID, Steps*>::const_iterator it = mNewSteps.begin(); it != mNewSteps.end(); ++it )
 	{
-		Steps *NewSteps = new Steps();
+		Steps *NewSteps = new Steps(this);
 		*NewSteps = *(it->second);
 		AddSteps( NewSteps );
 	}
@@ -464,6 +464,18 @@ void Song::TidyUpData( bool fromCache, bool /* duringCache */ )
 	FixupPath( m_sLyricsFile, m_sSongDir );
 	FixupPath( m_sBackgroundFile, m_sSongDir );
 	FixupPath( m_sCDTitleFile, m_sSongDir );
+
+	if (this->m_sArtist == "The Dancing Monkeys Project" && this->m_sMainTitle.find_first_of('-') != string::npos)
+	{
+		// Dancing Monkeys had a bug/feature where the artist was replaced. Restore it.
+		vector<RString> titleParts;
+		split(this->m_sMainTitle, "-", titleParts);
+		this->m_sArtist = titleParts.front();
+		Trim(this->m_sArtist);
+		titleParts.erase(titleParts.begin());
+		this->m_sMainTitle = join("-", titleParts);
+		Trim(this->m_sMainTitle);
+	}
 
 	if( !HasMusic() )
 	{
@@ -537,11 +549,11 @@ void Song::TidyUpData( bool fromCache, bool /* duringCache */ )
 		m_fMusicLengthSeconds = 0;
 	}
 
-	m_SongTiming.TidyUpData();
+	m_SongTiming.TidyUpData( false );
 	
 	FOREACH( Steps *, m_vpSteps, s )
 	{
-		(*s)->m_Timing.TidyUpData();
+		(*s)->m_Timing.TidyUpData( true );
 	}
 
 	/* Generate these before we autogen notes, so the new notes can inherit
@@ -810,6 +822,12 @@ void Song::TidyUpData( bool fromCache, bool /* duringCache */ )
 		GetDirListing( m_sSongDir + RString("*.avi"), arrayPossibleMovies );
 		GetDirListing( m_sSongDir + RString("*.mpg"), arrayPossibleMovies );
 		GetDirListing( m_sSongDir + RString("*.mpeg"), arrayPossibleMovies );
+		GetDirListing( m_sSongDir + RString("*.mp4"), arrayPossibleMovies );
+		GetDirListing( m_sSongDir + RString("*.mkv"), arrayPossibleMovies );
+		GetDirListing( m_sSongDir + RString("*.flv"), arrayPossibleMovies );
+		GetDirListing( m_sSongDir + RString("*.f4v"), arrayPossibleMovies );
+		GetDirListing( m_sSongDir + RString("*.mov"), arrayPossibleMovies );
+
 		/* Use this->GetBeatFromElapsedTime(0) instead of 0 to start when the
 		 * music starts. */
 		if( arrayPossibleMovies.size() == 1 )
@@ -869,31 +887,30 @@ void Song::ReCalculateRadarValuesAndLastSecond(bool fromCache, bool duringCache)
 		
 		// calculate lastSecond
 
-		// If it's autogen, then first/last beat will come from the parent.
-		if( pSteps->IsAutogen() )
-			goto wipe_notedata;
-
-		/* Don't calculate with edits unless the song only contains an edit
+		/* 1. If it's autogen, then first/last beat will come from the parent.
+		 * 2. Don't calculate with edits unless the song only contains an edit
 		 * chart, like those in Mungyodance 3. Otherwise, edits installed on
 		 * the machine could extend the length of the song. */
-		if( pSteps->IsAnEdit() && m_vpSteps.size() > 1 )
-			goto wipe_notedata;
-
-		// Don't set first/last beat based on lights.  They often start very 
-		// early and end very late.
-		if( pSteps->m_StepsType == StepsType_lights_cabinet )
-			continue; // no need to wipe this.
-
-		/* Many songs have stray, empty song patterns. Ignore them, so they
-		 * don't force the first beat of the whole song to 0. */
-		if( tempNoteData.GetLastRow() != 0 )
+		if( !pSteps->IsAutogen() &&
+				!( pSteps->IsAnEdit() && m_vpSteps.size() > 1 ) )
 		{
-			localFirst = min(localFirst,
-				 pSteps->m_Timing.GetElapsedTimeFromBeat(tempNoteData.GetFirstBeat()));
-			localLast = max(localLast,
-				pSteps->m_Timing.GetElapsedTimeFromBeat(tempNoteData.GetLastBeat()));
+			// Don't set first/last beat based on lights.  They often start very 
+			// early and end very late.
+			if( pSteps->m_StepsType == StepsType_lights_cabinet )
+				continue; // no need to wipe this.
+
+			/* Many songs have stray, empty song patterns. Ignore them, so they
+			 * don't force the first beat of the whole song to 0. */
+			if( tempNoteData.GetLastRow() != 0 )
+			{
+				localFirst = min(localFirst,
+					pSteps->GetTimingData()->GetElapsedTimeFromBeat(tempNoteData.GetFirstBeat()));
+				localLast = max(localLast,
+					pSteps->GetTimingData()->GetElapsedTimeFromBeat(tempNoteData.GetLastBeat()));
+			}
 		}
-	wipe_notedata:
+
+		// Wipe NoteData
 		if (duringCache)
 		{
 			NoteData dummy;
@@ -1136,7 +1153,7 @@ void Song::AutoGen( StepsType ntTo, StepsType ntFrom )
 		const Steps* pOriginalNotes = m_vpSteps[j];
 		if( pOriginalNotes->m_StepsType == ntFrom )
 		{
-			Steps* pNewNotes = new Steps;
+			Steps* pNewNotes = new Steps(this);
 			pNewNotes->AutogenFrom( pOriginalNotes, ntTo );
 			this->AddSteps( pNewNotes );
 		}
@@ -1587,7 +1604,8 @@ bool Song::IsEditAlreadyLoaded( Steps* pSteps ) const
 
 bool Song::IsStepsUsingDifferentTiming(Steps *pSteps) const
 {
-	return pSteps->m_Timing != this->m_SongTiming;
+	// XXX This no longer depends on Song at all
+	return !pSteps->m_Timing.empty();
 }
 
 bool Song::HasSignificantBpmChangesOrStops() const

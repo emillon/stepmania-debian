@@ -1723,37 +1723,27 @@ void NoteDataUtil::InsertIntelligentTaps(
 		inout.GetTapFirstNonEmptyTrack( iRowLater, iTrackOfNoteLater );
 		int iTrackOfNoteToAdd = 0;
 		if( bSkippy  &&
-			iTrackOfNoteEarlier != iTrackOfNoteLater )	// Don't make skips on the same note
+			iTrackOfNoteEarlier != iTrackOfNoteLater &&   // Don't make skips on the same note
+			bEarlierHasNonEmptyTrack )
 		{
-			if( bEarlierHasNonEmptyTrack )
-			{
-				iTrackOfNoteToAdd = iTrackOfNoteEarlier;
-				goto done_looking_for_track_to_add;
-			}
+			iTrackOfNoteToAdd = iTrackOfNoteEarlier;
 		}
-
-		// try to choose a track between the earlier and later notes
-		if( abs(iTrackOfNoteEarlier-iTrackOfNoteLater) >= 2 )
+		else if( abs(iTrackOfNoteEarlier-iTrackOfNoteLater) >= 2 )
 		{
+			// try to choose a track between the earlier and later notes
 			iTrackOfNoteToAdd = min(iTrackOfNoteEarlier,iTrackOfNoteLater)+1;
-			goto done_looking_for_track_to_add;
 		}
-		
-		// try to choose a track just to the left
-		if( min(iTrackOfNoteEarlier,iTrackOfNoteLater)-1 >= 0 )
+		else if( min(iTrackOfNoteEarlier,iTrackOfNoteLater)-1 >= 0 )
 		{
+			// try to choose a track just to the left
 			iTrackOfNoteToAdd = min(iTrackOfNoteEarlier,iTrackOfNoteLater)-1;
-			goto done_looking_for_track_to_add;
 		}
-
-		// try to choose a track just to the right
-		if( max(iTrackOfNoteEarlier,iTrackOfNoteLater)+1 < inout.GetNumTracks() )
+		else if( max(iTrackOfNoteEarlier,iTrackOfNoteLater)+1 < inout.GetNumTracks() )
 		{
+			// try to choose a track just to the right
 			iTrackOfNoteToAdd = max(iTrackOfNoteEarlier,iTrackOfNoteLater)+1;
-			goto done_looking_for_track_to_add;
 		}
 
-done_looking_for_track_to_add:
 		inout.SetTapNote(iTrackOfNoteToAdd, iRowToAdd, TAP_ADDITION_TAP);
 	}
 }
@@ -1967,6 +1957,7 @@ void NoteDataUtil::ConvertTapsToHolds( NoteData &inout, int iSimultaneousHolds, 
 				int iTapsLeft = iSimultaneousHolds;
 
 				int r2 = r+1;
+				bool addHold = true;
 				FOREACH_NONEMPTY_ROW_ALL_TRACKS_RANGE( inout, next_row, r+1, iEndIndex )
 				{
 					r2 = next_row;
@@ -1974,7 +1965,10 @@ void NoteDataUtil::ConvertTapsToHolds( NoteData &inout, int iSimultaneousHolds, 
 					// If there are two taps in a row on the same track, 
 					// don't convert the earlier one to a hold.
 					if( inout.GetTapNote(t,r2).type != TapNote::empty )
-						goto dont_add_hold;
+					{
+						addHold = false;
+						break;
+					}
 
 					set<int> tracksDown;
 					inout.GetTracksHeldAtRow( r2, tracksDown );
@@ -1983,7 +1977,15 @@ void NoteDataUtil::ConvertTapsToHolds( NoteData &inout, int iSimultaneousHolds, 
 					if( iTapsLeft == 0 )
 						break;	// we found the ending row for this hold
 					else if( iTapsLeft < 0 )
-						goto dont_add_hold;
+					{
+						addHold = false;
+						break;
+					}
+				}
+
+				if (!addHold)
+				{
+					continue;
 				}
 
 				// If the steps end in a tap, convert that tap
@@ -1994,8 +1996,6 @@ void NoteDataUtil::ConvertTapsToHolds( NoteData &inout, int iSimultaneousHolds, 
 				inout.AddHoldNote( t, r, r2, TAP_ORIGINAL_HOLD_HEAD );
 				iTrackAddedThisRow++;
 			}
-dont_add_hold:
-			;
 		}
 	}
 

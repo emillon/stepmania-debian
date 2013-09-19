@@ -15,7 +15,6 @@
 #include "RageTextureManager.h"
 #include "MemoryCardManager.h"
 #include "NoteSkinManager.h"
-#include "Bookkeeper.h"
 #include "ProfileManager.h"
 #include "CodeDetector.h"
 #include "RageInput.h"
@@ -418,7 +417,7 @@ static bool GetValueFromMap( const map<U, V> &m, const U &key, V &val )
 	return true;
 }
 
-bool ScreenDebugOverlay::OverlayInput( const InputEventPlus &input )
+bool ScreenDebugOverlay::Input( const InputEventPlus &input )
 {
 	if( input.DeviceI == g_Mappings.holdForDebug1 || 
 		input.DeviceI == g_Mappings.holdForDebug2 )
@@ -498,7 +497,7 @@ bool ScreenDebugOverlay::OverlayInput( const InputEventPlus &input )
 		}
 	}
 
-	return false;
+	return Screen::Input(input);
 }
 
 
@@ -1035,7 +1034,7 @@ class DebugLineWriteProfiles : public IDebugLine
 	virtual RString GetPageName() const { return "Profiles"; }
 	virtual void DoAndLog( RString &sMessageOut )
 	{
-		// Also save bookkeeping and profile info for debugging
+		// Also save profile info for debugging
 		// so we don't have to play through a whole song to get new output.
 		if( g_ProfileSlot == ProfileSlot_Machine )
 			GAMESTATE->SaveLocalData();

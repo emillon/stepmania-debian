@@ -152,13 +152,13 @@ void ScreenSyncOverlay::UpdateText()
 
 static LocalizedString CANT_SYNC_WHILE_PLAYING_A_COURSE	("ScreenSyncOverlay","Can't sync while playing a course.");
 static LocalizedString SYNC_CHANGES_REVERTED		("ScreenSyncOverlay","Sync changes reverted.");
-bool ScreenSyncOverlay::OverlayInput( const InputEventPlus &input )
+bool ScreenSyncOverlay::Input( const InputEventPlus &input )
 {
 	if( !IsGameplay() )
-		return false;
+		return Screen::Input(input);
 
 	if( input.DeviceI.device != DEVICE_KEYBOARD )
-		return false;
+		return Screen::Input(input);
 
 	enum Action
 	{
@@ -186,7 +186,7 @@ bool ScreenSyncOverlay::OverlayInput( const InputEventPlus &input )
 		break;
 
 	default:
-		return false;
+		return Screen::Input(input);
 	}
 
 	if( GAMESTATE->IsCourseMode() && a != ChangeGlobalOffset )
@@ -198,11 +198,8 @@ bool ScreenSyncOverlay::OverlayInput( const InputEventPlus &input )
 	switch( a )
 	{
 	case RevertSyncChanges:
-		switch( input.type )
-		{
-		case IET_FIRST_PRESS:	break;
-		default:	return false;
-		}
+		if( input.type != IET_FIRST_PRESS )
+			return false;
 		SCREENMAN->SystemMessage( SYNC_CHANGES_REVERTED );
 		AdjustSync::RevertSyncChanges();
 		break;
@@ -236,6 +233,10 @@ bool ScreenSyncOverlay::OverlayInput( const InputEventPlus &input )
 				FOREACH( Steps*, const_cast<vector<Steps *>&>(vpSteps), s )
 				{
 					TimingData &pTiming = (*s)->m_Timing;
+					// Empty means it inherits song timing,
+					// which has already been updated.
+					if( pTiming.empty() )
+						continue;
 					float second = sTiming.GetElapsedTimeFromBeat(GAMESTATE->m_Position.m_fSongBeat);
 					seg = pTiming.GetBPMSegmentAtBeat(pTiming.GetBeatFromElapsedTime(second));
 					seg->SetBPS( seg->GetBPS() + fDelta );
@@ -281,6 +282,10 @@ bool ScreenSyncOverlay::OverlayInput( const InputEventPlus &input )
 						const vector<Steps *>& vpSteps = GAMESTATE->m_pCurSong->GetAllSteps();
 						FOREACH( Steps*, const_cast<vector<Steps *>&>(vpSteps), s )
 						{
+							// Empty means it inherits song timing,
+							// which has already been updated.
+							if( (*s)->m_Timing.empty() )
+								continue;
 							(*s)->m_Timing.m_fBeat0OffsetInSeconds += fDelta;
 						}
 					}

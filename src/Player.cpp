@@ -659,7 +659,7 @@ void Player::Load()
 
 	const Song* pSong = GAMESTATE->m_pCurSong;
 
-	m_Timing = &GAMESTATE->m_pCurSteps[pn]->m_Timing;
+	m_Timing = GAMESTATE->m_pCurSteps[pn]->GetTimingData();
 
 	// Generate some cache data structure.
 	GenerateCacheDataStructure(m_pPlayerState, m_NoteData);
@@ -1206,27 +1206,32 @@ void Player::UpdateHoldNotes( int iSongRow, float fDeltaTime, vector<TrackRowTap
 	bool bIsHoldingButton = true;
 	FOREACH( TrackRowTapNote, vTN, trtn )
 	{
-		int iTrack = trtn->iTrack;
-
-		// TODO: Remove use of PlayerNumber.
-		PlayerNumber pn = m_pPlayerState->m_PlayerNumber;
-
-		if( m_pPlayerState->m_PlayerController != PC_HUMAN )
+		/*if this hold is already done, pretend it's always being pressed.
+		fixes/masks the phantom hold issue. -FSX*/
+		if( (iStartRow + trtn->pTN->iDuration) > iSongRow )
 		{
-			// TODO: Make the CPU miss sometimes.
-			if( m_pPlayerState->m_PlayerController == PC_AUTOPLAY )
+			int iTrack = trtn->iTrack;
+
+			// TODO: Remove use of PlayerNumber.
+			PlayerNumber pn = m_pPlayerState->m_PlayerNumber;
+
+			if( m_pPlayerState->m_PlayerController != PC_HUMAN )
 			{
-				STATSMAN->m_CurStageStats.m_bUsedAutoplay = true;
-				if( m_pPlayerStageStats != NULL )
-					m_pPlayerStageStats->m_bDisqualified = true;
+			// TODO: Make the CPU miss sometimes.
+				if( m_pPlayerState->m_PlayerController == PC_AUTOPLAY )
+				{
+					STATSMAN->m_CurStageStats.m_bUsedAutoplay = true;
+					if( m_pPlayerStageStats != NULL )
+						m_pPlayerStageStats->m_bDisqualified = true;
+				}
 			}
-		}
-		else
-		{
-			GameInput GameI = GAMESTATE->GetCurrentStyle()->StyleInputToGameInput( iTrack, pn );
+			else
+			{
+				GameInput GameI = GAMESTATE->GetCurrentStyle()->StyleInputToGameInput( iTrack, pn );
 			// this previously read as bIsHoldingButton &=
 			// was there a specific reason for this? - Friez
-			bIsHoldingButton &= INPUTMAPPER->IsBeingPressed( GameI, m_pPlayerState->m_mp );
+				bIsHoldingButton &= INPUTMAPPER->IsBeingPressed( GameI, m_pPlayerState->m_mp );
+			}
 		}
 	}
 
@@ -2437,52 +2442,41 @@ void Player::StepStrumHopo( int col, int row, const RageTimer &tm, bool bHeld, b
 			break;
 		case ButtonType_Hopo:
 			{
-				bool bDidHopo = true;
-
-				{
-					// only can hopo on a row with one note
-					if( m_NoteData.GetNumTapNotesInRow(iRowOfOverlappingNoteOrRow) != 1 )
-					{
-						bDidHopo = false;
-						goto done_checking_hopo;
-					}
-
-					// con't hopo on the same note 2x in a row
-					if( col == m_pPlayerState->m_iLastHopoNoteCol )
-					{
-						bDidHopo = false;
-						goto done_checking_hopo;
-					}
-
-					const TapNote &tn = m_NoteData.GetTapNote( col, iRowOfOverlappingNoteOrRow );
-					ASSERT( tn.type != TapNote::empty );
-
-					int iRowsAgoLastNote = 100000;	// TODO: find more reasonable value based on HOPO_CHAIN_SECONDS?
-					NoteData::all_tracks_reverse_iterator iter = m_NoteData.GetTapNoteRangeAllTracksReverse( iRowsAgoLastNote-iRowsAgoLastNote, iRowOfOverlappingNoteOrRow-1 );
-					ASSERT( !iter.IsAtEnd() );	// there must have been a note that started the hopo
-					if( !NoteDataWithScoring::IsRowCompletelyJudged(m_NoteData, iter.Row()) )
-					{
-						bDidHopo = false;
-						goto done_checking_hopo;
-					}
-
-					const TapNoteResult &lastTNR = NoteDataWithScoring::LastTapNoteWithResult( m_NoteData, iter.Row() ).result;
-					if( lastTNR.tns <= TNS_Miss )
-					{
-						bDidHopo = false;
-						goto done_checking_hopo;
-					}
-				}
-done_checking_hopo:
-				if( !bDidHopo )
+				// only can hopo on a row with one note
+				if( m_NoteData.GetNumTapNotesInRow(iRowOfOverlappingNoteOrRow) != 1 )
 				{
 					score = TNS_None;
+					break;
 				}
-				else
+
+				// con't hopo on the same note 2x in a row
+				if( col == m_pPlayerState->m_iLastHopoNoteCol )
 				{
-					m_pPlayerState->m_fLastHopoNoteMusicSeconds = fStepSeconds;
-					m_pPlayerState->m_iLastHopoNoteCol = col;
+					score = TNS_None;
+					break;
 				}
+
+				const TapNote &tn = m_NoteData.GetTapNote( col, iRowOfOverlappingNoteOrRow );
+				ASSERT( tn.type != TapNote::empty );
+
+				int iRowsAgoLastNote = 100000;	// TODO: find more reasonable value based on HOPO_CHAIN_SECONDS?
+				NoteData::all_tracks_reverse_iterator iter = m_NoteData.GetTapNoteRangeAllTracksReverse( iRowsAgoLastNote-iRowsAgoLastNote, iRowOfOverlappingNoteOrRow-1 );
+				ASSERT( !iter.IsAtEnd() );	// there must have been a note that started the hopo
+				if( !NoteDataWithScoring::IsRowCompletelyJudged(m_NoteData, iter.Row()) )
+				{
+					score = TNS_None;
+					break;
+				}
+
+				const TapNoteResult &lastTNR = NoteDataWithScoring::LastTapNoteWithResult( m_NoteData, iter.Row() ).result;
+				if( lastTNR.tns <= TNS_Miss )
+				{
+					score = TNS_None;
+					break;
+				}
+
+				m_pPlayerState->m_fLastHopoNoteMusicSeconds = fStepSeconds;
+				m_pPlayerState->m_iLastHopoNoteCol = col;
 			}
 			break;
 		case ButtonType_Step:
@@ -2690,6 +2684,7 @@ done_checking_hopo:
 		Message msg( "Step" );
 		msg.SetParam( "PlayerNumber", m_pPlayerState->m_PlayerNumber );
 		msg.SetParam( "MultiPlayer", m_pPlayerState->m_mp );
+		msg.SetParam( "Column", col );
 		MESSAGEMAN->Broadcast( msg );
 	}
 }
@@ -2813,6 +2808,11 @@ void Player::UpdateJudgedRows()
 		for( ; !iter.IsAtEnd()  &&  iter.Row() <= iEndRow; ++iter )
 		{
 			int iRow = iter.Row();
+
+			// Do not worry about mines in WarpSegments or FakeSegments
+			if (!m_Timing->IsJudgableAtRow(iRow))
+				continue;
+
 			TapNote &tn = *iter;
 
 			if( iRow != iLastSeenRow )
@@ -2857,7 +2857,7 @@ void Player::UpdateJudgedRows()
 
 				Attack attMineAttack;
 				attMineAttack.sModifiers = ApplyRandomAttack();
-				attMineAttack.fStartSecond = attMineAttack.ATTACK_STARTS_NOW();
+				attMineAttack.fStartSecond = ATTACK_STARTS_NOW;
 				attMineAttack.fSecsRemaining = fAttackRunTime;
 
 				m_pPlayerState->LaunchAttack( attMineAttack );
@@ -2965,10 +2965,6 @@ void Player::CrossedRows( int iLastRowCrossed, const RageTimer &now )
 		if( iRow != iLastSeenRow )
 		{
 			// crossed a not-empty row
-
-			// If we're doing random vanish, randomise notes on the fly.
-			if( m_pPlayerState->m_PlayerOptions.GetCurrent().m_fAppearances[PlayerOptions::APPEARANCE_RANDOMVANISH]==1 )
-				RandomizeNotes( iRow );
 
 			// check to see if there's a note at the crossed row
 			if( m_pPlayerState->m_PlayerController != PC_HUMAN )
@@ -3096,37 +3092,6 @@ void Player::CrossedRows( int iLastRowCrossed, const RageTimer &now )
 	}
 
 	m_iFirstUncrossedRow = iLastRowCrossed+1;
-}
-
-void Player::RandomizeNotes( int iNoteRow )
-{
-	// change the row to look ahead from based upon their speed mod
-	/* This is incorrect: if m_fScrollSpeed is 0.5, we'll never change
-	 * any odd rows, and if it's 2, we'll shuffle each row twice. */
-	int iNewNoteRow = iNoteRow + ROWS_PER_BEAT*2;
-	iNewNoteRow = int( iNewNoteRow / m_pPlayerState->m_PlayerOptions.GetCurrent().m_fScrollSpeed );
-
-	int iNumOfTracks = m_NoteData.GetNumTracks();
-	for( int t=0; t+1 < iNumOfTracks; t++ )
-	{
-		/* Only swap a tap and an empty. */
-		NoteData::iterator iter = m_NoteData.FindTapNote( t, iNewNoteRow );
-		if( iter == m_NoteData.end(t) || iter->second.type != TapNote::tap )
-			continue;
-
-		const int iSwapWith = RandomInt( iNumOfTracks );
-		
-		// Make sure this is empty.
-		if( m_NoteData.FindTapNote(iSwapWith, iNewNoteRow) != m_NoteData.end(iSwapWith) )
-			continue;
-
-		/* Make sure the destination row isn't in the middle of a hold. */
-		if( m_NoteData.IsHoldNoteAtRow(iSwapWith, iNoteRow) )
-			continue;
-
-		m_NoteData.SetTapNote( iSwapWith, iNewNoteRow, iter->second );
-		m_NoteData.RemoveTapNote( t, iter );
-	}
 }
 
 void Player::HandleTapRowScore( unsigned row )

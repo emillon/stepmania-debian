@@ -25,17 +25,10 @@ extern "C" int SM_main( int argc, char *argv[] );
 // CGFlushDrawable() performs a glFlush() and the docs say not to call glFlush()
 #define NO_GL_FLUSH
 
-#if defined(__ppc__)
-# define CPU_PPC
-# define ENDIAN_BIG
-# define BACKTRACE_LOOKUP_METHOD_DARWIN_DYLD
-# define BACKTRACE_METHOD_POWERPC_DARWIN
-#elif defined(__i386__)
-# define CPU_X86
-# define ENDIAN_LITTLE
-# define BACKTRACE_METHOD_X86_DARWIN
-# define BACKTRACE_LOOKUP_METHOD_DLADDR
-#endif
+#define CPU_X86
+#define ENDIAN_LITTLE
+#define BACKTRACE_METHOD_X86_DARWIN
+#define BACKTRACE_LOOKUP_METHOD_DLADDR
 
 #ifndef MACOSX
 # define MACOSX
@@ -49,15 +42,6 @@ extern "C" int SM_main( int argc, char *argv[] );
 #define ArchSwap24(n) (ArchSwap32((n)) >> 8)
 #define ArchSwap16(n) OSSwapInt16((n))
 #define HAVE_BYTE_SWAPS
-
-// Define the work around if needed.
-#include <bits/c++config.h>
-#include <stdint.h>
-#if _GLIBCXX_USE_C99
-# define NEED_CSTDLIB_WORKAROUND
-#else
-inline int64_t llabs( int64_t x ) { return x < 0LL ? -x : x; }
-#endif
 
 #define attribute_deprecated // Shut ffmpeg up!
 
