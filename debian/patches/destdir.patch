@@ -1,0 +1,25 @@
+diff --git a/Makefile.am b/Makefile.am
+index 80e9d93..ecc54da 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -26,14 +26,14 @@ dist-hook: SMData
+ 	cp -r -t "$(distdir)" $(installFiles)
+ 
+ install-exec-hook:
+-	mkdir -p "$(prefix)/$(productID)"
+-	$(INSTALL) $(installFiles) "$(prefix)/$(productID)"
++	mkdir -p "$(DESTDIR)/$(prefix)"
++	$(INSTALL) $(installFiles) "$(DESTDIR)/$(prefix)"
+ 
+ install-data-local:
+-	cp -r -t "$(prefix)/$(productID)" $(installData)
+-	mkdir -p "$(prefix)/$(productID)/Songs"
++	cp -r -t "$(DESTDIR)/$(prefix)" $(installData)
++	mkdir -p "$(DESTDIR)/$(prefix)/Songs"
+ 
+ uninstall-hook:
+-	rm -f "$(prefix)/$(productID)/stepmania"
+-	rm -f "$(prefix)/$(productID)/GtkModule.so"
++	rm -f "$(DESTDIR)/$(prefix)/stepmania"
++	rm -f "$(DESTDIR)/$(prefix)/GtkModule.so"
+ # todo: properly remove data
