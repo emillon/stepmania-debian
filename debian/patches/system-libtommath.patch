@@ -1,0 +1,31 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -388,6 +388,8 @@
+ 
+ LIBS="$LIBS -ltomcrypt"
+ 
++LIBS="$LIBS -ltommath"
++
+ AC_CONFIG_FILES(Makefile)
+ AC_CONFIG_FILES(bundle/Makefile)
+ AC_CONFIG_FILES(src/Makefile)
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -629,7 +629,6 @@
+ EXTRA_DIST += libtommath/bn_prime_tab.c
+ 
+ libtommath_a_CPPFLAGS = -I$(srcdir)/libtommath $(AM_CPPFLAGS)
+-noinst_LIBRARIES += libtommath.a
+ 
+ libtomcrypt_a_SOURCES = \
+ libtomcrypt/src/ciphers/aes/aes.c \
+@@ -729,8 +728,7 @@
+ main_LDADD = \
+ 		$(VIDEO_LIBS) \
+ 		$(AUDIO_LIBS) \
+-		$(GL_LIBS) \
+-		libtommath.a
++		$(GL_LIBS)
+ 
+ nodist_stepmania_SOURCES = ver.cpp
+ 

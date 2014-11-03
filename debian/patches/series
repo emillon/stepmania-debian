@@ -3,3 +3,4 @@ install.patch
 system-pcre.patch
 system-jsoncpp.patch
 system-libtomcrypt.patch
+system-libtommath.patch

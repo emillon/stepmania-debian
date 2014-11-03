@@ -18,6 +18,7 @@ Build-Depends:
  libmad0-dev,
  libpng-dev,
  libtomcrypt-dev,
+ libtommath-dev,
  libvorbis-dev,
  libxrandr-dev,
  pkg-config,
