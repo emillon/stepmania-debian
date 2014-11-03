@@ -1,0 +1,145 @@
+--- a/src/NotesLoaderJson.cpp
++++ b/src/NotesLoaderJson.cpp
+@@ -1,6 +1,6 @@
+ #include "global.h"
+ #include "NotesLoaderJson.h"
+-#include "json/value.h"
++#include <jsoncpp/json/value.h>
+ #include "TimingData.h"
+ #include "RageUtil.h"
+ #include "JsonUtil.h"
+--- a/src/NotesWriterJson.cpp
++++ b/src/NotesWriterJson.cpp
+@@ -1,7 +1,7 @@
+ #include "global.h"
+ #include "NotesWriterJson.h"
+ #include "TimingData.h"
+-#include "json/value.h"
++#include <jsoncpp/json/value.h>
+ #include "JsonUtil.h"
+ #include "Song.h"
+ #include "BackgroundUtil.h"
+--- a/src/JsonUtil.cpp
++++ b/src/JsonUtil.cpp
+@@ -4,8 +4,8 @@
+ #include "RageUtil.h"
+ #include "RageLog.h"
+ #include "arch/Dialog/Dialog.h"
+-#include "json/reader.h"
+-#include "json/writer.h"
++#include <jsoncpp/json/reader.h>
++#include <jsoncpp/json/writer.h>
+ 
+ bool JsonUtil::LoadFromString(Json::Value &root, RString sData, RString &sErrorOut)
+ {
+--- a/src/JsonUtil.h
++++ b/src/JsonUtil.h
+@@ -3,7 +3,7 @@
+ #define JsonUtil_H
+ 
+ class RageFileBasic;
+-#include "json/value.h"
++#include <jsoncpp/json/value.h>
+ 
+ namespace JsonUtil
+ {
+@@ -14,6 +14,13 @@
+ 
+ 	bool WriteFile(const Json::Value &root, const RString &sFile, bool bMinified);
+ 
++        static bool TryGet( const Json::Value &v, std::string &out ) { if(!v.isString()) return false; out=v.asString(); return true; }
++        static bool TryGet( const Json::Value &v, Json::Int &out ) { if(!v.isInt()) return false; out=v.asInt(); return true; }
++        static bool TryGet( const Json::Value &v, Json::UInt &out ) { if(!v.isUInt()) return false; out=v.asUInt(); return true; }
++        static bool TryGet( const Json::Value &v, double &out ) { if(!v.isDouble()) return false; out=v.asDouble(); return true; }
++        static bool TryGet( const Json::Value &v, float &out ) { if(!v.isDouble()) return false; out=(float)v.asDouble(); return true; }
++        static bool TryGet( const Json::Value &v, bool &out ) { if(!v.isBool()) return false; out=v.asBool(); return true; }
++
+ 	template<class T>
+ 	static void SerializeVectorObjects(const vector<T> &v, void fn(const T &, Json::Value &), Json::Value &root)
+ 	{
+@@ -202,7 +209,7 @@
+ 		for( unsigned i=0; i<root.size(); i++ )
+ 		{
+ 			T t;
+-			if( root[i].TryGet( t ) )
++			if( TryGet( root[i], t ) )
+ 				v.push_back( t );
+ 		}
+ 	}
+@@ -215,7 +222,7 @@
+ 		for( unsigned i=0; i<root.size(); i++ )
+ 		{
+ 			T t;
+-			if( root[i].TryGet( t ) )
++			if( TryGet( root[i], t ) )
+ 				s.insert( t );
+ 		}
+ 	}
+@@ -227,7 +234,7 @@
+ 		for( unsigned i=0; i<root.size(); i++ )
+ 		{
+ 			T t;
+-			if( root[i].TryGet( t ) )
++			if( TryGet( root[i], t ) )
+ 				v.push_back( t );
+ 		}
+ 	}
+@@ -236,14 +243,14 @@
+ 	static void DeserializeValueToValueMap(M &m, const Json::Value &root)
+ 	{
+ 		for( Json::Value::const_iterator iter = root.begin(); iter != root.end(); iter++ )
+-			(*iter).TryGet( m[ iter.memberName() ] );
++			TryGet( *iter, m[ iter.memberName() ] );
+ 	}
+ 
+ 	template <typename M, typename E, typename F>
+ 	static void DeserializeStringToValueMap(M &m, F fnToValue(E e), const Json::Value &root)
+ 	{
+ 		for( Json::Value::const_iterator iter = root.begin(); iter != root.end(); iter++ )
+-			(*iter).TryGet( m[ fnToValue(iter.memberName()) ] );
++			TryGet(*iter, m[ fnToValue(iter.memberName()) ] );
+ 	}
+ 
+ 	template <typename M, typename E, typename F>
+@@ -282,7 +289,7 @@
+ 			if( !k.Deserialize( root2[sKeyName] ) )
+ 				continue;
+ 			V v;
+-			if( !root2[sValueName].TryGet(v) )
++			if( !TryGet(root2[sValueName], v) )
+ 				continue;
+ 			m[k] = v;
+ 		}
+--- a/src/ScreenInstallOverlay.cpp
++++ b/src/ScreenInstallOverlay.cpp
+@@ -5,7 +5,7 @@
+ #include "Preference.h"
+ #include "RageLog.h"
+ #include "FileDownload.h"
+-#include "json/value.h"
++#include <jsoncpp/json/value.h>
+ #include "JsonUtil.h"
+ #include "SpecialFiles.h"
+ class Song;
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -513,7 +513,7 @@
+ RageFileDriverSlice.cpp RageFileDriverSlice.h \
+ RageFileDriverTimeout.cpp RageFileDriverTimeout.h
+ 
+-Rage = $(PCRE) $(Lua) $(jsoncpp) $(RageFile) $(RageSoundFileReaders) \
++Rage = $(PCRE) $(Lua) $(RageFile) $(RageSoundFileReaders) \
+ RageBitmapTexture.cpp RageBitmapTexture.h \
+ RageDisplay.cpp RageDisplay.h \
+ RageDisplay_OGL.cpp RageDisplay_OGL.h \
+--- a/configure.ac
++++ b/configure.ac
+@@ -384,6 +384,8 @@
+ 
+ LIBS="$LIBS -lpcre"
+ 
++LIBS="$LIBS -ljsoncpp"
++
+ AC_CONFIG_FILES(Makefile)
+ AC_CONFIG_FILES(bundle/Makefile)
+ AC_CONFIG_FILES(src/Makefile)
