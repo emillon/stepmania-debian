@@ -1,0 +1,3 @@
+version=3
+opts="uversionmangle=s/^/5~beta/" \
+http://www.stepmania.com/download/ .*SM5-beta(\d)
