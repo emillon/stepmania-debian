@@ -1,0 +1,19 @@
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -27,12 +27,12 @@
+ 	cp -r -t "$(distdir)" $(installFiles)
+ 
+ install-exec-hook:
+-	mkdir -p "$(DESTDIR)$(prefix)/$(productID)"
+-	$(INSTALL) $(installFiles) "$(DESTDIR)$(prefix)/$(productID)"
++	mkdir -p "$(DESTDIR)/usr/games"
++	$(INSTALL) $(installFiles) "$(DESTDIR)/usr/games"
+ 
+ install-data-local:
+-	mkdir -p "$(DESTDIR)$(prefix)/$(productID)/Songs"
+-	cp -r -t "$(DESTDIR)$(prefix)/$(productID)" $(installData)
++	mkdir -p "$(DESTDIR)/usr/share/games/stepmania/Songs"
++	cp -r -t "$(DESTDIR)/usr/share/games/stepmania" $(installData)
+ 
+ uninstall-hook:
+ 	rm -f "$(DESTDIR)$(prefix)/$(productID)/stepmania"
