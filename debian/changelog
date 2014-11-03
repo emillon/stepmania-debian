@@ -2,5 +2,6 @@ stepmania (5~beta4-1) UNRELEASED; urgency=low
 
   * The "Butterfly" release (initial release, Closes: #200715)
     - add a patch to fix several typos
+    - disable embedded pcre library
 
  -- Etienne Millon <etienne.millon@gmail.com>  Mon, 07 Jan 2013 10:49:43 +0100
