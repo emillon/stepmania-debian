@@ -7,9 +7,9 @@
 #include "LuaManager.h"
 #include "LocalizedString.h"
 
-RageInput* INPUTMAN = NULL; // globally accessable input device
+RageInput* INPUTMAN = NULL; // global and accessible from anywhere in our program
 
-static Preference<RString> g_sInputDrivers( "InputDrivers", "" ); // "" == DEFAULT_INPUT_DRIVER_LIST
+Preference<RString> g_sInputDrivers( "InputDrivers", "" ); // "" == DEFAULT_INPUT_DRIVER_LIST
 
 namespace
 {
@@ -66,7 +66,7 @@ void RageInput::LoadDrivers()
 
 	// If no input devices are loaded, the user won't be able to input anything.
 	if( apDevices.size() == 0 )
-		LOG->Warn( NO_INPUT_DEVICES_LOADED.GetValue() );
+		LOG->Warn( "%s", NO_INPUT_DEVICES_LOADED.GetValue().c_str() );
 }
 
 void RageInput::Update()

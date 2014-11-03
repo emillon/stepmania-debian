@@ -1,52 +1,70 @@
+local num_players = GAMESTATE:GetHumanPlayers();
+local function PositionItem(i,max)
+	local x_spacing = 128; 
+	return x_spacing * (i-(max-1)/2);
+end
+
+
 local t = Def.ActorFrame {
-	OnCommand=cmd(x,SCREEN_CENTER_X;y,SCREEN_BOTTOM-96;zoomy,0;sleep,0.5;decelerate,0.25;zoomy,1);
-	OffCommand=cmd(bouncebegin,0.15;zoomx,0);
-	LoadActor(THEME:GetPathG("CDTitle", "Con")) .. {
-		InitCommand=cmd(diffuse,Color("Orange"));
+	FOV=90;
+	--
+	Def.Quad {
+		InitCommand=cmd(zoomto,SCREEN_CENTER_X+80,SCREEN_HEIGHT);
+		OnCommand=cmd(diffuse,Color.Black;diffusealpha,0.75;fadeleft,32/SCREEN_CENTER_X;faderight,32/SCREEN_CENTER_X);
 	};
-	LoadFont("Common Normal") .. {
-		Text="Author";
-		InitCommand=cmd(zoom,0.7;y,-36,diffuse,0,0,0,1;shadowlength,1); -- strokecolor,Color("Black")
+};
+--
+for i=1,#num_players do
+	local f = Def.ActorFrame {
+		InitCommand=cmd(x,-128+PositionItem(i,#num_players));
+		UnchosenCommand=cmd(finishtweening;bounceend,0.25;zoom,1);
+		ChosenCommand=cmd(stoptweening;bouncebegin,0.3;zoom,0);
+		--
+		StepsChosenMessageCommand=function( self, param ) 
+			if param.Player ~= num_players[i] then return end;
+			self:playcommand("Chosen");
+		end;
+		StepsUnchosenMessageCommand=function( self, param ) 
+			if param.Player ~= num_players[i] then return end;
+			self:playcommand("Unchosen");
+		end;
+		Def.Quad {
+			InitCommand=cmd(y,-35);
+			OnCommand=cmd(diffuse,PlayerColor(num_players[i]);shadowlength,1;linear,0.25;zoomtowidth,80;fadeleft,0.5;faderight,0.5);
+		};
+		LoadFont("Common Bold") .. {
+			Text=ToEnumShortString(num_players[i]);
+			InitCommand=cmd(y,-48);
+			OnCommand=cmd(shadowlength,1;diffuse,PlayerColor(num_players[i]));
+		};
+		LoadFont("Common Bold") .. {
+			Text="PRESS";
+			InitCommand=cmd(y,-20);
+			OnCommand=cmd(shadowlength,1;pulse;effectmagnitude,1,1.125,1;effectperiod,0.5);
+		};
+		LoadFont("Common Normal") .. {
+			Text="TO START";
+			InitCommand=cmd(y,58);
+			OnCommand=cmd(shadowlength,1;zoom,0.75);
+		};
 	};
-	Def.Sprite {
-		Name="CDTitle";
-		InitCommand=cmd(y,19);
-		--OnCommand=cmd(draworder,106;shadowlength,1;zoom,0.75;diffusealpha,1;zoom,0;bounceend,0.35;zoom,0.75;spin;effectmagnitude,0,180,0);
-	};	
+	if GAMESTATE:GetCurrentGame():GetName() == "pump" then
+		local ns = num_players[i] == PLAYER_1 and RoutineSkinP1() or RoutineSkinP2()
+		f[#f+1] = LoadActor( NOTESKIN:GetPathForNoteSkin("Center","Tap",ns) ) .. {
+			InitCommand=cmd(y,20);
+		}
+	end
+	t[#t+1] = f;
+end
+-- Lock input for half a second so that players don't accidentally start a song
+t[#t+1] = Def.Actor { 
+	StartSelectingStepsMessageCommand=function() SCREENMAN:GetTopScreen():lockinput(0.5); end;
 };
 
-local function Update(self)
-	local song = GAMESTATE:GetCurrentSong();
-	local cdtitle = self:GetChild("CDTitle");
-	local height = cdtitle:GetHeight();
-	local width = cdtitle:GetWidth();
-	
-	if song then
-		if song:HasCDTitle() then
-			cdtitle:visible(true);
-			cdtitle:Load(song:GetCDTitlePath());
-		else
-			cdtitle:visible(false);
-		end;
-	else
-		cdtitle:visible(false);
-	end;
-	
-	if height >= 60 and width >= 80 then
-		if height*(80/60) >= width then
-		cdtitle:zoom(60/height);
-		else
-		cdtitle:zoom(80/width);
-		end;
-	elseif height >= 60 then
-		cdtitle:zoom(60/height);
-	elseif width >= 80 then
-		cdtitle:zoom(80/width);
-	else 
-		cdtitle:zoom(1);
-	end;
+--
+t.InitCommand=cmd(Center;x,SCREEN_CENTER_X*1.5;diffusealpha,0);
+t.StartSelectingStepsMessageCommand=cmd(linear,0.2;diffusealpha,1);
+t.SongUnchosenMessageCommand=cmd(linear,0.2;diffusealpha,0);
 
-end;
 
-t.InitCommand=cmd(SetUpdateFunction,Update);
-return t--]]
+return t;

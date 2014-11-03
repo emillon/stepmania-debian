@@ -52,8 +52,10 @@ void ScreenSelect::Init()
 		}
 	}
 
-	if( !m_aGameCommands.size() )
-		RageException::Throw( "Screen \"%s\" does not set any choices.", m_sName.c_str() );
+	if(m_aGameCommands.empty())
+	{
+		LuaHelpers::ReportScriptErrorFmt("Screen \"%s\" does not set any choices.", m_sName.c_str());
+	}
 }
 
 void ScreenSelect::BeginScreen()
@@ -101,7 +103,10 @@ bool ScreenSelect::Input( const InputEventPlus &input )
 	m_timerIdleComment.GetDeltaTime();
 	m_timerIdleTimeout.GetDeltaTime();
 
-	
+	/* Choices may change when more coins are inserted. */
+	if( input.MenuI == GAME_BUTTON_COIN && input.type == IET_FIRST_PRESS )
+		this->UpdateSelectableChoices();
+
 	if( input.MenuI == GAME_BUTTON_START && input.type == IET_FIRST_PRESS && GAMESTATE->JoinInput(input.pn) )
 	{
 		// HACK: Only play start sound for the 2nd player who joins. The 
@@ -154,25 +159,27 @@ void ScreenSelect::HandleScreenMessage( const ScreenMessage SM )
 			}
 		}
 
-		if( bAllPlayersChoseTheSame )
+		if(!m_aGameCommands.empty())
 		{
-			const GameCommand &gc = m_aGameCommands[iMastersIndex];
-			m_sNextScreen = gc.m_sScreen;
-			if( !gc.m_bInvalid )
-				gc.ApplyToAllPlayers();
-		}
-		else
-		{
-			FOREACH_HumanPlayer( p )
+			if( bAllPlayersChoseTheSame )
 			{
-				int iIndex = this->GetSelectionIndex(p);
-				const GameCommand &gc = m_aGameCommands[iIndex];
+				const GameCommand &gc = m_aGameCommands[iMastersIndex];
 				m_sNextScreen = gc.m_sScreen;
 				if( !gc.m_bInvalid )
+				gc.ApplyToAllPlayers();
+			}
+			else
+			{
+				FOREACH_HumanPlayer( p )
+				{
+					int iIndex = this->GetSelectionIndex(p);
+					const GameCommand &gc = m_aGameCommands[iIndex];
+					m_sNextScreen = gc.m_sScreen;
+					if( !gc.m_bInvalid )
 					gc.Apply( p );
+				}
 			}
 		}
-
 		StopTimer();
 
 		SCREENMAN->RefreshCreditsMessages();

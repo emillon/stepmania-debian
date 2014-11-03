@@ -12,9 +12,12 @@
 #include "RageFile.h"
 #if !defined(SMPACKAGE)
 #include "ScreenManager.h"
+#include "ProfileManager.h"
+#include "Profile.h"
 #include "ActorUtil.h"
 #endif
 #include "Foreach.h"
+#include "GameLoop.h" // For ChangeTheme
 #include "ThemeMetric.h"
 #include "SubscriptionManager.h"
 #include "LuaManager.h"
@@ -26,7 +29,7 @@
 #include "XmlFileUtil.h"
 #include <deque>
 
-ThemeManager*	THEME = NULL;	// global object accessable from anywhere in the program
+ThemeManager*	THEME = NULL;	// global object accessible from anywhere in the program
 
 static const RString THEME_INFO_INI = "ThemeInfo.ini";
 
@@ -87,9 +90,12 @@ public:
 	const RString &GetLocalized() const
 	{
 		if( IsLoaded() )
+		{
 			return GetValue();
-		else
-			return m_sName;
+		}
+		RString const & curLanguage = (THEME && THEME->IsThemeLoaded() ? THEME->GetCurLanguage() : "current");
+		LOG->Warn("Missing translation for %s in the %s language.", m_sName.c_str(), curLanguage.c_str());
+		return m_sName;
 	}
 };
 
@@ -406,18 +412,26 @@ void ThemeManager::SwitchThemeAndLanguage( const RString &sThemeName_, const RSt
 	// Clear the theme path cache. This caches language-specific graphic paths,
 	// so do this even if only the language is changing.
 	ClearThemePathCache();
-	if( bThemeChanging )
+	if(bThemeChanging || bForceThemeReload)
 	{
 #if !defined(SMPACKAGE)
 		// reload common sounds
 		if( SCREENMAN != NULL )
 			SCREENMAN->ThemeChanged();
+
 #endif
 
 		/* Lua globals can use metrics which are cached, and vice versa.  Update Lua
 		 * globals first; it's Lua's job to explicitly update cached metrics that it
 		 * uses. */
 		UpdateLuaGlobals();
+
+		// Reload MachineProfile with new theme's CustomLoadFunction
+		if( PROFILEMAN != NULL )
+		{
+			Profile* pProfile = PROFILEMAN->GetMachineProfile();
+			pProfile->LoadCustomFunction( "/Save/MachineProfile/" );
+		}
 	}
 
 	// Use theme metrics for localization.
@@ -581,8 +595,6 @@ bool ThemeManager::GetPathInfoToRaw( PathInfo &out, const RString &sThemeName_, 
 	const RString sMetricsGroup = sMetricsGroup_;
 	const RString sElement = sElement_;
 
-try_element_again:
-
 	const RString sThemeDir = GetThemeDirFromName( sThemeName );
 	const RString &sCategory = ElementCategoryToString(category);
 
@@ -658,10 +670,15 @@ try_element_again:
 
 		RString message = ssprintf( 
 			"ThemeManager:  There is more than one theme element that matches "
-			"'%s/%s/%s'.  Please remove all but one of these matches.",
+			"'%s/%s/%s'.  Please remove all but one of these matches: ",
 			sThemeName.c_str(), sCategory.c_str(), MetricsGroupAndElementToFileName(sMetricsGroup,sElement).c_str() );
+		message+= asElementPaths[1];
+		for(size_t i= 1; i < asElementPaths.size(); ++i)
+		{
+			message+= ", " + asElementPaths[i];
+		}
 
-		switch( Dialog::AbortRetryIgnore(message) )
+		switch( LuaHelpers::ReportScriptError(message, "", true) )
 		{
 		case Dialog::abort:
 			RageException::Throw( "%s", message.c_str() ); 
@@ -706,7 +723,7 @@ try_element_again:
 			"Verify that this redirect is correct.",
 			sPath.c_str(), sNewFileName.c_str());
 
-	switch( Dialog::AbortRetryIgnore(sMessage) )
+	switch(LuaHelpers::ReportScriptError(sMessage, "", true))
 	{
 	case Dialog::retry:
 		ReloadMetrics();
@@ -742,11 +759,9 @@ bool ThemeManager::GetPathInfoToAndFallback( PathInfo &out, ElementCategory cate
 			return false;
 	}
 
-	RageException::Throw( "Infinite recursion looking up theme element \"%s\"",
-		MetricsGroupAndElementToFileName(sMetricsGroup, sElement).c_str() );
-	/* Not really reached, but Appple's gcc 4 can't figure that out without
-	 * optimization even though RE:Throw() is correctly annotated. */
-	while( true ) {}
+	LuaHelpers::ReportScriptErrorFmt("Infinite recursion looking up theme element \"%s\"",
+		MetricsGroupAndElementToFileName(sMetricsGroup, sElement).c_str());
+	return false;
 }
 
 bool ThemeManager::GetPathInfo( PathInfo &out, ElementCategory category, const RString &sMetricsGroup_, const RString &sElement_, bool bOptional ) 
@@ -800,10 +815,15 @@ try_element_again:
 		ReloadMetrics();
 		goto try_element_again;
 	case Dialog::ignore:
-		LOG->UserLog( "Theme element", sCategory + '/' + sFileName,
-					"could not be found in \"%s\" or \"%s\".",
-					GetThemeDirFromName(m_sCurThemeName).c_str(), 
-					GetThemeDirFromName(SpecialFiles::BASE_THEME_NAME).c_str() );
+		{
+			RString element = sCategory + '/' + sFileName;
+			RString error = "could not be found in \"" +
+				GetThemeDirFromName(m_sCurThemeName) + "\" or \"" +
+				GetThemeDirFromName(SpecialFiles::BASE_THEME_NAME) + "\".";
+			LOG->UserLog("Theme element", element.c_str(), "%s", error.c_str());
+			LOG->Warn( "%s %s", element.c_str(), error.c_str());
+			LuaHelpers::ScriptErrorMessage(error);
+		}
 
 		// Err?
 		if( sFileName == "_missing" )
@@ -844,12 +864,20 @@ RString ThemeManager::GetMetricsIniPath( const RString &sThemeName )
 bool ThemeManager::HasMetric( const RString &sMetricsGroup, const RString &sValueName )
 {
 	RString sThrowAway;
+	if(sMetricsGroup == "" || sValueName == "")
+	{
+		return false;
+	}
 	return GetMetricRawRecursive( g_pLoadedThemeData->iniMetrics, sMetricsGroup, sValueName, sThrowAway );
 }
 
 bool ThemeManager::HasString( const RString &sMetricsGroup, const RString &sValueName )
 {
 	RString sThrowAway;
+	if(sMetricsGroup == "" || sValueName == "")
+	{
+		return false;
+	}
 	return GetMetricRawRecursive( g_pLoadedThemeData->iniStrings, sMetricsGroup, sValueName, sThrowAway );
 }
 
@@ -907,7 +935,8 @@ bool ThemeManager::GetMetricRawRecursive( const IniFile &ini, const RString &sMe
 			return false;
 	}
 
-	RageException::Throw( "Infinite recursion looking up theme metric \"%s::%s\".", sMetricsGroup.c_str(), sValueName.c_str() );
+	LuaHelpers::ReportScriptErrorFmt("Infinite recursion looking up theme metric \"%s::%s\".", sMetricsGroup.c_str(), sValueName.c_str());
+	return false;
 }
 
 RString ThemeManager::GetMetricRaw( const IniFile &ini, const RString &sMetricsGroup_, const RString &sValueName_ )
@@ -934,12 +963,12 @@ RString ThemeManager::GetMetricRaw( const IniFile &ini, const RString &sMetricsG
 		else
 			FAIL_M("");
 		
-		RString sMessage = ssprintf( "%s \"%s::%s\" is missing.  Correct this and click Retry, or Cancel to break.",
-			sType.c_str(), 
-			sMetricsGroup.c_str(), 
+		RString sMessage = ssprintf( "%s \"%s::%s\" is missing.",
+			sType.c_str(),
+			sMetricsGroup.c_str(),
 			sValueName.c_str() );
 			
-		switch( Dialog::AbortRetryIgnore(sMessage) )
+		switch( LuaHelpers::ReportScriptError(sMessage, "", true) )
 		{
 			case Dialog::abort:
 				{
@@ -1024,12 +1053,18 @@ LuaReference ThemeManager::GetMetricR( const RString &sMetricsGroup, const RStri
 
 void ThemeManager::PushMetric( Lua *L, const RString &sMetricsGroup, const RString &sValueName )
 {
+	if(sMetricsGroup == "" || sValueName == "")
+	{
+		LuaHelpers::ReportScriptError("PushMetric:  Attempted to fetch metric with empty group name or empty value name.");
+		lua_pushnil(L);
+		return;
+	}
 	RString sValue = GetMetricRaw( g_pLoadedThemeData->iniMetrics, sMetricsGroup, sValueName );
 
 	RString sName = ssprintf( "%s::%s", sMetricsGroup.c_str(), sValueName.c_str() );
 	if( EndsWith(sValueName, "Command") )
 	{
-		LuaHelpers::ParseCommandList( L, sValue, sName );
+		LuaHelpers::ParseCommandList( L, sValue, sName, false );
 	}
 	else
 	{
@@ -1158,6 +1193,11 @@ static RString PseudoLocalize( RString s )
 RString ThemeManager::GetString( const RString &sMetricsGroup, const RString &sValueName_ )
 {
 	RString sValueName = sValueName_;
+	if(sMetricsGroup == "" || sValueName == "")
+	{
+		LuaHelpers::ReportScriptError("PushMetric:  Attempted to fetch metric with empty group name or empty value name.");
+		return "";
+	}
 
 	// TODO: Handle escaping = with \=
 	DEBUG_ASSERT( sValueName.find('=') == sValueName.npos );
@@ -1246,9 +1286,29 @@ public:
 	static int ReloadMetrics( T* p, lua_State *L )		{ p->ReloadMetrics(); return 0; }
 
 	static int HasMetric( T* p, lua_State *L )		{ lua_pushboolean(L, p->HasMetric(SArg(1),SArg(2))); return 1; }
-	static int GetMetric( T* p, lua_State *L )		{ p->PushMetric( L, SArg(1),SArg(2) ); return 1; }
+	static int GetMetric( T* p, lua_State *L )
+	{
+		RString group= SArg(1);
+		RString name= SArg(2);
+		if(group == "" || name == "")
+		{
+			luaL_error(L, "Cannot fetch metric with empty group name or empty value name.");
+		}
+		p->PushMetric(L, group, name);
+		return 1;
+	}
 	static int HasString( T* p, lua_State *L )		{ lua_pushboolean(L, p->HasString(SArg(1),SArg(2))); return 1; }
-	static int GetString( T* p, lua_State *L )		{ lua_pushstring(L, p->GetString(SArg(1),SArg(2)) ); return 1; }
+	static int GetString( T* p, lua_State *L )
+	{
+		RString group= SArg(1);
+		RString name= SArg(2);
+		if(group == "" || name == "")
+		{
+			luaL_error(L, "Cannot fetch string with empty group name or empty value name.");
+		}
+		lua_pushstring(L, p->GetString(group, name));
+		return 1;
+	}
 	static int GetPathInfoB( T* p, lua_State *L )
 	{
 		ThemeManager::PathInfo pi;
@@ -1258,11 +1318,21 @@ public:
 		lua_pushstring(L, pi.sMatchingElement);
 		return 3;
 	}
-	static int GetPathF( T* p, lua_State *L )			{ lua_pushstring(L, p->GetPathF(SArg(1),SArg(2)) ); return 1; }
-	static int GetPathG( T* p, lua_State *L )			{ lua_pushstring(L, p->GetPathG(SArg(1),SArg(2)) ); return 1; }
-	static int GetPathB( T* p, lua_State *L )			{ lua_pushstring(L, p->GetPathB(SArg(1),SArg(2)) ); return 1; }
-	static int GetPathS( T* p, lua_State *L )			{ lua_pushstring(L, p->GetPathS(SArg(1),SArg(2)) ); return 1; }
-	static int GetPathO( T* p, lua_State *L )			{ lua_pushstring(L, p->GetPathO(SArg(1),SArg(2)) ); return 1; }
+	// GENERAL_GET_PATH uses lua_toboolean instead of BArg because that makes
+	// it optional. -Kyz
+#define GENERAL_GET_PATH(get_path_name) \
+	static int get_path_name(T* p, lua_State* L) \
+	{ \
+		lua_pushstring(L, p->get_path_name( \
+				SArg(1), SArg(2), lua_toboolean(L, 3))); \
+		return 1; \
+	}
+	GENERAL_GET_PATH(GetPathF);
+	GENERAL_GET_PATH(GetPathG);
+	GENERAL_GET_PATH(GetPathB);
+	GENERAL_GET_PATH(GetPathS);
+	GENERAL_GET_PATH(GetPathO);
+#undef GENERAL_GET_PATH
 	
 	static int RunLuaScripts( T* p, lua_State *L )			{ p->RunLuaScripts(SArg(1)); return 1; }
 
@@ -1286,6 +1356,51 @@ public:
 	DEFINE_METHOD( IsThemeSelectable, IsThemeSelectable(SArg(1)) );
 	DEFINE_METHOD( DoesLanguageExist, DoesLanguageExist(SArg(1)) );
 	DEFINE_METHOD( GetCurThemeName, GetCurThemeName() );
+
+	static void PushMetricNamesInGroup(IniFile const& ini, lua_State* L)
+	{
+		RString group_name= SArg(1);
+		const XNode* metric_node= ini.GetChild(group_name);
+		if(metric_node != NULL)
+		{
+			// Placed in a table indexed by number, so the order is always the same.
+			lua_createtable(L, metric_node->m_attrs.size(), 0);
+			int next_index= 1;
+			for(XAttrs::const_iterator n= metric_node->m_attrs.begin(); n != metric_node->m_attrs.end(); ++n)
+			{
+				LuaHelpers::Push(L, n->first);
+				lua_rawseti(L, -2, next_index);
+				++next_index;
+			}
+		}
+		else
+		{
+			lua_pushnil(L);
+		}
+	}
+
+	static int GetMetricNamesInGroup(T* p, lua_State* L)
+	{
+		PushMetricNamesInGroup(g_pLoadedThemeData->iniMetrics, L);
+		return 1;
+	}
+
+	static int GetStringNamesInGroup(T* p, lua_State* L)
+	{
+		PushMetricNamesInGroup(g_pLoadedThemeData->iniStrings, L);
+		return 1;
+	}
+
+	static int SetTheme(T* p, lua_State* L)
+	{
+		RString theme_name= SArg(1);
+		if(!p->IsThemeSelectable(theme_name))
+		{
+			luaL_error(L, "SetTheme: Invalid Theme: '%s'", theme_name.c_str());
+		}
+		GameLoop::ChangeTheme(theme_name);
+		return 0;
+	}
 
 	LunaThemeManager()
 	{
@@ -1311,6 +1426,9 @@ public:
 		ADD_METHOD( GetCurThemeName );
 		ADD_METHOD( HasMetric );
 		ADD_METHOD( HasString );
+		ADD_METHOD( GetMetricNamesInGroup );
+		ADD_METHOD( GetStringNamesInGroup );
+		ADD_METHOD( SetTheme );
 	}
 };
 

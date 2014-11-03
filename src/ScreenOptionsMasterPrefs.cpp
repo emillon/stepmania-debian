@@ -177,7 +177,7 @@ static void GameSel( int &sel, bool ToSel, const ConfOption *pConfOption )
 
 	if( ToSel )
 	{
-		const RString sCurGameName = GAMESTATE->m_pCurGame->m_szName;
+		const RString sCurGameName = PREFSMAN->GetCurrentGame();
 
 		sel = 0;
 		for(unsigned i = 0; i < choices.size(); ++i)
@@ -186,13 +186,7 @@ static void GameSel( int &sel, bool ToSel, const ConfOption *pConfOption )
 	} else {
 		vector<const Game*> aGames;
 		GAMEMAN->GetEnabledGames( aGames );
-		StepMania::ChangeCurrentGame( aGames[sel] );
-		/* Reload metrics to force a refresh of CommonMetrics::DIFFICULTIES_TO_SHOW,
-		 * mainly if we're not switching themes. I'm not sure if this was the
-		 * case going from theme to theme, but if it was, it should be fixed
-		 * now. There's probably be a better way to do it, but I'm not sure
-		 * what it'd be. -aj */
-		THEME->ReloadMetrics();
+		PREFSMAN->SetCurrentGame(aGames[sel]->m_szName);
 	}
 }
 
@@ -383,6 +377,41 @@ static void MusicWheelSwitchSpeed( int &sel, bool ToSel, const ConfOption *pConf
 	MoveMap( sel, pConfOption, ToSel, mapping, ARRAYLEN(mapping) );
 }
 
+static void CoinModeNoHome( int &sel, bool ToSel, const ConfOption *pConfOption )
+{
+	// 0 = Pay, 1 = Free
+	// But MovePref<CoinMode> thinks 0 = Home, 1 = Pay, 2 = Free
+	if( ToSel )
+	{
+		MovePref<CoinMode>( sel, ToSel, pConfOption );
+		// If the mode was Pay, the index is 0; otherwise, set the index
+		// to 1 to avoid out-of-range crashing.
+		if (sel == 1)
+			sel = 0;
+		else
+			sel = 1;
+	}
+	else 
+	{
+		int tmp = sel + 1;
+		MovePref<CoinMode>( tmp, ToSel, pConfOption );
+	}
+}
+
+static void CoinsPerCredit( int &sel, bool ToSel, const ConfOption *pConfOption )
+{
+	if( ToSel )
+	{
+		MovePref<int>( sel, ToSel, pConfOption );
+		sel--;
+	}
+	else
+	{
+		int tmp = sel + 1;
+		MovePref<int>( tmp, ToSel, pConfOption );
+	}
+}
+
 static void JointPremium( int &sel, bool ToSel, const ConfOption *pConfOption )
 {
 	const Premium mapping[] = { Premium_DoubleFor1Credit, Premium_2PlayersFor1Credit };
@@ -412,6 +441,7 @@ static void TimingWindowScale( int &sel, bool ToSel, const ConfOption *pConfOpti
 {
 	// StepMania 5 values (implemented 2008/03/12)
 	//const float mapping[] = { 2.0f,1.66f,1.33f,1.00f,0.75f,0.50f,0.25f };
+
 	// StepMania 3.9 and 4.0 values:
 	const float mapping[] = { 1.50f,1.33f,1.16f,1.00f,0.84f,0.66f,0.50f,0.33f,0.20f };
 	MoveMap( sel, pConfOption, ToSel, mapping, ARRAYLEN(mapping) );
@@ -420,12 +450,13 @@ static void TimingWindowScale( int &sel, bool ToSel, const ConfOption *pConfOpti
 /** @brief Life Difficulty scale */
 static void LifeDifficulty( int &sel, bool ToSel, const ConfOption *pConfOption )
 {
-	// StepMania 5 values (implemented 2008/03/12)
+	// original StepMania 5 values (implemented 2008/03/12)
 	//const float mapping[] = { 2.0f,1.50f,1.00f,0.66f,0.33f };
+	// 3.9 modified so that L6 is L4 (in SM5 some time after)
+	//const float mapping[] = { 1.20f,1.00f,0.80f,0.60f,0.40f,0.33f,0.25f };
+
 	// StepMania 3.9 and 4.0 values:
-	//const float mapping[] = { 1.60f,1.40f,1.20f,1.00f,0.80f,0.60f,0.40f };
-	// 3.9 modified so that L6 is L4
-	const float mapping[] = { 1.20f,1.00f,0.80f,0.60f,0.40f,0.33f,0.25f };
+	const float mapping[] = { 1.60f,1.40f,1.20f,1.00f,0.80f,0.60f,0.40f };
 	MoveMap( sel, pConfOption, ToSel, mapping, ARRAYLEN(mapping) );
 }
 
@@ -448,37 +479,6 @@ static int GetLifeDifficulty()
 }
 LuaFunction( GetLifeDifficulty, GetLifeDifficulty() );
 
-
-static void DefaultFailType( int &sel, bool ToSel, const ConfOption *pConfOption )
-{
-	if( ToSel )
-	{
-		PlayerOptions po;
-		po.FromString( PREFSMAN->m_sDefaultModifiers );
-		sel = po.m_FailType;
-	}
-	else
-	{
-		PlayerOptions po;
-		SongOptions so;
-		GetPrefsDefaultModifiers( po, so );
-
-		switch( sel )
-		{
-			case 0:	po.m_FailType = PlayerOptions::FAIL_IMMEDIATE; break;
-			case 1:	po.m_FailType = PlayerOptions::FAIL_IMMEDIATE_CONTINUE; break;
-			case 2:	po.m_FailType = PlayerOptions::FAIL_AT_END; break;
-			case 3:	po.m_FailType = PlayerOptions::FAIL_OFF; break;
-			default:
-			{
-				LOG->Warn("Invalid fail type %d! Going to use the default...", sel);
-				po.m_FailType = PlayerOptions::FAIL_IMMEDIATE; break;
-			}
-		}
-
-		SetPrefsDefaultModifiers( po, so );
-	}
-}
 
 // Graphic options
 struct res_t
@@ -620,15 +620,15 @@ static void InitializeConfOptions()
 	// a new choice in the interface into a new preference. The easiest is when
 	// the interface choices are an exact mapping to the values the preference
 	// can be. In that case, the easiest thing to do is use MovePref<bool or enum>.
-	// The next easiest case is when there is a hardcoded mapping that is not 1-1.
-	// In that case, you need to remap the result of
+	// The next easiest case is when there is a hardcoded mapping that is not 1-1,
+	// such as CoinModeNoHome. In that case, you need to remap the result of
 	// MovePref<enum> to the correct mapping.  Harder yet is when there is a
 	// float or a dynamic set of options, such as Language or Theme.
 	// Those require individual attention.
 #define ADD(x) g_ConfOptions.push_back( x )
 	// Select game
 	ADD( ConfOption( "Game",			GameSel,		GameChoices ) );
-	g_ConfOptions.back().m_iEffects = OPT_RESET_GAME;
+	g_ConfOptions.back().m_iEffects = OPT_CHANGE_GAME;
 
 	// Appearance options
 	ADD( ConfOption( "Language",			Language,		LanguageChoices ) );
@@ -663,7 +663,8 @@ static void InitializeConfOptions()
 	g_ConfOptions.back().m_sPrefName = "BGBrightness";
 	ADD( ConfOption( "BGBrightnessOrStatic",	BGBrightnessOrStatic,	"Disabled","25% Bright","50% Bright","75% Bright" ) );
 	g_ConfOptions.back().m_sPrefName = "BGBrightness";
-	ADD( ConfOption( "StretchBackgrounds",			MovePref<bool>,		"Off","On" ) );
+	ADD( ConfOption( "StretchBackgrounds",			MovePref<bool>,		"Off","On" ) ); // Deprecated, unused by default/_fallback. -Kyz
+	ADD( ConfOption( "BackgroundFitMode", MovePref<BackgroundFitMode>, "CoverDistort", "CoverPreserve", "FitInside", "FitInsideAvoidLetter", "FitInsideAvoidPillar") );
 
 	ADD( ConfOption( "ShowDanger",			MovePref<bool>,		"Hide","Show" ) );
 	ADD( ConfOption( "ShowDancingCharacters",	MovePref<ShowDancingCharacters>, "Default to Off","Default to Random","Select" ) );
@@ -676,6 +677,7 @@ static void InitializeConfOptions()
 	ADD( ConfOption( "AutoPlay",			MovePref<PlayerController>, "Off","On","CPU-Controlled" ) );
 	ADD( ConfOption( "DelayedBack",			MovePref<bool>,		"Instant","Hold" ) );
 	ADD( ConfOption( "ArcadeOptionsNavigation",	MovePref<bool>,		"StepMania Style","Arcade Style" ) );
+	ADD( ConfOption( "ThreeKeyNavigation", MovePref<bool>, "Five Key Menu", "Three Key Menu" ) );
 	ADD( ConfOption( "MusicWheelSwitchSpeed",	MusicWheelSwitchSpeed,	"Slow","Normal","Fast","Really Fast" ) );
 
 	// Gameplay options
@@ -690,8 +692,10 @@ static void InitializeConfOptions()
 
 	// Machine options
 	ADD( ConfOption( "MenuTimer",			MovePref<bool>,		"Off","On" ) );
-	ADD( ConfOption( "CoinMode",			MovePref<CoinMode>,	"Home","Free Play" ) );
+	ADD( ConfOption( "CoinMode",			MovePref<CoinMode>,	"Home","Pay","Free Play" ) );
+	ADD( ConfOption( "CoinModeNoHome",		CoinModeNoHome,		"Pay","Free Play" ) );
 	g_ConfOptions.back().m_sPrefName = "CoinMode";
+	ADD( ConfOption( "CoinsPerCredit",		CoinsPerCredit,		"|1","|2","|3","|4","|5","|6","|7","|8","|9","|10","|11","|12","|13","|14","|15","|16" ) );
 
 	ADD( ConfOption( "SongsPerPlay",		SongsPerPlay,		"|1","|2","|3","|4","|5" ) );
 	ADD( ConfOption( "SongsPerPlayOrEvent",		SongsPerPlayOrEventMode,"|1","|2","|3","|4","|5","Event" ) );
@@ -699,12 +703,13 @@ static void InitializeConfOptions()
 
 	ADD( ConfOption( "EventMode",			MovePref<bool>,		"Off","On (recommended)" ) );
 	ADD( ConfOption( "TimingWindowScale",		TimingWindowScale,	"|1","|2","|3","|4","|5","|6","|7","|8","Justice" ) );
-	ADD( ConfOption( "LifeDifficulty",		LifeDifficulty,		"|1.2","|1.0","|0.8","|0.6","|0.4","|0.33","|0.25" ) );
+	ADD( ConfOption( "LifeDifficulty",		LifeDifficulty,		"|1","|2","|3","|4","|5","|6","|7" ) );
 	g_ConfOptions.back().m_sPrefName = "LifeDifficultyScale";
 	ADD( ConfOption( "ProgressiveLifebar",		MovePref<int>,		"Off","|1","|2","|3","|4","|5","|6","|7","|8") );
 	ADD( ConfOption( "ProgressiveStageLifebar",	MovePref<int>,		"Off","|1","|2","|3","|4","|5","|6","|7","|8","Insanity") );
 	ADD( ConfOption( "ProgressiveNonstopLifebar",	MovePref<int>,		"Off","|1","|2","|3","|4","|5","|6","|7","|8","Insanity") );
-	ADD( ConfOption( "DefaultFailType",		DefaultFailType,	"Immediate","ImmediateContinue","EndOfSong","Off" ) );	
+	ADD( ConfOption( "DefaultFailType", MovePref<FailType>, "Immediate","ImmediateContinue","EndOfSong","Off" ) );
+	ADD( ConfOption( "CoinsPerCredit",		CoinsPerCredit,		"|1","|2","|3","|4","|5","|6","|7","|8","|9","|10","|11","|12","|13","|14","|15","|16" ) );
 	ADD( ConfOption( "Premium",			MovePref<Premium>,	"Off","Double for 1 Credit","2 Players for 1 Credit" ) );
 	ADD( ConfOption( "JointPremium",		JointPremium,		"Off","2 Players for 1 Credit" ) );
 	g_ConfOptions.back().m_sPrefName = "Premium";
@@ -743,6 +748,7 @@ static void InitializeConfOptions()
 	g_ConfOptions.back().m_iEffects = OPT_APPLY_GRAPHICS;
 	ADD( ConfOption( "Vsync",			MovePref<bool>,		"No", "Yes" ) );
 	g_ConfOptions.back().m_iEffects = OPT_APPLY_GRAPHICS;
+	ADD( ConfOption( "FastNoteRendering", MovePref<bool>, "Off", "On"));
 	ADD( ConfOption( "ShowStats",			MovePref<bool>,		"Off","On" ) );
 	ADD( ConfOption( "ShowBanners",			MovePref<bool>,		"Off","On" ) );
 

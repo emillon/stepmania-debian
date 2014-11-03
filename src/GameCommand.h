@@ -16,8 +16,11 @@ class Course;
 class Trail;
 class Character;
 class Style;
-class Game;
+struct Game;
 struct lua_State;
+
+int GetNumCreditsPaid();
+int GetCreditsRequiredToPlayStyle( const Style *style );
 
 class GameCommand
 {
@@ -31,11 +34,12 @@ public:
 		m_sAnnouncer(""), m_sPreferredModifiers(""),
 		m_sStageModifiers(""), m_sScreen(""), m_LuaFunction(),
 		m_pSong(NULL), m_pSteps(NULL), m_pCourse(NULL),
-		m_pTrail(NULL), m_pCharacter(NULL), m_SetEnv(),
+		m_pTrail(NULL), m_pCharacter(NULL), m_SetEnv(), m_SetPref(),
 		m_sSongGroup(""), m_SortOrder(SortOrder_Invalid),
 		m_sSoundPath(""), m_vsScreensToPrepare(), m_iWeightPounds(-1),
 		m_iGoalCalories(-1), m_GoalType(GoalType_Invalid),
 		m_sProfileID(""), m_sUrl(""), m_bUrlExits(true),
+		m_bInsertCredit(false), m_bClearCredits(false),
 		m_bStopMusic(false), m_bApplyDefaultOptions(false),
 		m_bFadeMusic(false), m_fMusicFadeOutVolume(-1),
 		m_fMusicFadeOutSeconds(-1), m_bApplyCommitsScreens(true)
@@ -88,6 +92,7 @@ public:
 	Trail*		m_pTrail;
 	Character*	m_pCharacter;
 	std::map<RString,RString> m_SetEnv;
+	std::map<RString,RString> m_SetPref;
 	RString		m_sSongGroup;
 	SortOrder	m_SortOrder;
 	RString		m_sSoundPath;	// "" for no sound
@@ -104,6 +109,8 @@ public:
 	// sm-ssc adds:
 	bool		m_bUrlExits;	// for making stepmania not exit on url
 
+	bool m_bInsertCredit;
+	bool m_bClearCredits;
 	bool m_bStopMusic;
 	bool m_bApplyDefaultOptions;
 	// sm-ssc also adds:

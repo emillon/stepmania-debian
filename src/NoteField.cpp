@@ -36,8 +36,11 @@ static ThemeMetric<float> FADE_FAIL_TIME( "NoteField", "FadeFailTime" );
 static RString RoutineNoteSkinName( size_t i ) { return ssprintf("RoutineNoteSkinP%i",int(i+1)); }
 static ThemeMetric1D<RString> ROUTINE_NOTESKIN( "NoteField", RoutineNoteSkinName, NUM_PLAYERS );
 
+static bool FAST_NOTE_RENDERING_PREF_CACHED= false;
+
 NoteField::NoteField()
 {
+	FAST_NOTE_RENDERING_PREF_CACHED= PREFSMAN->m_FastNoteRendering;
 	m_pNoteData = NULL;
 	m_pCurDisplay = NULL;
 
@@ -362,19 +365,22 @@ void NoteField::DrawBeatBar( const float fBeat, BeatBarType type, int iMeasureIn
 
 void NoteField::DrawBoard( int iDrawDistanceAfterTargetsPixels, int iDrawDistanceBeforeTargetsPixels )
 {
-	// Draw the board centered on fYPosAt0 so that the board doesn't slide as
-	// the draw distance changes with modifiers.
-	const float fYPosAt0 = ArrowEffects::GetYPos( m_pPlayerState, 0, 0, m_fYReverseOffsetPixels );
-
 	// todo: make this an AutoActor instead? -aj
 	Sprite *pSprite = dynamic_cast<Sprite *>( (Actor*)m_sprBoard );
 	if( pSprite == NULL )
-		RageException::Throw( "Board must be a Sprite" );
-
-	RectF rect = *pSprite->GetCurrentTextureCoordRect();
-	const float fBoardGraphicHeightPixels = pSprite->GetUnzoomedHeight();
-	float fTexCoordOffset = m_fBoardOffsetPixels / fBoardGraphicHeightPixels;
 	{
+		m_sprBoard->Draw();
+	}
+	else
+	{
+		// Draw the board centered on fYPosAt0 so that the board doesn't slide as
+		// the draw distance changes with modifiers.
+		const float fYPosAt0 = ArrowEffects::GetYPos( m_pPlayerState, 0, 0, m_fYReverseOffsetPixels );
+
+		RectF rect = *pSprite->GetCurrentTextureCoordRect();
+		const float fBoardGraphicHeightPixels = pSprite->GetUnzoomedHeight();
+		float fTexCoordOffset = m_fBoardOffsetPixels / fBoardGraphicHeightPixels;
+
 		// top half
 		const float fHeight = iDrawDistanceBeforeTargetsPixels - iDrawDistanceAfterTargetsPixels;
 		const float fY = fYPosAt0 - ((iDrawDistanceBeforeTargetsPixels + iDrawDistanceAfterTargetsPixels) / 2.0f);
@@ -920,17 +926,14 @@ void NoteField::DrawPrimitives()
 		const TimingData &timing = *pTiming;
 
 		// Scroll text
-		if( GAMESTATE->m_bIsUsingStepTiming )
+		for (i = 0; i < segs[SEGMENT_SCROLL]->size(); i++)
 		{
-			for (i = 0; i < segs[SEGMENT_SCROLL]->size(); i++)
+			ScrollSegment *seg = ToScroll( segs[SEGMENT_SCROLL]->at(i) );
+			if( seg->GetRow() >= iFirstRowToDraw && seg->GetRow() <= iLastRowToDraw )
 			{
-				ScrollSegment *seg = ToScroll( segs[SEGMENT_SCROLL]->at(i) );
-				if( seg->GetRow() >= iFirstRowToDraw && seg->GetRow() <= iLastRowToDraw )
-				{
-					float fBeat = seg->GetBeat();
-					if( IS_ON_SCREEN(fBeat) )
-						DrawScrollText( fBeat, seg->GetRatio() );
-				}
+				float fBeat = seg->GetBeat();
+				if( IS_ON_SCREEN(fBeat) )
+					DrawScrollText( fBeat, seg->GetRatio() );
 			}
 		}
 
@@ -1214,7 +1217,7 @@ void NoteField::DrawPrimitives()
 			for( ; begin != end; ++begin )
 			{
 				const TapNote &tn = begin->second; //m_pNoteData->GetTapNote(c, j);
-				if( tn.type != TapNote::hold_head )
+				if( tn.type != TapNoteType_HoldHead )
 					continue; // skip
 
 				const HoldNoteResult &Result = tn.HoldResult;
@@ -1243,7 +1246,7 @@ void NoteField::DrawPrimitives()
 					continue;	// skip
 				}
 
-				bool bIsAddition = (tn.source == TapNote::addition);
+				bool bIsAddition = (tn.source == TapNoteSource_Addition);
 				bool bIsHopoPossible = (tn.bHopoPossible);
 				bool bUseAdditionColoring = bIsAddition || bIsHopoPossible;
 				const bool bHoldGhostShowing = tn.HoldResult.bActive  &&  tn.HoldResult.fLife > 0;
@@ -1280,13 +1283,13 @@ void NoteField::DrawPrimitives()
 			// Fixes hold head overlapping issue, but not the rolls.
 			switch( tn.type )
 			{
-				case TapNote::empty: // no note here
+				case TapNoteType_Empty: // no note here
 				{
 					continue;
 				}
-				case TapNote::hold_head:
+				case TapNoteType_HoldHead:
 				{
-					//if (tn.subType == TapNote::hold_head_roll)
+					//if (tn.subType == TapNoteSubType_Roll)
 						continue; // skip
 				}
 				default: break;
@@ -1313,8 +1316,8 @@ void NoteField::DrawPrimitives()
 				for( int c2=0; c2<m_pNoteData->GetNumTracks(); c2++ )
 				{
 					const TapNote &tmp = m_pNoteData->GetTapNote(c2, q);
-					if(tmp.type == TapNote::hold_head &&
-					   tmp.subType == TapNote::hold_head_hold)
+					if(tmp.type == TapNoteType_HoldHead &&
+					   tmp.subType == TapNoteSubType_Hold)
 					{
 						bHoldNoteBeginsOnThisBeat = true;
 						break;
@@ -1329,8 +1332,8 @@ void NoteField::DrawPrimitives()
 				for( int c2=0; c2<m_pNoteData->GetNumTracks(); c2++ )
 				{
 					const TapNote &tmp = m_pNoteData->GetTapNote(c2, q);
-					if(tmp.type == TapNote::hold_head &&
-					   tmp.subType == TapNote::hold_head_roll)
+					if(tmp.type == TapNoteType_HoldHead &&
+					   tmp.subType == TapNoteSubType_Roll)
 					{
 						bRollNoteBeginsOnThisBeat = true;
 						break;
@@ -1342,7 +1345,7 @@ void NoteField::DrawPrimitives()
 			if( m_iBeginMarker!=-1 && m_iEndMarker!=-1 )
 				bIsInSelectionRange = m_iBeginMarker<=q && q<m_iEndMarker;
 
-			bool bIsAddition = (tn.source == TapNote::addition);
+			bool bIsAddition = (tn.source == TapNoteSource_Addition);
 			bool bIsHopoPossible = (tn.bHopoPossible);
 			bool bUseAdditionColoring = bIsAddition || bIsHopoPossible;
 			NoteDisplayCols *displayCols = tn.pn == PLAYER_INVALID ? m_pCurDisplay : m_pDisplays[tn.pn];
@@ -1355,7 +1358,10 @@ void NoteField::DrawPrimitives()
 			bool bNoteIsUpcoming = NoteRowToBeat(q) > m_pPlayerState->GetDisplayedPosition().m_fSongBeat;
 			bAnyUpcomingInThisCol |= bNoteIsUpcoming;
 
-			DISPLAY->ClearZBuffer();
+			if(!FAST_NOTE_RENDERING_PREF_CACHED)
+			{
+				DISPLAY->ClearZBuffer();
+			}
 		}
 
 		cur->m_ReceptorArrowRow.SetNoteUpcoming( c, bAnyUpcomingInThisCol );

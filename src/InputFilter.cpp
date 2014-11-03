@@ -1,4 +1,5 @@
 #include "global.h"
+#include "LocalizedString.h"
 #include "InputFilter.h"
 #include "RageLog.h"
 #include "RageInput.h"
@@ -6,11 +7,24 @@
 #include "RageThreads.h"
 #include "Preference.h"
 #include "Foreach.h"
+#include "GameInput.h"
+#include "InputMapper.h"
 // for mouse stuff: -aj
 #include "PrefsManager.h"
 #include "ScreenDimensions.h"
 
 #include <set>
+
+static const char *InputEventTypeNames[] = {
+	"FirstPress",
+	"Repeat",
+	"Release"
+};
+
+XToString(InputEventType);
+XToLocalizedString(InputEventType);
+LuaXType(InputEventType);
+
 struct ButtonState
 {
 	ButtonState();
@@ -82,7 +96,7 @@ namespace
  * this won't cause timing problems, because the event timestamp is preserved. */
 static Preference<float> g_fInputDebounceTime( "InputDebounceTime", 0 );
 
-InputFilter*	INPUTFILTER = NULL;	// global and accessable from anywhere in our program
+InputFilter*	INPUTFILTER = NULL;	// global and accessible from anywhere in our program
 
 static const float TIME_BEFORE_REPEATS = 0.375f;
 
@@ -158,8 +172,17 @@ void InputFilter::ButtonPressed( const DeviceInput &di )
 	if( di.ts.IsZero() )
 		LOG->Warn( "InputFilter::ButtonPressed: zero timestamp is invalid" );
 
-	ASSERT_M( di.device < NUM_InputDevice, ssprintf("Invalid device %i", di.device) );
-	ASSERT_M( di.button < NUM_DeviceButton, ssprintf("Invalid button %i", di.button) );
+	// Filter out input that is beyond the range of the current system.
+	if(di.device >= NUM_InputDevice)
+	{
+		LOG->Trace("InputFilter::ButtonPressed: Invalid device %i", di.device);
+		return;
+	}
+	if(di.button >= NUM_DeviceButton)
+	{
+		LOG->Trace("InputFilter::ButtonPressed: Invalid button %i", di.button);
+		return;
+	}
 
 	ButtonState &bs = GetButtonState( di );
 
@@ -208,12 +231,26 @@ void InputFilter::CheckButtonChange( ButtonState &bs, DeviceInput di, const Rage
 {
 	if( bs.m_BeingHeld == bs.m_bLastReportedHeld )
 		return;
+	
+	GameInput gi;
 
-	/* If the last IET_FIRST_PRESS or IET_RELEASE event was sent too recently,
-	 * wait a while before sending it. */
-	if( now - bs.m_LastReportTime < g_fInputDebounceTime )
-		return;
-
+	/* Possibly apply debounce,
+	 * If the input was coin, possibly apply distinct coin debounce in the else below. */
+	if (! INPUTMAPPER->DeviceToGame(di, gi) || gi.button != GAME_BUTTON_COIN )
+	{
+		/* If the last IET_FIRST_PRESS or IET_RELEASE event was sent too recently,
+		 * wait a while before sending it. */
+		if( now - bs.m_LastReportTime < g_fInputDebounceTime )
+		{
+			return;
+		}
+	} else {
+		if( now - bs.m_LastReportTime < PREFSMAN->m_fDebounceCoinInputTime )
+		{
+			return;
+		}
+	}
+	
 	bs.m_LastReportTime = now;
 	bs.m_bLastReportedHeld = bs.m_BeingHeld;
 	bs.m_fSecsHeld = 0;

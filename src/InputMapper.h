@@ -4,7 +4,7 @@
 #include "RageInputDevice.h"
 #include "GameInput.h"
 #include "PlayerNumber.h"
-class Game;
+struct Game;
 
 const int NUM_GAME_TO_DEVICE_SLOTS	= 5;	// five device inputs may map to one game input
 const int NUM_SHOWN_GAME_TO_DEVICE_SLOTS = 3;
@@ -150,6 +150,7 @@ public:
 
 	void ReadMappingsFromDisk();
 	void SaveMappingsToDisk();
+	void ResetMappingsToDefault();
 
 	void ClearAllMappings();
 
@@ -202,7 +203,7 @@ private:
 	InputMapper& operator=(const InputMapper& rhs);
 };
 
-extern InputMapper*	INPUTMAPPER;	// global and accessable from anywhere in our program
+extern InputMapper*	INPUTMAPPER;	// global and accessible from anywhere in our program
 
 #endif
 

@@ -97,8 +97,7 @@ namespace
 		}
 		else // bShowCreditsMessage
 		{
-			CoinMode mode = GAMESTATE->GetCoinMode();
-			switch( mode )
+			switch( GAMESTATE->GetCoinMode() )
 			{
 			case CoinMode_Home:
 				if( GAMESTATE->PlayersCanJoin() )
@@ -106,16 +105,29 @@ namespace
 				else
 					return CREDITS_NOT_PRESENT.GetValue();
 
-			case CoinMode_Free:
+			case CoinMode_Pay:
+			// GCC is picky and needs this to be bracketed
+			{
+				int iCredits = GAMESTATE->m_iCoins / PREFSMAN->m_iCoinsPerCredit;
+				int iCoins = GAMESTATE->m_iCoins % PREFSMAN->m_iCoinsPerCredit;
+				RString sCredits = CREDITS_CREDITS;
+				// todo: allow themers to change these strings -aj
+				if( iCredits > 0 || PREFSMAN->m_iCoinsPerCredit == 1 )
+					sCredits += ssprintf("  %d", iCredits);
+				if( PREFSMAN->m_iCoinsPerCredit > 1 )
+					sCredits += ssprintf("  %d/%d", iCoins, PREFSMAN->m_iCoinsPerCredit.Get() );
+				if( iCredits >= MAX_NUM_CREDITS )
+					sCredits += "  " + CREDITS_MAX.GetValue();
+				return sCredits;
+			}
+			default: // CoinMode_Free
 				if( GAMESTATE->PlayersCanJoin() )
 					return CREDITS_FREE_PLAY.GetValue();
-				else
-					return CREDITS_NOT_PRESENT.GetValue();
-
-			default:
-				FAIL_M(ssprintf("Invalid CoinMode: %i", mode));
+				// TODO: What should be displayed if players can't join in free mode?
+				// Probably something like "Please Wait" or "Cannot Join"? -freem
 			}
 		}
+		return RString();
 	}
 
 };
@@ -147,8 +159,10 @@ void ScreenSystemLayer::Init()
 {
 	Screen::Init();
 
-	m_sprOverlay.Load( THEME->GetPathB("ScreenSystemLayer", "overlay") );
+	m_sprOverlay.Load( THEME->GetPathB(m_sName, "overlay") );
 	this->AddChild( m_sprOverlay );
+	m_errLayer.Load( THEME->GetPathB(m_sName, "error") );
+	this->AddChild( m_errLayer );
 }
 
 /*

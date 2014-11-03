@@ -59,7 +59,7 @@ class Style;
 class Song;
 class Steps;
 class Course;
-class Game;
+struct Game;
 /** 
  * @brief Player data that persists between sessions. 
  *
@@ -73,12 +73,14 @@ public:
 	 * Note: there are probably a lot of variables. */
 	Profile(): m_sDisplayName(""), m_sCharacterID(""),
 		m_sLastUsedHighScoreName(""), m_iWeightPounds(0),
+		m_Voomax(0), m_BirthYear(0), m_IgnoreStepCountCalories(false),
+		m_IsMale(true),
 		m_sGuid(MakeGuid()), m_sDefaultModifiers(),
 		m_SortOrder(SortOrder_Invalid),
 		m_LastDifficulty(Difficulty_Invalid),
 		m_LastCourseDifficulty(Difficulty_Invalid),
 		m_LastStepsType(StepsType_Invalid), m_lastSong(),
-		m_lastCourse(), m_iTotalSessions(0),
+		m_lastCourse(), m_iCurrentCombo(0), m_iTotalSessions(0),
 		m_iTotalSessionSeconds(0), m_iTotalGameplaySeconds(0),
 		m_fTotalCaloriesBurned(0), m_GoalType(GoalType_Calories),
 		m_iGoalCalories(0), m_iGoalSeconds(0), m_iTotalDancePoints(0),
@@ -120,6 +122,7 @@ public:
 	RString GetDisplayTotalCaloriesBurned() const;		// remove me and use Lua instead
 	RString GetDisplayTotalCaloriesBurnedToday() const;	// remove me and use Lua instead
 	int GetCalculatedWeightPounds() const;	// returns a default value if m_iWeightPounds isn't set
+	int GetAge() const; // returns a default value if m_Age isn't set
 	float GetCaloriesBurnedToday() const;
 	int GetTotalNumSongsPassed() const;
 	int GetTotalStepsWithTopGrade( StepsType st, Difficulty d, Grade g ) const;
@@ -139,6 +142,8 @@ public:
 
 	void AddStepTotals( int iNumTapsAndHolds, int iNumJumps, int iNumHolds, int iNumRolls, int iNumMines, 
 			   int iNumHands, int iNumLifts, float fCaloriesBurned );
+	void AddCaloriesToDailyTotal(float cals);
+	float CalculateCaloriesFromHeartRate(float HeartRate, float Duration);
 
 	bool IsMachine() const;
 
@@ -152,6 +157,14 @@ public:
 	 * so that it can be ready quickly. */
 	RString m_sLastUsedHighScoreName;
 	int m_iWeightPounds;	// 0 == not set
+	// Voomax and BirthYear are used for calculating calories from heart rate.
+	float m_Voomax; // 0 == not set
+	int m_BirthYear; // 0 == not set
+	// m_IgnoreStepCountCalories is so that the step count based calorie
+	// counter can be ignored in favor of calculating calories from heart rate
+	// and voomax.
+	bool m_IgnoreStepCountCalories;
+	bool m_IsMale; // Used solely for calculating calories from heart rate.
 	//RString m_sProfileImageName;	// todo: add a default image -aj
 
 	// General data
@@ -165,6 +178,7 @@ public:
 	StepsType m_LastStepsType;
 	SongID m_lastSong;
 	CourseID m_lastCourse;
+	int m_iCurrentCombo;
 	int m_iTotalSessions;
 	int m_iTotalSessionSeconds;
 	int m_iTotalGameplaySeconds;
@@ -261,6 +275,7 @@ public:
 	DateTime GetCourseLastPlayedDateTime( const Course* pCourse ) const;
 	void IncrementCoursePlayCount( const Course* pCourse, const Trail* pTrail );
 
+	void GetAllUsedHighScoreNames(std::set<RString>& names);
 
 	// Category high scores
 	HighScoreList m_CategoryHighScores[NUM_StepsType][NUM_RankingCategory];
@@ -281,8 +296,8 @@ public:
 	/**
 	 * @brief The basics for Calorie Data.
 	 *
-	 * Why track calories in a map, and not in a static sized array?
-	 * The machine's clock is not guaranteed to be set correctly.
+	 * Why track calories in a map, and not in a static sized array like 
+	 * Bookkeeping?  The machine's clock is not guaranteed to be set correctly.
 	 * If calorie array is in a static sized array, playing on a machine with 
 	 * a mis-set clock could wipe out all your past data.  With this scheme, 
 	 * the worst that could happen is that playing on a mis-set machine will 
@@ -348,6 +363,7 @@ public:
 
 	// Loading and saving
 	ProfileLoadResult LoadAllFromDir( RString sDir, bool bRequireSignature );
+	void LoadCustomFunction( RString sDir );
 	bool SaveAllToDir( RString sDir, bool bSignData ) const;
 
 	ProfileLoadResult LoadEditableDataFromDir( RString sDir );
@@ -368,6 +384,8 @@ public:
 	XNode* SaveCategoryScoresCreateNode() const;
 	XNode* SaveScreenshotDataCreateNode() const;
 	XNode* SaveCalorieDataCreateNode() const;
+
+	XNode* SaveCoinDataCreateNode() const;
 
 	void SaveStatsWebPageToDir( RString sDir ) const;
 	void SaveMachinePublicKeyToDir( RString sDir ) const;

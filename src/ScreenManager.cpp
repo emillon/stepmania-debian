@@ -32,7 +32,7 @@
  * 
  * If a screen is added to the screen stack that isn't in the current screen group
  * (added to by GroupScreen), the screen group is reset: all prepared screens are
- * unloaded and the persistance list is cleared.
+ * unloaded and the persistence list is cleared.
  *
  * Note that not all screens yet support reuse in this way; proper use of BeginScreen
  * is required.  This will misbehave if a screen pushes another screen that's already
@@ -73,7 +73,7 @@
 #include "Foreach.h"
 #include "ActorUtil.h"
 
-ScreenManager*	SCREENMAN = NULL;	// global and accessable from anywhere in our program
+ScreenManager*	SCREENMAN = NULL;	// global and accessible from anywhere in our program
 
 static Preference<bool> g_bDelayedScreenLoad( "DelayedScreenLoad", false );
 //static Preference<bool> g_bPruneFonts( "PruneFonts", true );
@@ -242,6 +242,7 @@ ScreenManager::ScreenManager()
 
 	g_pSharedBGA = new Actor;
 
+	m_bReloadOverlayScreensAfterInput= false;
 	m_bZeroNextUpdate = false;
 	m_PopTopScreen = SM_Invalid;
 	m_OnDonePreparingScreen = SM_Invalid;
@@ -281,31 +282,14 @@ void ScreenManager::ThemeChanged()
 	m_soundInvalid.Load( THEME->GetPathS("Common","invalid") );
 	m_soundScreenshot.Load( THEME->GetPathS("Common","screenshot") );
 
-	// unload overlay screens
-	for( unsigned i=0; i<g_OverlayScreens.size(); i++ )
-		SAFE_DELETE( g_OverlayScreens[i] );
-	g_OverlayScreens.clear();
-
-	// reload overlay screens
-	RString sOverlays = THEME->GetMetric( "Common","OverlayScreens" );
-	vector<RString> asOverlays;
-	split( sOverlays, ",", asOverlays );
-	for( unsigned i=0; i<asOverlays.size(); i++ )
-	{
-		Screen *pScreen = MakeNewScreen( asOverlays[i] );
-		LuaThreadVariable var2( "LoadingScreen", pScreen->GetName() );
-		pScreen->BeginScreen();
-		g_OverlayScreens.push_back( pScreen );
-	}
-
 	// reload song manager colors (to avoid crashes) -aj
 	SONGMAN->ResetGroupColors();
+
+	ReloadOverlayScreens();
 
 	// force recreate of new BGA
 	SAFE_DELETE( g_pSharedBGA );
 	g_pSharedBGA = new Actor;
-
-	this->RefreshCreditsMessages();
 }
 
 void ScreenManager::ReloadOverlayScreens()
@@ -322,12 +306,20 @@ void ScreenManager::ReloadOverlayScreens()
 	for( unsigned i=0; i<asOverlays.size(); i++ )
 	{
 		Screen *pScreen = MakeNewScreen( asOverlays[i] );
-		LuaThreadVariable var2( "LoadingScreen", pScreen->GetName() );
-		pScreen->BeginScreen();
-		g_OverlayScreens.push_back( pScreen );
+		if(pScreen)
+		{
+			LuaThreadVariable var2( "LoadingScreen", pScreen->GetName() );
+			pScreen->BeginScreen();
+			g_OverlayScreens.push_back( pScreen );
+		}
 	}
 
 	this->RefreshCreditsMessages();
+}
+
+void ScreenManager::ReloadOverlayScreensAfterInputFinishes()
+{
+	m_bReloadOverlayScreensAfterInput= true;
 }
 
 Screen *ScreenManager::GetTopScreen()
@@ -353,6 +345,16 @@ bool ScreenManager::AllowOperatorMenuButton() const
 	}
 
 	return true;
+}
+
+bool ScreenManager::IsScreenNameValid(RString const& name) const
+{
+	if(name.empty() || !THEME->HasMetric(name, "Class"))
+	{
+		return false;
+	}
+	RString ClassName = THEME->GetMetric(name, "Class");
+	return g_pmapRegistrees->find(ClassName) != g_pmapRegistrees->end();
 }
 
 bool ScreenManager::IsStackedScreen( const Screen *pScreen ) const
@@ -509,8 +511,19 @@ void ScreenManager::Input( const InputEventPlus &input )
 	for( unsigned i = 0; i < g_OverlayScreens.size(); ++i )
 	{
 		Screen *pScreen = g_OverlayScreens[i];
-		if( pScreen->Input(input) )
+		bool handled= pScreen->Input(input);
+		// Pass input to the screen and lua.  Contention shouldn't be a problem
+		// because anybody setting an input callback is probably doing it to
+		// do something in addition to whatever the screen does.
+		if(pScreen->PassInputToLua(input) || handled)
+		{
+			if(m_bReloadOverlayScreensAfterInput)
+			{
+				ReloadOverlayScreens();
+				m_bReloadOverlayScreensAfterInput= false;
+			}
 			return;
+		}
 	}
 
 	// Pass input to the topmost screen.  If we have a new top screen pending, don't
@@ -522,6 +535,7 @@ void ScreenManager::Input( const InputEventPlus &input )
 		return;
 
 	g_ScreenStack.back().m_pScreen->Input( input );
+	g_ScreenStack.back().m_pScreen->PassInputToLua( input );
 }
 
 // Just create a new screen; don't do any associated cleanup.
@@ -534,7 +548,10 @@ Screen* ScreenManager::MakeNewScreen( const RString &sScreenName )
 
 	map<RString,CreateScreenFn>::iterator iter = g_pmapRegistrees->find( sClassName );
 	if( iter == g_pmapRegistrees->end() )
-		RageException::Throw( "Screen \"%s\" has an invalid class \"%s\".", sScreenName.c_str(), sClassName.c_str() );
+	{
+		LuaHelpers::ReportScriptErrorFmt("Screen \"%s\" has an invalid class \"%s\".", sScreenName.c_str(), sClassName.c_str());
+		return NULL;
+	}
 
 	this->ZeroNextUpdate();
 
@@ -553,6 +570,10 @@ void ScreenManager::PrepareScreen( const RString &sScreenName )
 		return;
 
 	Screen* pNewScreen = MakeNewScreen(sScreenName);
+	if(pNewScreen == NULL)
+	{
+		return;
+	}
 
 	{
 		LoadedScreen ls;
@@ -584,8 +605,11 @@ void ScreenManager::PrepareScreen( const RString &sScreenName )
 		{
 			LOG->Trace( "Loading screen background \"%s\"", sNewBGA.c_str() );
 			Actor *pActor = ActorUtil::MakeActor( sNewBGA );
-			pActor->SetName( sNewBGA );
-			g_vPreparedBackgrounds.push_back( pActor );
+			if( pActor != NULL )
+			{
+				pActor->SetName( sNewBGA );
+				g_vPreparedBackgrounds.push_back( pActor );
+			}
 		}
 	}
 
@@ -682,6 +706,11 @@ void ScreenManager::LoadDelayedScreen()
 {
 	RString sScreenName = m_sDelayedScreen;
 	m_sDelayedScreen = "";
+	if(!IsScreenNameValid(sScreenName))
+	{
+		LuaHelpers::ReportScriptError("Tried to go to invalid screen: " + sScreenName, "INVALID_SCREEN");
+		return;
+	}
 
 	// Pop the top screen, if any.
 	ScreenMessage SM = PopTopScreenInternal();
@@ -859,7 +888,29 @@ public:
 	// Note: PrepareScreen binding is not allowed; loading data inside
 	// Lua causes the Lua lock to be held for the duration of the load,
 	// which blocks concurrent rendering
-	static int SetNewScreen( T* p, lua_State *L )		{ p->SetNewScreen( SArg(1) ); return 0; }
+	static void ValidateScreenName(lua_State* L, RString& name)
+	{
+		if(name == "")
+		{
+			RString errstr= "Screen name is empty.";
+			SCREENMAN->SystemMessage(errstr);
+			luaL_error(L, errstr.c_str());
+		}
+		RString ClassName= THEME->GetMetric(name, "Class");
+		if(g_pmapRegistrees->find(ClassName) == g_pmapRegistrees->end())
+		{
+			RString errstr= "Screen \"" + name + "\" has an invalid class \"" + ClassName + "\".";
+			SCREENMAN->SystemMessage(errstr);
+			luaL_error(L, errstr.c_str());
+		}
+	}
+	static int SetNewScreen( T* p, lua_State *L )
+	{
+		RString screen= SArg(1);
+		ValidateScreenName(L, screen);
+		p->SetNewScreen(screen);
+		return 0;
+	}
 	static int GetTopScreen( T* p, lua_State *L )
 	{
 		Actor *pScreen = p->GetTopScreen();
@@ -874,6 +925,8 @@ public:
 	static int ScreenClassExists( T* p, lua_State *L )	{ lua_pushboolean( L, g_pmapRegistrees->find( SArg(1) ) != g_pmapRegistrees->end() ); return 1; }
 	static int AddNewScreenToTop( T* p, lua_State *L )
 	{
+		RString screen= SArg(1);
+		ValidateScreenName(L, screen);
 		ScreenMessage SM = SM_None;
 		if( lua_gettop(L) >= 2 && !lua_isnil(L,2) )
 		{
@@ -881,7 +934,7 @@ public:
 			SM = ScreenMessageHelpers::ToScreenMessage( sMessage );
 		}
 
-		p->AddNewScreenToTop( SArg(1), SM );
+		p->AddNewScreenToTop( screen, SM );
 		return 0;
 	}
 	//static int GetScreenStackSize( T* p, lua_State *L )	{ lua_pushnumber( L, ScreenManagerUtil::g_ScreenStack.size() ); return 1; }

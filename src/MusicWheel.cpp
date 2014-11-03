@@ -529,6 +529,10 @@ void MusicWheel::BuildWheelItemDatas( vector<MusicWheelItemData *> &arrayWheelIt
 		case SORT_MEDIUM_METER:
 		case SORT_HARD_METER:
 		case SORT_CHALLENGE_METER:
+		case SORT_DOUBLE_EASY_METER:
+		case SORT_DOUBLE_MEDIUM_METER:
+		case SORT_DOUBLE_HARD_METER:
+		case SORT_DOUBLE_CHALLENGE_METER:
 		case SORT_LENGTH:
 		case SORT_RECENT:
 		{
@@ -1609,7 +1613,7 @@ Song *MusicWheel::GetPreferredSelectionForRandomOrPortal()
 			return wid[iSelection]->m_pSong;
 		}
 	}
-	LOG->Warn( "Couldn't find any songs" );
+	LuaHelpers::ReportScriptError( "Couldn't find any songs" );
 	return wid[0]->m_pSong;
 }
 
@@ -1636,6 +1640,7 @@ public:
 		}
 		return 1;
 	}
+	DEFINE_METHOD(GetSelectedSection, GetSelectedSection());
 	static int IsRouletting( T* p, lua_State *L ){ lua_pushboolean( L, p->IsRouletting() ); return 1; }
 	static int SelectSong( T* p, lua_State *L )
 	{
@@ -1653,7 +1658,7 @@ public:
 		else
 		{
 			Course *pC = Luna<Course>::check( L, 1, true );
-			lua_pushboolean( L, p->TrySelectCourse( pC ) );
+			lua_pushboolean( L, p->SelectCourse( pC ) );
 		}
 		return 1;
 	}
@@ -1662,6 +1667,7 @@ public:
 	LunaMusicWheel()
 	{
 		ADD_METHOD( ChangeSort );
+		ADD_METHOD( GetSelectedSection );
 		ADD_METHOD( IsRouletting );
 		ADD_METHOD( SelectSong );
 		ADD_METHOD( SelectCourse );

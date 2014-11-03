@@ -21,6 +21,7 @@
 #include "XmlFile.h"
 #include "XmlFileUtil.h"
 #include "Foreach.h"
+#include "Bookkeeper.h"
 #include "Game.h"
 #include "CharacterManager.h"
 #include "Character.h"
@@ -38,6 +39,7 @@ const RString EDIT_COURSES_SUBDIR  = "EditCourses/";
 //const RString UPLOAD_SUBDIR         = "Upload/";
 const RString RIVAL_SUBDIR         = "Rivals/";
 
+ThemeMetric<bool> SHOW_COIN_DATA( "Profile", "ShowCoinData" );
 static Preference<bool> g_bProfileDataCompress( "ProfileDataCompress", false );
 static ThemeMetric<RString> UNLOCK_AUTH_STRING( "Profile", "UnlockAuthString" );
 #define GUID_SIZE_BYTES 8
@@ -49,7 +51,8 @@ static ThemeMetric<RString> UNLOCK_AUTH_STRING( "Profile", "UnlockAuthString" );
 	* 5 /* HighScores per Steps */		\
 	* 1024 /* size in bytes of a HighScores XNode */
 
-const unsigned int DEFAULT_WEIGHT_POUNDS	= 120;
+const int DEFAULT_WEIGHT_POUNDS	= 120;
+const float DEFAULT_BIRTH_YEAR= 1995;
 
 #if defined(_MSC_VER)
 #pragma warning (disable : 4706) // assignment within conditional expression
@@ -83,6 +86,10 @@ void Profile::InitEditableData()
 	m_sCharacterID = "";
 	m_sLastUsedHighScoreName = "";
 	m_iWeightPounds = 0;
+	m_Voomax= 0;
+	m_BirthYear= 0;
+	m_IgnoreStepCountCalories= false;
+	m_IsMale= true;
 }
 
 void Profile::ClearStats()
@@ -114,6 +121,7 @@ void Profile::InitGeneralData()
 	m_LastStepsType = StepsType_Invalid;
 	m_lastSong.Unset();
 	m_lastCourse.Unset();
+	m_iCurrentCombo = 0;
 	m_iTotalSessions = 0;
 	m_iTotalSessionSeconds = 0;
 	m_iTotalGameplaySeconds = 0;
@@ -216,6 +224,15 @@ int Profile::GetCalculatedWeightPounds() const
 		return DEFAULT_WEIGHT_POUNDS;
 	else 
 		return m_iWeightPounds;
+}
+
+int Profile::GetAge() const
+{
+	if(m_BirthYear == 0)
+	{
+		return (GetLocalTime().tm_year+1900) - DEFAULT_BIRTH_YEAR;
+	}
+	return (GetLocalTime().tm_year+1900) - m_BirthYear;
 }
 
 RString Profile::GetDisplayTotalCaloriesBurned() const
@@ -741,6 +758,33 @@ void Profile::IncrementCoursePlayCount( const Course* pCourse, const Trail* pTra
 	GetCourseHighScoreList(pCourse,pTrail).IncrementPlayCount( now );
 }
 
+void Profile::GetAllUsedHighScoreNames(std::set<RString>& names)
+{
+#define GET_NAMES_FROM_MAP(main_member, main_key_type, main_value_type, sub_member, sub_key_type, sub_value_type) \
+	for(std::map<main_key_type, main_value_type>::iterator main_entry= \
+				main_member.begin(); main_entry != main_member.end(); ++main_entry) \
+	{ \
+		for(std::map<sub_key_type, sub_value_type>::iterator sub_entry= \
+					main_entry->second.sub_member.begin(); \
+				sub_entry != main_entry->second.sub_member.end(); ++sub_entry) \
+		{ \
+			for(vector<HighScore>::iterator high_score= \
+						sub_entry->second.hsl.vHighScores.begin(); \
+					high_score != sub_entry->second.hsl.vHighScores.end(); \
+					++high_score) \
+			{ \
+				if(high_score->GetName().size() > 0) \
+				{ \
+					names.insert(high_score->GetName()); \
+				} \
+			} \
+		} \
+	}
+	GET_NAMES_FROM_MAP(m_SongHighScores, SongID, HighScoresForASong, m_StepsHighScores, StepsID, HighScoresForASteps);
+	GET_NAMES_FROM_MAP(m_CourseHighScores, CourseID, HighScoresForACourse, m_TrailHighScores, TrailID, HighScoresForATrail);
+#undef GET_NAMES_FROM_MAP
+}
+
 // Category high scores
 void Profile::AddCategoryHighScore( StepsType st, RankingCategory rc, HighScore hs, int &iIndexOut )
 {
@@ -786,6 +830,28 @@ void Profile::IncrementCategoryPlayCount( StepsType st, RankingCategory rc )
 	if( X==NULL ) LOG->Warn("Failed to read section " #X); \
 	else Load##X##FromNode(X); }
 
+void Profile::LoadCustomFunction( RString sDir )
+{
+	/* Get the theme's custom load function:
+	 *   [Profile]
+	 *   CustomLoadFunction=function(profile, profileDir) ... end
+	 */
+	Lua *L = LUA->Get();
+	LuaReference customLoadFunc = THEME->GetMetricR("Profile", "CustomLoadFunction");
+	customLoadFunc.PushSelf(L);
+	ASSERT_M(!lua_isnil(L, -1), "CustomLoadFunction not defined");
+
+	// Pass profile and profile directory as arguments
+	this->PushSelf(L);
+	LuaHelpers::Push(L, sDir);
+
+	// Run it
+	RString Error= "Error running CustomLoadFunction: ";
+	LuaHelpers::RunScriptOnStack(L, Error, 2, 0, true);
+
+	LUA->Release(L);
+}
+	
 ProfileLoadResult Profile::LoadAllFromDir( RString sDir, bool bRequireSignature )
 {
 	CHECKPOINT;
@@ -839,7 +905,7 @@ ProfileLoadResult Profile::LoadAllFromDir( RString sDir, bool bRequireSignature 
 		int iBytes = pFile->GetFileSize();
 		if( iBytes > MAX_PLAYER_STATS_XML_SIZE_BYTES )
 		{
-			LOG->Warn( "The file '%s' is unreasonably large.  It won't be loaded.", fn.c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "The file '%s' is unreasonably large.  It won't be loaded.", fn.c_str() );
 			return ProfileLoadResult_FailedTampered;
 		}
 	}
@@ -853,7 +919,7 @@ ProfileLoadResult Profile::LoadAllFromDir( RString sDir, bool bRequireSignature 
 		// verify the stats.xml signature with the "don't share" file
 		if( !CryptManager::VerifyFileWithFile(sStatsXmlSigFile, sDontShareFile) )
 		{
-			LOG->Warn( "The don't share check for '%s' failed.  Data will be ignored.", sStatsXmlSigFile.c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "The don't share check for '%s' failed.  Data will be ignored.", sStatsXmlSigFile.c_str() );
 			return ProfileLoadResult_FailedTampered;
 		}
 		LOG->Trace( "Done." );
@@ -862,7 +928,7 @@ ProfileLoadResult Profile::LoadAllFromDir( RString sDir, bool bRequireSignature 
 		LOG->Trace( "Verifying stats.xml signature" );
 		if( !CryptManager::VerifyFileWithFile(fn, sStatsXmlSigFile) )
 		{
-			LOG->Warn( "The signature check for '%s' failed.  Data will be ignored.", fn.c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "The signature check for '%s' failed.  Data will be ignored.", fn.c_str() );
 			return ProfileLoadResult_FailedTampered;
 		}
 		LOG->Trace( "Done." );
@@ -874,7 +940,13 @@ ProfileLoadResult Profile::LoadAllFromDir( RString sDir, bool bRequireSignature 
 		return ProfileLoadResult_FailedTampered;
 	LOG->Trace( "Done." );
 
-	return LoadStatsXmlFromNode( &xml );
+	ProfileLoadResult ret = LoadStatsXmlFromNode(&xml);
+	if (ret != ProfileLoadResult_Success)
+		return ret;
+
+	LoadCustomFunction( sDir );
+
+	return ProfileLoadResult_Success;
 }
 
 ProfileLoadResult Profile::LoadStatsXmlFromNode( const XNode *xml, bool bIgnoreEditable )
@@ -895,6 +967,10 @@ ProfileLoadResult Profile::LoadStatsXmlFromNode( const XNode *xml, bool bIgnoreE
 	RString sCharacterID = m_sCharacterID;
 	RString sLastUsedHighScoreName = m_sLastUsedHighScoreName;
 	int iWeightPounds = m_iWeightPounds;
+	float Voomax= m_Voomax;
+	int BirthYear= m_BirthYear;
+	bool IgnoreStepCountCalories= m_IgnoreStepCountCalories;
+	bool IsMale= m_IsMale;
 
 	LOAD_NODE( GeneralData );
 	LOAD_NODE( SongScores );
@@ -909,6 +985,10 @@ ProfileLoadResult Profile::LoadStatsXmlFromNode( const XNode *xml, bool bIgnoreE
 		m_sCharacterID = sCharacterID;
 		m_sLastUsedHighScoreName = sLastUsedHighScoreName;
 		m_iWeightPounds = iWeightPounds;
+		m_Voomax= Voomax;
+		m_BirthYear= BirthYear;
+		m_IgnoreStepCountCalories= IgnoreStepCountCalories;
+		m_IsMale= IsMale;
 	}
 
 	return ProfileLoadResult_Success;
@@ -934,6 +1014,25 @@ bool Profile::SaveAllToDir( RString sDir, bool bSignData ) const
 	FILEMAN->CreateDir( sDir + SCREENSHOTS_SUBDIR );
 	FILEMAN->CreateDir( sDir + RIVAL_SUBDIR );
 
+	/* Get the theme's custom save function:
+	 *   [Profile]
+	 *   CustomSaveFunction=function(profile, profileDir) ... end
+	 */
+	Lua *L = LUA->Get();
+	LuaReference customSaveFunc = THEME->GetMetricR("Profile", "CustomSaveFunction");
+	customSaveFunc.PushSelf(L);
+	ASSERT_M(!lua_isnil(L, -1), "CustomSaveFunction not defined");
+
+	// Pass profile and profile directory as arguments
+	const_cast<Profile *>(this)->PushSelf(L);
+	LuaHelpers::Push(L, sDir);
+
+	// Run it
+	RString Error= "Error running CustomSaveFunction: ";
+	LuaHelpers::RunScriptOnStack(L, Error, 2, 0, true);
+
+	LUA->Release(L);
+
 	return bSaved;
 }
 
@@ -947,6 +1046,8 @@ XNode *Profile::SaveStatsXmlCreateNode() const
 	xml->AppendChild( SaveCategoryScoresCreateNode() );
 	xml->AppendChild( SaveScreenshotDataCreateNode() );
 	xml->AppendChild( SaveCalorieDataCreateNode() );
+	if( SHOW_COIN_DATA.GetValue() && IsMachine() )
+		xml->AppendChild( SaveCoinDataCreateNode() );
 
 	return xml;
 }
@@ -964,7 +1065,7 @@ bool Profile::SaveStatsXmlToDir( RString sDir, bool bSignData ) const
 		RageFile f;
 		if( !f.Open(fn, RageFile::WRITE) )
 		{
-			LOG->Warn( "Couldn't open %s for writing: %s", fn.c_str(), f.GetError().c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "Couldn't open %s for writing: %s", fn.c_str(), f.GetError().c_str() );
 			return false;
 		}
 
@@ -1014,6 +1115,10 @@ void Profile::SaveEditableDataToDir( RString sDir ) const
 	ini.SetValue( "Editable", "CharacterID",			m_sCharacterID );
 	ini.SetValue( "Editable", "LastUsedHighScoreName",		m_sLastUsedHighScoreName );
 	ini.SetValue( "Editable", "WeightPounds",			m_iWeightPounds );
+	ini.SetValue( "Editable", "Voomax", m_Voomax );
+	ini.SetValue( "Editable", "BirthYear", m_BirthYear );
+	ini.SetValue( "Editable", "IgnoreStepCountCalories", m_IgnoreStepCountCalories );
+	ini.SetValue( "Editable", "IsMale", m_IsMale );
 
 	ini.WriteFile( sDir + EDITABLE_INI );
 }
@@ -1029,8 +1134,12 @@ XNode* Profile::SaveGeneralDataCreateNode() const
 	pGeneralDataNode->AppendChild( "CharacterID",			m_sCharacterID );
 	pGeneralDataNode->AppendChild( "LastUsedHighScoreName",		m_sLastUsedHighScoreName );
 	pGeneralDataNode->AppendChild( "WeightPounds",			m_iWeightPounds );
+	pGeneralDataNode->AppendChild( "Voomax", m_Voomax );
+	pGeneralDataNode->AppendChild( "BirthYear", m_BirthYear );
+	pGeneralDataNode->AppendChild( "IgnoreStepCountCalories", m_IgnoreStepCountCalories );
+	pGeneralDataNode->AppendChild( "IsMale", m_IsMale );
+
 	pGeneralDataNode->AppendChild( "IsMachine",			IsMachine() );
-	pGeneralDataNode->AppendChild( "IsWeightSet",			m_iWeightPounds != 0 );
 
 	pGeneralDataNode->AppendChild( "Guid",				m_sGuid );
 	pGeneralDataNode->AppendChild( "SortOrder",			SortOrderToString(m_SortOrder) );
@@ -1040,6 +1149,7 @@ XNode* Profile::SaveGeneralDataCreateNode() const
 		pGeneralDataNode->AppendChild( "LastStepsType",			GAMEMAN->GetStepsTypeInfo(m_LastStepsType).szName );
 	pGeneralDataNode->AppendChild( m_lastSong.CreateNode() );
 	pGeneralDataNode->AppendChild( m_lastCourse.CreateNode() );
+	pGeneralDataNode->AppendChild( "CurrentCombo", m_iCurrentCombo );
 	pGeneralDataNode->AppendChild( "TotalSessions",			m_iTotalSessions );
 	pGeneralDataNode->AppendChild( "TotalSessionSeconds",		m_iTotalSessionSeconds );
 	pGeneralDataNode->AppendChild( "TotalGameplaySeconds",		m_iTotalGameplaySeconds );
@@ -1178,7 +1288,7 @@ ProfileLoadResult Profile::LoadEditableDataFromDir( RString sDir )
 	int iBytes = FILEMAN->GetFileSizeInBytes( fn );
 	if( iBytes > MAX_EDITABLE_INI_SIZE_BYTES )
 	{
-		LOG->Warn( "The file '%s' is unreasonably large. It won't be loaded.", fn.c_str() );
+		LuaHelpers::ReportScriptErrorFmt( "The file '%s' is unreasonably large. It won't be loaded.", fn.c_str() );
 		return ProfileLoadResult_FailedTampered;
 	}
 
@@ -1192,6 +1302,10 @@ ProfileLoadResult Profile::LoadEditableDataFromDir( RString sDir )
 	ini.GetValue( "Editable", "CharacterID",			m_sCharacterID );
 	ini.GetValue( "Editable", "LastUsedHighScoreName",		m_sLastUsedHighScoreName );
 	ini.GetValue( "Editable", "WeightPounds",			m_iWeightPounds );
+	ini.GetValue( "Editable", "Voomax", m_Voomax );
+	ini.GetValue( "Editable", "BirthYear", m_BirthYear );
+	ini.GetValue( "Editable", "IgnoreStepCountCalories", m_IgnoreStepCountCalories );
+	ini.GetValue( "Editable", "IsMale", m_IsMale );
 
 	// This is data that the user can change, so we have to validate it.
 	wstring wstr = RStringToWstring(m_sDisplayName);
@@ -1216,6 +1330,10 @@ void Profile::LoadGeneralDataFromNode( const XNode* pNode )
 	pNode->GetChildValue( "CharacterID",				m_sCharacterID );
 	pNode->GetChildValue( "LastUsedHighScoreName",			m_sLastUsedHighScoreName );
 	pNode->GetChildValue( "WeightPounds",				m_iWeightPounds );
+	pNode->GetChildValue( "Voomax", m_Voomax );
+	pNode->GetChildValue( "BirthYear", m_BirthYear );
+	pNode->GetChildValue( "IgnoreStepCountCalories", m_IgnoreStepCountCalories );
+	pNode->GetChildValue( "IsMale", m_IsMale );
 	pNode->GetChildValue( "Guid",					m_sGuid );
 	pNode->GetChildValue( "SortOrder",				s );	m_SortOrder = StringToSortOrder( s );
 	pNode->GetChildValue( "LastDifficulty",				s );	m_LastDifficulty = StringToDifficulty( s );
@@ -1223,6 +1341,7 @@ void Profile::LoadGeneralDataFromNode( const XNode* pNode )
 	pNode->GetChildValue( "LastStepsType",				s );	m_LastStepsType = GAMEMAN->StringToStepsType( s );
 	pTemp = pNode->GetChild( "Song" );				if( pTemp ) m_lastSong.LoadFromNode( pTemp );
 	pTemp = pNode->GetChild( "Course" );				if( pTemp ) m_lastCourse.LoadFromNode( pTemp );
+	pNode->GetChildValue( "CurrentCombo", m_iCurrentCombo );
 	pNode->GetChildValue( "TotalSessions",				m_iTotalSessions );
 	pNode->GetChildValue( "TotalSessionSeconds",			m_iTotalSessionSeconds );
 	pNode->GetChildValue( "TotalGameplaySeconds",			m_iTotalGameplaySeconds );
@@ -1368,10 +1487,94 @@ void Profile::AddStepTotals( int iTotalTapsAndHolds, int iTotalJumps, int iTotal
 	m_iTotalHands += iTotalHands;
 	m_iTotalLifts += iTotalLifts;
 
-	m_fTotalCaloriesBurned += fCaloriesBurned;
+	if(!m_IgnoreStepCountCalories)
+	{
+		m_fTotalCaloriesBurned += fCaloriesBurned;
+		DateTime date = DateTime::GetNowDate();
+		m_mapDayToCaloriesBurned[date].fCals += fCaloriesBurned;
+	}
+}
 
+// It's a bit unclean to have this flag for routing around the old step count
+// based calorie calculation, but I can't think of a better way to do it.
+// AddStepTotals is called (through a couple layers) by CommitStageStats at
+// the end of ScreenGameplay, so it can't be moved to somewhere else.  The
+// player can't put in their heart rate for calculation until after
+// ScreenGameplay
+void Profile::AddCaloriesToDailyTotal(float cals)
+{
+	m_fTotalCaloriesBurned += cals;
 	DateTime date = DateTime::GetNowDate();
-	m_mapDayToCaloriesBurned[date].fCals += fCaloriesBurned;
+	m_mapDayToCaloriesBurned[date].fCals += cals;
+}
+
+float Profile::CalculateCaloriesFromHeartRate(float HeartRate, float Duration)
+{
+	// Copied from http://www.shapesense.com/fitness-exercise/calculators/heart-rate-based-calorie-burn-calculator.aspx
+	/*
+		Male: ((-55.0969 + (0.6309 x HR) + (0.1988 x W) + (0.2017 x A))/4.184) x T
+		Female: ((-20.4022 + (0.4472 x HR) - (0.1263 x W) + (0.074 x A))/4.184) x T
+		where
+
+		HR = Heart rate (in beats/minute) 
+		W = Weight (in kilograms) 
+		A = Age (in years) 
+		T = Exercise duration time (in minutes)
+
+		Equations for Determination of Calorie Burn if VO2max is Known
+
+		Male: ((-95.7735 + (0.634 x HR) + (0.404 x VO2max) + (0.394 x W) + (0.271 x A))/4.184) x T
+		Female: ((-59.3954 + (0.45 x HR) + (0.380 x VO2max) + (0.103 x W) + (0.274 x A))/4.184) x T
+		where
+
+		HR = Heart rate (in beats/minute) 
+		VO2max = Maximal oxygen consumption (in mL•kg-1•min-1) 
+		W = Weight (in kilograms) 
+		A = Age (in years) 
+		T = Exercise duration time (in minutes)
+	*/
+	// Duration passed in is in seconds.  Convert it to minutes to make the code
+	// match the equations from the website.
+	Duration= Duration / 60.0;
+	float kilos= GetCalculatedWeightPounds() / 2.205;
+	float age= GetAge();
+
+	// Names for the constants in the equations.
+	// Assumes male and unknown voomax.
+	float gender_factor= -55.0969f;
+	float heart_factor= 0.6309f;
+	float voo_factor= 0.0f;
+	float weight_factor= 0.1988f;
+	float age_factor= 0.2017f;
+	if(m_Voomax > 0)
+	{
+		if(m_IsMale)
+		{
+			gender_factor= -95.7735f;
+			heart_factor= 0.634f;
+			voo_factor= 0.404f;
+			weight_factor= 0.394f;
+			age_factor= 0.271f;
+		}
+		else
+		{
+			gender_factor= -59.3954f;
+			heart_factor= 0.45f;
+			voo_factor= 0.380f;
+			weight_factor= 0.103f;
+			age_factor= 0.274f;
+		}
+	}
+	else if(!m_IsMale)
+	{
+		gender_factor= -20.4022f;
+		heart_factor= 0.6309f;
+		weight_factor= 0.1988f;
+		age_factor= 0.2017f;
+	}
+	return ((gender_factor + (heart_factor * HeartRate) +
+			(voo_factor * m_Voomax) + (weight_factor * kilos) + (age_factor + age))
+		/ 4.184) * Duration;
 }
 
 XNode* Profile::SaveSongScoresCreateNode() const
@@ -1835,6 +2038,48 @@ bool Profile::IsMachine() const
 	return this == PROFILEMAN->GetMachineProfile();
 }
 
+
+XNode* Profile::SaveCoinDataCreateNode() const
+{
+	CHECKPOINT;
+
+	const Profile* pProfile = this;
+	ASSERT( pProfile != NULL );
+
+	XNode* pNode = new XNode( "CoinData" );
+
+	{
+		int coins[NUM_LAST_DAYS];
+		BOOKKEEPER->GetCoinsLastDays( coins );
+		XNode* p = pNode->AppendChild( "LastDays" );
+		for( int i=0; i<NUM_LAST_DAYS; i++ )
+			p->AppendChild( LastDayToString(i), coins[i] );
+	}
+	{
+		int coins[NUM_LAST_WEEKS];
+		BOOKKEEPER->GetCoinsLastWeeks( coins );
+		XNode* p = pNode->AppendChild( "LastWeeks" );
+		for( int i=0; i<NUM_LAST_WEEKS; i++ )
+			p->AppendChild( LastWeekToString(i), coins[i] );
+	}
+	{
+		int coins[DAYS_IN_WEEK];
+		BOOKKEEPER->GetCoinsByDayOfWeek( coins );
+		XNode* p = pNode->AppendChild( "DayOfWeek" );
+		for( int i=0; i<DAYS_IN_WEEK; i++ )
+			p->AppendChild( DayOfWeekToString(i), coins[i] );
+	}
+	{
+		int coins[HOURS_IN_DAY];
+		BOOKKEEPER->GetCoinsByHour( coins );
+		XNode* p = pNode->AppendChild( "Hour" );
+		for( int i=0; i<HOURS_IN_DAY; i++ )
+			p->AppendChild( HourInDayToString(i), coins[i] );
+	}
+
+	return pNode;
+}
+
 void Profile::MoveBackupToDir( RString sFromDir, RString sToDir )
 {
 	if( FILEMAN->IsAFile(sFromDir + STATS_XML) &&
@@ -1893,8 +2138,30 @@ RString Profile::MakeFileNameNoExtension( RString sFileNameBeginning, int iIndex
 class LunaProfile: public Luna<Profile>
 {
 public:
+	static int AddScreenshot( T* p, lua_State *L )
+	{
+		HighScore* hs= Luna<HighScore>::check(L, 1);
+		RString filename= SArg(2);
+		Screenshot screenshot;
+		screenshot.sFileName= filename;
+		screenshot.sMD5= BinaryToHex(CRYPTMAN->GetMD5ForFile(filename));
+		screenshot.highScore= *hs;
+		p->AddScreenshot(screenshot);
+		return 0;
+	}
+
 	static int GetDisplayName( T* p, lua_State *L )			{ lua_pushstring(L, p->m_sDisplayName ); return 1; }
+	static int SetDisplayName( T* p, lua_State *L )
+	{
+		p->m_sDisplayName= SArg(1);
+		return 0;
+	}
 	static int GetLastUsedHighScoreName( T* p, lua_State *L )	{ lua_pushstring(L, p->m_sLastUsedHighScoreName ); return 1; }
+	static int SetLastUsedHighScoreName( T* p, lua_State *L )
+	{
+		p->m_sLastUsedHighScoreName= SArg(1);
+		return 0;
+	}
 	static int GetHighScoreList( T* p, lua_State *L )
 	{
 		if( LuaBinding::CheckLuaObjectType(L, 1, "Song") )
@@ -1917,11 +2184,105 @@ public:
 		luaL_typerror( L, 1, "Song or Course" );
 		return 0;
 	}
+	static int GetCategoryHighScoreList( T* p, lua_State *L )
+	{
+		StepsType pStepsType = Enum::Check<StepsType>(L, 1);
+		RankingCategory pRankCat = Enum::Check<RankingCategory>(L, 2);
+		HighScoreList &hsl = p->GetCategoryHighScoreList(pStepsType, pRankCat);
+		hsl.PushSelf( L );
+		return 1;
+	}
+
+	static int GetHighScoreListIfExists( T* p, lua_State *L )
+	{
+#define GET_IF_EXISTS(arga_type, argb_type) \
+		const arga_type *parga = Luna<arga_type>::check(L, 1); \
+		const argb_type *pargb = Luna<argb_type>::check(L, 2); \
+		arga_type##ID arga_id; \
+		arga_id.From##arga_type(parga); \
+		argb_type##ID argb_id; \
+		argb_id.From##argb_type(pargb); \
+		std::map<arga_type##ID, Profile::HighScoresForA##arga_type>::iterator \
+			main_scores= p->m_##arga_type##HighScores.find(arga_id); \
+		if(main_scores == p->m_##arga_type##HighScores.end()) \
+		{ \
+			lua_pushnil(L); \
+			return 1; \
+		} \
+		std::map<argb_type##ID, Profile::HighScoresForA##argb_type>::iterator \
+			sub_scores= main_scores->second.m_##argb_type##HighScores.find(argb_id); \
+		if(sub_scores == main_scores->second.m_##argb_type##HighScores.end()) \
+		{ \
+			lua_pushnil(L); \
+			return 1; \
+		} \
+		sub_scores->second.hsl.PushSelf(L); \
+		return 1;
+
+		if( LuaBinding::CheckLuaObjectType(L, 1, "Song") )
+		{
+			GET_IF_EXISTS(Song, Steps);
+		}
+		else if( LuaBinding::CheckLuaObjectType(L, 1, "Course") )
+		{
+			GET_IF_EXISTS(Course, Trail);
+		}
+		luaL_typerror( L, 1, "Song or Course" );
+		return 0;
+#undef GET_IF_EXISTS
+	}
+
+	static int GetAllUsedHighScoreNames( T* p, lua_State *L )
+	{
+		std::set<RString> names;
+		p->GetAllUsedHighScoreNames(names);
+		lua_createtable(L, names.size(), 0);
+		int next_name_index= 1;
+		for(std::set<RString>::iterator name= names.begin(); name != names.end();
+				++name)
+		{
+			lua_pushstring(L, name->c_str());
+			lua_rawseti(L, -2, next_name_index);
+			++next_name_index;
+		}
+		return 1;
+	}
 
 	static int GetCharacter( T* p, lua_State *L )			{ p->GetCharacter()->PushSelf(L); return 1; }
 	static int SetCharacter( T* p, lua_State *L )			{ p->SetCharacter(SArg(1)); return 0; }
 	static int GetWeightPounds( T* p, lua_State *L )		{ lua_pushnumber(L, p->m_iWeightPounds ); return 1; }
 	static int SetWeightPounds( T* p, lua_State *L )		{ p->m_iWeightPounds = IArg(1); return 0; }
+	DEFINE_METHOD(GetVoomax, m_Voomax);
+	DEFINE_METHOD(GetAge, GetAge());
+	DEFINE_METHOD(GetBirthYear, m_BirthYear);
+	DEFINE_METHOD(GetIgnoreStepCountCalories, m_IgnoreStepCountCalories);
+	DEFINE_METHOD(GetIsMale, m_IsMale);
+	static int SetVoomax( T* p, lua_State *L )
+	{
+		p->m_Voomax= FArg(1);
+		return 0;
+	}
+	static int SetBirthYear( T* p, lua_State *L )
+	{
+		p->m_BirthYear= IArg(1);
+		return 0;
+	}
+	static int SetIgnoreStepCountCalories( T* p, lua_State *L )
+	{
+		p->m_IgnoreStepCountCalories= BArg(1);
+		return 0;
+	}
+	static int SetIsMale( T* p, lua_State *L )
+	{
+		p->m_IsMale= BArg(1);
+		return 0;
+	}
+	static int AddCaloriesToDailyTotal( T* p, lua_State *L )
+	{
+		p->AddCaloriesToDailyTotal(FArg(1));
+		return 0;
+	}
+	DEFINE_METHOD(CalculateCaloriesFromHeartRate, CalculateCaloriesFromHeartRate(FArg(1), FArg(2)));
 	static int GetGoalType( T* p, lua_State *L )			{ lua_pushnumber(L, p->m_GoalType ); return 1; }
 	static int SetGoalType( T* p, lua_State *L )			{ p->m_GoalType = Enum::Check<GoalType>(L, 1); return 0; }
 	static int GetGoalCalories( T* p, lua_State *L )		{ lua_pushnumber(L, p->m_iGoalCalories ); return 1; }
@@ -2009,13 +2370,30 @@ public:
 
 	LunaProfile()
 	{
+		ADD_METHOD( AddScreenshot );
 		ADD_METHOD( GetDisplayName );
+		ADD_METHOD( SetDisplayName );
 		ADD_METHOD( GetLastUsedHighScoreName );
+		ADD_METHOD( SetLastUsedHighScoreName );
+		ADD_METHOD( GetAllUsedHighScoreNames );
+		ADD_METHOD( GetHighScoreListIfExists );
 		ADD_METHOD( GetHighScoreList );
+		ADD_METHOD( GetCategoryHighScoreList );
 		ADD_METHOD( GetCharacter );
 		ADD_METHOD( SetCharacter );
 		ADD_METHOD( GetWeightPounds );
 		ADD_METHOD( SetWeightPounds );
+		ADD_METHOD( GetVoomax );
+		ADD_METHOD( SetVoomax );
+		ADD_METHOD( GetAge );
+		ADD_METHOD( GetBirthYear );
+		ADD_METHOD( SetBirthYear );
+		ADD_METHOD( GetIgnoreStepCountCalories );
+		ADD_METHOD( SetIgnoreStepCountCalories );
+		ADD_METHOD( GetIsMale );
+		ADD_METHOD( SetIsMale );
+		ADD_METHOD( AddCaloriesToDailyTotal );
+		ADD_METHOD( CalculateCaloriesFromHeartRate );
 		ADD_METHOD( GetGoalType );
 		ADD_METHOD( SetGoalType );
 		ADD_METHOD( GetGoalCalories );

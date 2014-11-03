@@ -31,11 +31,13 @@ Actor *CreateActor() { return new T; }
 enum FileType
 {
 	FT_Bitmap, 
+	FT_Sprite,
 	FT_Sound, 
 	FT_Movie, 
 	FT_Directory, 
-	FT_Lua, 
+	FT_Xml,
 	FT_Model, 
+	FT_Lua, 
 	NUM_FileType, 
 	FileType_Invalid
 };
@@ -112,10 +114,10 @@ namespace ActorUtil
 	Actor* MakeActor( const RString &sPath, Actor *pParentActor = NULL );
 	RString GetSourcePath( const XNode *pNode );
 	RString GetWhere( const XNode *pNode );
-	bool GetAttrPath( const XNode *pNode, const RString &sName, RString &sOut );
+	bool GetAttrPath( const XNode *pNode, const RString &sName, RString &sOut, bool optional= false );
 	bool LoadTableFromStackShowErrors( Lua *L );
 
-	bool ResolvePath( RString &sPath, const RString &sName );
+	bool ResolvePath( RString &sPath, const RString &sName, bool optional= false );
 
 	void SortByZPosition( vector<Actor*> &vActors );
 

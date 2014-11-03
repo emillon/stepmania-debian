@@ -15,6 +15,8 @@ REGISTER_SCREEN_CLASS( ScreenGameplaySyncMachine );
 
 void ScreenGameplaySyncMachine::Init()
 {
+	m_bForceNoNetwork = true;
+
 	GAMESTATE->m_PlayMode.Set( PLAY_MODE_REGULAR );
 	GAMESTATE->SetCurrentStyle( GAMEMAN->GetHowToPlayStyleForGame(GAMESTATE->m_pCurGame) );
 	AdjustSync::ResetOriginalSyncData();
@@ -43,7 +45,7 @@ void ScreenGameplaySyncMachine::Init()
 
 	ScreenGameplayNormal::Init();
 
-	SO_GROUP_ASSIGN( GAMESTATE->m_SongOptions, ModsLevel_Stage, m_AutosyncType, SongOptions::AUTOSYNC_MACHINE );
+	SO_GROUP_ASSIGN( GAMESTATE->m_SongOptions, ModsLevel_Stage, m_AutosyncType, AutosyncType_Machine );
 
 	ClearMessageQueue();	// remove all of the messages set in ScreenGameplay that animate "ready", "here we go", etc.
 
@@ -92,6 +94,10 @@ void ScreenGameplaySyncMachine::HandleScreenMessage( const ScreenMessage SM )
 
 	if( SM == SM_GoToPrevScreen || SM == SM_GoToNextScreen )
 	{
+		FOREACH_PlayerNumber( pn )
+		{
+			GAMESTATE->m_pCurSteps[pn].Set( NULL );
+		}
 		GAMESTATE->m_PlayMode.Set( PlayMode_Invalid );
 		GAMESTATE->SetCurrentStyle( NULL );
 		GAMESTATE->m_pCurSong.Set( NULL );

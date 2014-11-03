@@ -14,7 +14,7 @@
 #include "CryptManager.h"
 #include "XmlFileUtil.h"
 
-StatsManager*	STATSMAN = NULL;	// global object accessable from anywhere in the program
+StatsManager*	STATSMAN = NULL;	// global object accessible from anywhere in the program
 
 void AddPlayerStatsToProfile( Profile *pProfile, const StageStats &ss, PlayerNumber pn );
 XNode* MakeRecentScoreNode( const StageStats &ss, Trail *pTrail, const PlayerStageStats &pss, MultiPlayer mp );
@@ -90,29 +90,11 @@ static StageStats AccumPlayedStageStats( const vector<StageStats>& vss )
 void StatsManager::GetFinalEvalStageStats( StageStats& statsOut ) const
 {
 	statsOut.Init();
-
 	vector<StageStats> vssToCount;
-
-	// Show stats only for the latest 3 normal songs + passed extra stages
-	int PassedRegularSongsLeft = 3;
-	for( int i = (int)m_vPlayedStageStats.size()-1; i >= 0; --i )
+	for(size_t i= 0; i < m_vPlayedStageStats.size(); ++i)
 	{
-		const StageStats &ss = m_vPlayedStageStats[i];
-
-		if( !ss.OnePassed() )
-			continue;
-
-		if( ss.m_Stage != Stage_Extra1 && ss.m_Stage != Stage_Extra2 )
-		{
-			if( PassedRegularSongsLeft == 0 )
-				break;
-
-			--PassedRegularSongsLeft;
-		}
-
-		vssToCount.push_back( ss );
+		vssToCount.push_back(m_vPlayedStageStats[i]);
 	}
-
 	statsOut = AccumPlayedStageStats( vssToCount );
 }
 
@@ -368,6 +350,13 @@ public:
 	}
 	static int Reset( T* p, lua_State *L )			{ p->Reset(); return 0; }
 	static int GetAccumPlayedStageStats( T* p, lua_State *L )	{ p->GetAccumPlayedStageStats().PushSelf(L); return 1; }
+	static int GetFinalEvalStageStats( T* p, lua_State *L )
+	{
+		StageStats stats;
+		p->GetFinalEvalStageStats( stats );
+		stats.PushSelf(L);
+		return 1;
+	}
 	static int GetFinalGrade( T* p, lua_State *L )
 	{
 		PlayerNumber pn = Enum::Check<PlayerNumber>(L, 1);
@@ -435,6 +424,7 @@ public:
 		ADD_METHOD( GetCurStageStats );
 		ADD_METHOD( GetPlayedStageStats );
 		ADD_METHOD( GetAccumPlayedStageStats );
+		ADD_METHOD( GetFinalEvalStageStats );
 		ADD_METHOD( Reset );
 		ADD_METHOD( GetFinalGrade );
 		ADD_METHOD( GetStagesPlayed );

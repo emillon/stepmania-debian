@@ -14,7 +14,6 @@
 #include "Game.h"
 #include "Style.h"
 #include "Foreach.h"
-#include "arch/Dialog/Dialog.h"
 #include "GameSoundManager.h"
 #include "PlayerState.h"
 #include "SongManager.h"
@@ -60,6 +59,8 @@ void GameCommand::Init()
 	m_sUrl = "";
 	m_bUrlExits = true;
 
+	m_bInsertCredit = false;
+	m_bClearCredits = false;
 	m_bStopMusic = false;
 	m_bApplyDefaultOptions = false;
 	m_bFadeMusic = false;
@@ -174,31 +175,40 @@ void GameCommand::LoadOne( const Command& cmd )
 		sValue += cmd.m_vsArgs[i];
 	}
 
+#define MAKE_INVALID(expr) \
+	m_sInvalidReason= (expr);																							\
+	LuaHelpers::ReportScriptError(m_sInvalidReason, "INVALID_GAME_COMMAND"); \
+	m_bInvalid= true;
+
+#define CHECK_INVALID_COND(member, value, cond, message) \
+	if(cond) \
+	{ \
+		MAKE_INVALID(message); \
+	} \
+	else \
+	{ \
+		member= value; \
+	}
+
+#define CHECK_INVALID_VALUE(member, value, invalid_value, value_name) \
+	CHECK_INVALID_COND(member, value, (value == invalid_value), ssprintf("Invalid "#value_name" \"%s\".", sValue.c_str()));
+
 	if( sName == "style" )
 	{
 		const Style* style = GAMEMAN->GameAndStringToStyle( GAMESTATE->m_pCurGame, sValue );
-		if( style )
-			m_pStyle = style;
-		else
-			m_bInvalid = true;
+		CHECK_INVALID_VALUE(m_pStyle, style, NULL, style);
 	}
 
 	else if( sName == "playmode" )
 	{
 		PlayMode pm = StringToPlayMode( sValue );
-		if( pm != PlayMode_Invalid )
-			m_pm = pm;
-		else
-			m_bInvalid = true;
+		CHECK_INVALID_VALUE(m_pm, pm, PlayMode_Invalid, playmode);
 	}
 
 	else if( sName == "difficulty" )
 	{
 		Difficulty dc = StringToDifficulty( sValue );
-		if( dc != Difficulty_Invalid )
-			m_dc = dc;
-		else
-			m_bInvalid = true;
+		CHECK_INVALID_VALUE(m_dc, dc, Difficulty_Invalid, difficulty);
 	}
 
 	else if( sName == "announcer" )
@@ -233,22 +243,42 @@ void GameCommand::LoadOne( const Command& cmd )
 	else if( sName == "lua" )
 	{
 		m_LuaFunction.SetFromExpression( sValue );
-		ASSERT_M( !m_LuaFunction.IsNil(), ssprintf("\"%s\" evaluated to nil", sValue.c_str()) );
+		if(m_LuaFunction.IsNil())
+		{
+			MAKE_INVALID("Lua error in game command: \"" + sValue + "\" evaluated to nil");
+		}
 	}
 
 	else if( sName == "screen" )
 	{
-		m_sScreen = sValue;
+		// OptionsList uses the screen command to push onto its stack.
+		// OptionsList "screen"s are OptionRow entries in ScreenOptionsMaster.
+		// So if the metric exists in ScreenOptionsMaster, consider it valid.
+		// Additionally, the screen value can be used to create an OptionRow.
+		// When used to create an OptionRow, it pulls a metric from OptionsList.
+		// -Kyz
+
+		if(!THEME->HasMetric("ScreenOptionsMaster", sValue))
+		{
+			if(!THEME->HasMetric("OptionsList", "Line" + sValue))
+			{
+				if(!SCREENMAN->IsScreenNameValid(sValue))
+				{
+					MAKE_INVALID("screen arg '" + sValue + "' is not a screen name, ScreenOptionsMaster list or OptionsList entry.");
+				}
+			}
+		}
+		if(!m_bInvalid)
+		{
+			m_sScreen= sValue;
+		}
 	}
 
 	else if( sName == "song" )
 	{
-		m_pSong = SONGMAN->FindSong( sValue );
-		if( m_pSong == NULL )
-		{
-			m_sInvalidReason = ssprintf( "Song \"%s\" not found", sValue.c_str() );
-			m_bInvalid |= true;
-		}
+		CHECK_INVALID_COND(m_pSong, SONGMAN->FindSong(sValue),
+			(SONGMAN->FindSong(sValue) == NULL),
+			(ssprintf("Song \"%s\" not found", sValue.c_str()))); 
 	}
 
 	else if( sName == "steps" )
@@ -261,29 +291,32 @@ void GameCommand::LoadOne( const Command& cmd )
 			Song *pSong = (m_pSong != NULL)? m_pSong:GAMESTATE->m_pCurSong;
 			const Style *pStyle = m_pStyle ? m_pStyle : GAMESTATE->GetCurrentStyle();
 			if( pSong == NULL || pStyle == NULL )
-				RageException::Throw( "Must set Song and Style to set Steps." );
-
-			Difficulty dc = StringToDifficulty( sSteps );
-			if( dc != Difficulty_Edit )
-				m_pSteps = SongUtil::GetStepsByDifficulty( pSong, pStyle->m_StepsType, dc );
-			else
-				m_pSteps = SongUtil::GetStepsByDescription( pSong, pStyle->m_StepsType, sSteps );
-			if( m_pSteps == NULL )
 			{
-				m_sInvalidReason = "steps not found";
-				m_bInvalid |= true;
+				MAKE_INVALID("Must set Song and Style to set Steps.");
+			}
+			else
+			{
+				Difficulty dc = StringToDifficulty( sSteps );
+				Steps* st;
+				if( dc < Difficulty_Edit )
+				{
+					st = SongUtil::GetStepsByDifficulty( pSong, pStyle->m_StepsType, dc );
+				}
+				else
+				{
+					st = SongUtil::GetStepsByDescription( pSong, pStyle->m_StepsType, sSteps );
+				}
+				CHECK_INVALID_COND(m_pSteps, st, (st == NULL),
+					(ssprintf("Steps \"%s\" not found", sSteps.c_str())));
 			}
 		}
 	}
 
 	else if( sName == "course" )
 	{
-		m_pCourse = SONGMAN->FindCourse( "", sValue );
-		if( m_pCourse == NULL )
-		{
-			m_sInvalidReason = ssprintf( "Course \"%s\" not found", sValue.c_str() );
-			m_bInvalid |= true;
-		}
+		CHECK_INVALID_COND(m_pCourse, SONGMAN->FindCourse("", sValue),
+			(SONGMAN->FindCourse("", sValue) == NULL),
+			(ssprintf( "Course \"%s\" not found", sValue.c_str())));
 	}
 	
 	else if( sName == "trail" )
@@ -296,39 +329,50 @@ void GameCommand::LoadOne( const Command& cmd )
 			Course *pCourse = (m_pCourse != NULL)? m_pCourse:GAMESTATE->m_pCurCourse;
 			const Style *pStyle = m_pStyle ? m_pStyle : GAMESTATE->GetCurrentStyle();
 			if( pCourse == NULL || pStyle == NULL )
-				RageException::Throw( "Must set Course and Style to set Steps." );
-
-			const CourseDifficulty cd = StringToDifficulty( sTrail );
-			ASSERT_M( cd != Difficulty_Invalid, ssprintf("Invalid difficulty '%s'", sTrail.c_str()) );
-
-			m_pTrail = pCourse->GetTrail( pStyle->m_StepsType, cd );
-			if( m_pTrail == NULL )
 			{
-				m_sInvalidReason = "trail not found";
-				m_bInvalid |= true;
+				MAKE_INVALID("Must set Course and Style to set Trail.");
+			}
+			else
+			{
+				const CourseDifficulty cd = StringToDifficulty( sTrail );
+				if(cd == Difficulty_Invalid)
+				{
+					MAKE_INVALID(ssprintf("Invalid difficulty '%s'", sTrail.c_str()));
+				}
+				else
+				{
+					Trail* tr = pCourse->GetTrail(pStyle->m_StepsType, cd);
+					CHECK_INVALID_COND(m_pTrail, tr, (tr == NULL),
+						("Trail \"" + sTrail + "\" not found."));
+				}
 			}
 		}
 	}
 	
 	else if( sName == "setenv" )
 	{
-		if( cmd.m_vsArgs.size() == 3 )
-			m_SetEnv[ cmd.m_vsArgs[1] ] = cmd.m_vsArgs[2];
+		if((cmd.m_vsArgs.size() - 1) % 2 != 0)
+		{
+			MAKE_INVALID("Arguments to setenv game command must be key,value pairs.");
+		}
+		else
+		{
+			for(size_t i= 1; i < cmd.m_vsArgs.size(); i+= 2)
+			{
+				m_SetEnv[cmd.m_vsArgs[i]]= cmd.m_vsArgs[i+1];
+			}
+		}
 	}
 	
 	else if( sName == "songgroup" )
 	{
-		m_sSongGroup = sValue;
+		CHECK_INVALID_COND(m_sSongGroup, sValue, (!SONGMAN->DoesSongGroupExist(sValue)), ("Song group \"" + sValue + "\" does not exist."));
 	}
 
 	else if( sName == "sort" )
 	{
-		m_SortOrder = StringToSortOrder( sValue );
-		if( m_SortOrder == SortOrder_Invalid )
-		{
-			m_sInvalidReason = ssprintf( "SortOrder \"%s\" is not valid.", sValue.c_str() );
-			m_bInvalid |= true;
-		}
+		SortOrder so= StringToSortOrder(sValue);
+		CHECK_INVALID_VALUE(m_SortOrder, so, SortOrder_Invalid, sortorder);
 	}
 
 	else if( sName == "weight" )
@@ -343,7 +387,8 @@ void GameCommand::LoadOne( const Command& cmd )
 
 	else if( sName == "goaltype" )
 	{
-		m_GoalType = StringToGoalType( sValue );
+		GoalType go= StringToGoalType(sValue);
+		CHECK_INVALID_VALUE(m_GoalType, go, GoalType_Invalid, goaltype);
 	}
 
 	else if( sName == "profileid" )
@@ -367,6 +412,16 @@ void GameCommand::LoadOne( const Command& cmd )
 		m_vsScreensToPrepare.push_back( sValue );
 	}
 
+	else if( sName == "insertcredit" )
+	{
+		m_bInsertCredit = true;
+	}
+
+	else if( sName == "clearcredits" )
+	{
+		m_bClearCredits = true;
+	}
+
 	else if( sName == "stopmusic" )
 	{
 		m_bStopMusic = true;
@@ -386,15 +441,23 @@ void GameCommand::LoadOne( const Command& cmd )
 
 	else if( sName == "setpref" )
 	{
-		if( cmd.m_vsArgs.size() == 3 )
+		if((cmd.m_vsArgs.size() - 1) % 2 != 0)
 		{
-			IPreference *pPref = IPreference::GetPreferenceByName( cmd.m_vsArgs[1] );
-			if( pPref == NULL )
+			MAKE_INVALID("Arguments to setpref game command must be key,value pairs.");
+		}
+		else
+		{
+			for(size_t i= 1; i < cmd.m_vsArgs.size(); i+= 2)
 			{
-				m_sInvalidReason = ssprintf("unknown preference \"%s\"", cmd.m_vsArgs[1].c_str() );
-				m_bInvalid |= true;
+				if(IPreference::GetPreferenceByName(cmd.m_vsArgs[i]) == NULL)
+				{
+					MAKE_INVALID("Unknown preference \"" + cmd.m_vsArgs[i] + "\".");
+				}
+				else
+				{
+					m_SetPref[cmd.m_vsArgs[i]]= cmd.m_vsArgs[i+1];
+				}
 			}
-			pPref->FromString(cmd.m_vsArgs[2]);
 		}
 	}
 
@@ -406,13 +469,57 @@ void GameCommand::LoadOne( const Command& cmd )
 			m_fMusicFadeOutVolume = static_cast<float>(atof( cmd.m_vsArgs[1] ));
 			m_fMusicFadeOutSeconds = static_cast<float>(atof( cmd.m_vsArgs[2] ));
 		}
+		else
+		{
+			MAKE_INVALID("Wrong number of args to fademusic.");
+		}
 	}
 
 	else
 	{
-		RString sWarning = ssprintf( "Command '%s' is not valid.", cmd.GetOriginalCommandString().c_str() );
-		LOG->Warn( "%s", sWarning.c_str() );
-		Dialog::OK( sWarning, "INVALID_GAME_COMMAND" );
+		MAKE_INVALID(ssprintf( "Command '%s' is not valid.", cmd.GetOriginalCommandString().c_str()));
+	}
+#undef CHECK_INVALID_VALUE
+#undef CHECK_INVALID_COND
+#undef MAKE_INVALID
+}
+
+int GetNumCreditsPaid()
+{
+	int iNumCreditsPaid = GAMESTATE->GetNumSidesJoined();
+
+	// players other than the first joined for free
+	if( GAMESTATE->GetPremium() == Premium_2PlayersFor1Credit )
+		iNumCreditsPaid = min( iNumCreditsPaid, 1 );
+
+	return iNumCreditsPaid;
+}
+
+
+int GetCreditsRequiredToPlayStyle( const Style *style )
+{
+	// GameState::GetCoinsNeededToJoin returns 0 if the coin mode isn't
+	// CoinMode_Pay, which means the theme can't make sure that there are
+	// enough credits available.
+	// So we have to check the coin mode here
+	// and return 0 if the player doesn't have to pay.
+	if( GAMESTATE->GetCoinMode() != CoinMode_Pay )
+	{
+		return 0;
+	}
+	if( GAMESTATE->GetPremium() == Premium_2PlayersFor1Credit )
+		return 1;
+
+	switch( style->m_StyleType )
+	{
+	case StyleType_OnePlayerOneSide:
+		return 1;
+	case StyleType_TwoPlayersSharedSides:
+	case StyleType_TwoPlayersTwoSides:
+		return 2;
+	case StyleType_OnePlayerTwoSides:
+		return (GAMESTATE->GetPremium() == Premium_DoubleFor1Credit) ? 1 : 2;
+	DEFAULT_FAIL( style->m_StyleType );
 	}
 }
 
@@ -451,10 +558,34 @@ bool GameCommand::IsPlayable( RString *why ) const
 
 	if ( m_pStyle )
 	{
+		int iCredits;
+		if( GAMESTATE->GetCoinMode() == CoinMode_Pay )
+			iCredits = GAMESTATE->m_iCoins / PREFSMAN->m_iCoinsPerCredit;
+		else
+			iCredits = NUM_PLAYERS;
+
+		const int iNumCreditsPaid = GetNumCreditsPaid();
+		const int iNumCreditsRequired = GetCreditsRequiredToPlayStyle(m_pStyle);
+		
+		/* With PREFSMAN->m_bDelayedCreditsReconcile disabled, enough credits must
+		 * be paid. (This means that enough sides must be joined.)  Enabled, simply
+		 * having enough credits lying in the machine is sufficient; we'll deduct the
+		 * extra in Apply(). */
+		int iNumCreditsAvailable = iNumCreditsPaid;
+		if( PREFSMAN->m_bDelayedCreditsReconcile )
+			iNumCreditsAvailable += iCredits;
+
+		if( iNumCreditsAvailable < iNumCreditsRequired )
+		{
+			if( why )
+				*why = ssprintf( "need %i credits, have %i", iNumCreditsRequired, iNumCreditsAvailable );
+			return false;
+		}
+
 		/* If both sides are joined, disallow singles modes, since easy to select
 		 * them accidentally, instead of versus mode. */
 		if( m_pStyle->m_StyleType == StyleType_OnePlayerOneSide &&
-			GAMESTATE->GetNumSidesJoined() > 1 )
+			GAMESTATE->GetNumPlayersEnabled() > 1 )
 		{
 			if( why )
 				*why = "too many players joined for ONE_PLAYER_ONE_CREDIT";
@@ -576,14 +707,27 @@ void GameCommand::ApplySelf( const vector<PlayerNumber> &vpns ) const
 	{
 		GAMESTATE->SetCurrentStyle( m_pStyle );
 
+		// It's possible to choose a style that didn't have enough players joined.
+		// If enough players aren't joined, then  we need to subtract credits
+		// for the sides that will be joined as a result of applying this option.
+		if( GAMESTATE->GetCoinMode() == CoinMode_Pay )
+		{
+			int iNumCreditsRequired = GetCreditsRequiredToPlayStyle(m_pStyle);
+			int iNumCreditsPaid = GetNumCreditsPaid();
+			int iNumCreditsOwed = iNumCreditsRequired - iNumCreditsPaid;
+			GAMESTATE->m_iCoins.Set( GAMESTATE->m_iCoins - iNumCreditsOwed * PREFSMAN->m_iCoinsPerCredit );
+			LOG->Trace( "Deducted %i coins, %i remaining",
+					iNumCreditsOwed * PREFSMAN->m_iCoinsPerCredit, GAMESTATE->m_iCoins.Get() );
+		}
+		
 		// If only one side is joined and we picked a style that requires both
 		// sides, join the other side.
 		switch( m_pStyle->m_StyleType )
 		{
 		case StyleType_OnePlayerOneSide:
+		case StyleType_OnePlayerTwoSides:
 			break;
 		case StyleType_TwoPlayersTwoSides:
-		case StyleType_OnePlayerTwoSides:
 		case StyleType_TwoPlayersSharedSides:
 			{
 				FOREACH_PlayerNumber( p )
@@ -591,7 +735,7 @@ void GameCommand::ApplySelf( const vector<PlayerNumber> &vpns ) const
 			}
 			break;
 		default:
-			FAIL_M(ssprintf("Invalid StyleType: %i", m_pStyle->m_StyleType));
+			LuaHelpers::ReportScriptError("Invalid StyleType: " + m_pStyle->m_StyleType);
 		}
 	}
 	if( m_dc != Difficulty_Invalid )
@@ -605,7 +749,7 @@ void GameCommand::ApplySelf( const vector<PlayerNumber> &vpns ) const
 	if( m_sStageModifiers != "" )
 		FOREACH_CONST( PlayerNumber, vpns, pn )
 			GAMESTATE->ApplyStageModifiers( *pn, m_sStageModifiers );
-	if( m_LuaFunction.IsSet() )
+	if( m_LuaFunction.IsSet() && !m_LuaFunction.IsNil() )
 	{
 		Lua *L = LUA->Get();
 		FOREACH_CONST( PlayerNumber, vpns, pn )
@@ -614,7 +758,8 @@ void GameCommand::ApplySelf( const vector<PlayerNumber> &vpns ) const
 			ASSERT( !lua_isnil(L, -1) );
 
 			lua_pushnumber( L, *pn ); // 1st parameter
-			lua_call( L, 1, 0 ); // call function with 1 argument and 0 results
+			RString error= "Lua GameCommand error: ";
+			LuaHelpers::RunScriptOnStack(L, error, 1, 0, true);
 		}
 		LUA->Release(L);
 	}
@@ -651,6 +796,14 @@ void GameCommand::ApplySelf( const vector<PlayerNumber> &vpns ) const
 		lua_settable( L, -3 );
 		lua_pop( L, 1 );
 		LUA->Release(L);
+	}
+	for(map<RString,RString>::const_iterator setting= m_SetPref.begin(); setting != m_SetPref.end(); ++setting)
+	{
+		IPreference* pref= IPreference::GetPreferenceByName(setting->first);
+		if(pref != NULL)
+		{
+			pref->FromString(setting->second);
+		}
 	}
 	if( !m_sSongGroup.empty() )
 		GAMESTATE->m_sPreferredSongGroup.Set( m_sSongGroup );
@@ -691,6 +844,14 @@ void GameCommand::ApplySelf( const vector<PlayerNumber> &vpns ) const
 	FOREACH_CONST( RString, m_vsScreensToPrepare, s )
 		SCREENMAN->PrepareScreen( *s );
 
+	if( m_bInsertCredit )
+	{
+		StepMania::InsertCredit();
+	}
+
+	if( m_bClearCredits )
+		StepMania::ClearCredits();
+
 	if( m_bApplyDefaultOptions )
 	{
 		// applying options affects only the current stage
@@ -707,11 +868,14 @@ void GameCommand::ApplySelf( const vector<PlayerNumber> &vpns ) const
 	}
 	// HACK: Set life type to BATTERY just once here so it happens once and 
 	// we don't override the user's changes if they back out.
-	if( GAMESTATE->m_PlayMode == PLAY_MODE_ONI && 
-		GAMESTATE->m_PlayMode != OldPlayMode &&
-		GAMESTATE->m_SongOptions.GetStage().m_LifeType == SongOptions::LIFE_BAR )
+	FOREACH_PlayerNumber(pn)
 	{
-		SO_GROUP_ASSIGN( GAMESTATE->m_SongOptions, ModsLevel_Stage, m_LifeType, SongOptions::LIFE_BATTERY );
+		if(GAMESTATE->m_PlayMode == PLAY_MODE_ONI &&
+			GAMESTATE->m_PlayMode != OldPlayMode &&
+			GAMESTATE->m_pPlayerState[pn]->m_PlayerOptions.GetStage().m_LifeType ==LifeType_Bar)
+		{
+			PO_GROUP_ASSIGN(GAMESTATE->m_pPlayerState[pn]->m_PlayerOptions, ModsLevel_Stage, m_LifeType, LifeType_Battery);
+		}
 	}
 }
 

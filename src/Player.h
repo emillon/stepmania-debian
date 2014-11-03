@@ -131,9 +131,10 @@ protected:
 	void SendComboMessages( int iOldCombo, int iOldMissCombo );
 	void PlayKeysound( const TapNote &tn, TapNoteScore score );
 
-	void SetMineJudgment( TapNoteScore tns );
-	void SetJudgment( TapNoteScore tns, int iFirstTrack, float fTapNoteOffset );	// -1 if no track as in TNS_Miss
-	void SetHoldJudgment( TapNoteScore tns, HoldNoteScore hns, int iTrack );
+	void SetMineJudgment( TapNoteScore tns , int iTrack );
+	void SetJudgment( int iRow, int iFirstTrack, const TapNote &tn ) { SetJudgment( iRow, iFirstTrack, tn, tn.result.tns, tn.result.fTapNoteOffset ); }	
+	void SetJudgment( int iRow, int iFirstTrack, const TapNote &tn, TapNoteScore tns, float fTapNoteOffset );	// -1 if no track as in TNS_Miss
+	void SetHoldJudgment( TapNote &tn, int iTrack );
 	void SetCombo( int iCombo, int iMisses );
 
 	void ChangeLife( TapNoteScore tns );
@@ -226,6 +227,7 @@ protected:
 	TweenState		m_tsCombo[NUM_REVERSE][NUM_CENTERED];
 
 	bool m_bSendJudgmentAndComboMessages;
+	bool m_bTickHolds;
 };
 
 class PlayerPlus

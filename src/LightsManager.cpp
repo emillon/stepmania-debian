@@ -93,7 +93,7 @@ static void GetUsedGameInputs( vector<GameInput> &vGameInputsOut )
 		vGameInputsOut.push_back( *gi );
 }
 
-LightsManager*	LIGHTSMAN = NULL;	// global and accessable from anywhere in our program
+LightsManager*	LIGHTSMAN = NULL;	// global and accessible from anywhere in our program
 
 LightsManager::LightsManager()
 {
@@ -417,6 +417,18 @@ void LightsManager::Update( float fDeltaTime )
 			}
 
 			break;
+		}
+	}
+
+	// If not joined, has enough credits, and not too late to join, then
+	// blink the menu buttons rapidly so they'll press Start
+	{
+		int iBeat = (int)(GAMESTATE->m_Position.m_fLightSongBeat*4);
+		bool bBlinkOn = (iBeat%2)==0;
+		FOREACH_PlayerNumber( pn )
+		{
+			if( !GAMESTATE->m_bSideIsJoined[pn] && GAMESTATE->PlayersCanJoin() && GAMESTATE->EnoughCreditsToJoin() )
+				m_LightsState.m_bGameButtonLights[pn][GAME_BUTTON_START] = bBlinkOn;
 		}
 	}
 

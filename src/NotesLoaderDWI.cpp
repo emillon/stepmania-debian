@@ -19,7 +19,7 @@ Difficulty DwiCompatibleStringToDifficulty( const RString& sDC );
 static std::map<int,int> g_mapDanceNoteToNoteDataColumn;
 
 /** @brief The different types of core DWI arrows and pads. */
-enum
+enum DanceNotes
 {
 	DANCE_NOTE_NONE = 0,
 	DANCE_NOTE_PAD1_LEFT,
@@ -367,7 +367,7 @@ static NoteData ParseNoteData(RString &step1, RString &step2,
 		FOREACH_NONEMPTY_ROW_IN_TRACK( newNoteData, t, iHeadRow )
 		{
 			TapNote tn = newNoteData.GetTapNote( t, iHeadRow  );
-			if( tn.type != TapNote::hold_head )
+			if( tn.type != TapNoteType_HoldHead )
 				continue;
 			
 			int iTailRow = iHeadRow;
@@ -375,9 +375,9 @@ static NoteData ParseNoteData(RString &step1, RString &step2,
 			while( !bFound && newNoteData.GetNextTapNoteRowForTrack(t, iTailRow) )
 			{
 				const TapNote &TailTap = newNoteData.GetTapNote( t, iTailRow );
-				if( TailTap.type == TapNote::empty )
+				if( TailTap.type == TapNoteType_Empty )
 					continue;
-				
+
 				newNoteData.SetTapNote( t, iTailRow, TAP_EMPTY );
 				tn.iDuration = iTailRow - iHeadRow;
 				newNoteData.SetTapNote( t, iHeadRow, tn );

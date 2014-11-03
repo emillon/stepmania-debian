@@ -8,7 +8,7 @@ local function CurGameName()
 end
 
 -- Check the active game mode against a string. Cut down typing this in metrics.
-function IsGame(str) return CurGameName() == str end
+function IsGame(str) return CurGameName():lower() == str:lower() end
 
 -- GetExtraColorThreshold()
 -- [en] returns the difficulty threshold in meter
@@ -23,7 +23,7 @@ function GetExtraColorThreshold()
 		techno = 10,
 		lights = 10, -- lights shouldn't be playable
 	}
-	return Modes[CurGameName()]
+	return Modes[CurGameName()] or 10
 end
 
 -- AllowOptionsMenu()
@@ -89,7 +89,7 @@ function ComboContinue()
 		kb7 = "TapNoteScore_W3",
 		para = "TapNoteScore_W4"
 	}
-	return Continue[CurGameName()]
+  return Continue[CurGameName()] or "TapNoteScore_W3"
 end
 
 function ComboMaintain()
@@ -100,7 +100,7 @@ function ComboMaintain()
 		kb7 = "TapNoteScore_W3",
 		para = "TapNoteScore_W4"
 	}
-	return Maintain[CurGameName()]
+  return Maintain[CurGameName()] or "TapNoteScore_W3"
 end
 
 function ComboPerRow()
@@ -152,6 +152,10 @@ function FailCombo()
 	end
 	return ComboThresholds["default"].Fail
 end
+
+function TwoPartSelection()
+	return GAMESTATE:GetCurrentGame():GetName() == "pump" and true or false 
+end 
 
 local RoutineSkins = {
 	dance	= { P1 = "midi-routine-p1", P2 = "midi-routine-p2" },
@@ -264,35 +268,35 @@ local CodeDetectorCodes = {
 	--- specific modifiers
 	Mirror = {
 		default = "",
-		dance = "Up,Left,Right,Left,Right",
+		dance = "",
 		pump = "DownRight,DownLeft,UpRight,UpLeft,DownRight,DownLeft,UpRight,UpLeft,Center",
 	},
 	Left = {
 		default = "",
-		dance = "Up,Down,Right,Left",
+		dance = "",
 	},
 	Right = {
 		default = "",
-		dance = "Up,Down,Left,Right",
+		dance = "",
 	},
 	Shuffle = {
 		default = "",
-		dance = "Down,Up,Down,Up",
+		dance = "",
 		pump = "UpLeft,UpRight,UpLeft,UpRight,DownLeft,DownRight,DownLeft,DownRight,Center", -- random
 	},
 	SuperShuffle = {
 		default = "",
-		dance = "Down,Up,Left,Right",
+		dance = "",
 		pump = "UpLeft,UpRight,DownLeft,DownRight,UpLeft,UpRight,DownLeft,DownRight,Center"
 	},
 	Reverse = {
 		default = "",
-		dance = "Down,Left,Right,Left,Right",
+		dance = "",
 		pump = "UpLeft,DownLeft,UpRight,DownRight,UpLeft,DownLeft,UpRight,DownRight,DownRight", -- drop
 	},
 	HoldNotes = {
 		default = "",
-		dance = "Right,Left,Down,Up",
+		dance = "",
 	},
 	Mines = {
 		default = "",
@@ -314,25 +318,25 @@ local CodeDetectorCodes = {
 	},
 	NextScrollSpeed = {
 		default = "",
-		dance = "Up,Left,Down,Left,Up",
+		dance = "",
 		pump = "UpLeft,UpRight,UpLeft,UpRight,Center",
 	},
 	PreviousScrollSpeed = {
 		default = "",
-		dance = "Down,Right,Up,Right,Down",
+		dance = "",
 		pump = "UpRight,UpLeft,UpRight,UpLeft,Center",
 	},
 	NextAccel = {
 		default = "",
-		dance = "Left,Right,Down,Up",
+		dance = "",
 	},
 	NextEffect = {
 		default = "",
-		dance = "Left,Down,Right",
+		dance = "",
 	},
 	NextAppearance = {
 		default = "",
-		dance = "Left,Up,Right",
+		dance = "",
 	},
 	NextTurn = {
 		default = "",

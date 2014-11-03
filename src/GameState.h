@@ -19,7 +19,7 @@
 
 class Character;
 class Course;
-class Game;
+struct Game;
 struct lua_State;
 class LuaTable;
 class PlayerState;
@@ -98,6 +98,7 @@ public:
 	 * Note that coins are not "credits". One may have to put in two coins 
 	 * to get one credit, only to have to put in another four coins to get
 	 * the three credits needed to begin the game. */
+	BroadcastOnChange<int>			m_iCoins;
 	bool			m_bMultiplayer;
 	int				m_iNumMultiplayerNoteFields;
 	bool DifficultiesLocked() const;
@@ -116,15 +117,20 @@ public:
 	int			m_iGameSeed, m_iStageSeed;
 	RString		m_sStageGUID;
 
+	void SetNewStageSeed();
+
 	/**
 	 * @brief Determine if a second player can join in at this time.
 	 * @return true if a player can still enter the game, false otherwise. */
 	bool	PlayersCanJoin() const;
+	int 	GetCoinsNeededToJoin() const;
+	bool	EnoughCreditsToJoin() const { return m_iCoins >= GetCoinsNeededToJoin(); }
 	int		GetNumSidesJoined() const;
 
 	const Game*	GetCurrentGame();
 	const Style*	GetCurrentStyle() const;
 	void	SetCurrentStyle( const Style *pStyle );
+	bool SetCompatibleStyle(StepsType stype);
 
 	void GetPlayerInfo( PlayerNumber pn, bool& bIsEnabledOut, bool& bIsHumanOut );
 	bool IsPlayerEnabled( PlayerNumber pn ) const;
@@ -173,7 +179,7 @@ public:
 
 	BroadcastOnChange<RString>	m_sPreferredSongGroup;		// GROUP_ALL denotes no preferred group
 	BroadcastOnChange<RString>	m_sPreferredCourseGroup;	// GROUP_ALL denotes no preferred group
-	bool		m_bChangedFailTypeOnScreenSongOptions;	// true if FailType was changed in the song options screen
+	bool		m_bFailTypeWasExplicitlySet;	// true if FailType was changed in the song options screen
 	BroadcastOnChange<StepsType>				m_PreferredStepsType;
 	BroadcastOnChange1D<Difficulty,NUM_PLAYERS>		m_PreferredDifficulty;
 	BroadcastOnChange1D<CourseDifficulty,NUM_PLAYERS>	m_PreferredCourseDifficulty;// used in nonstop
@@ -198,6 +204,9 @@ public:
 	 *
 	 * This resets whenever a player joins or continues. */
 	int				m_iPlayerStageTokens[NUM_PLAYERS];
+	// This is necessary so that IsFinalStageForEveryHumanPlayer knows to
+	// adjust for the current song cost.
+	bool m_AdjustTokensBySongCostForFinalStageCheck;
 
 	RString sExpandedSectionName;
 
@@ -212,6 +221,7 @@ public:
 	int			GetNumStagesLeft( PlayerNumber pn ) const;
 	int			GetSmallestNumStagesLeftForAnyHumanPlayer() const;
 	bool		IsFinalStageForAnyHumanPlayer() const;
+	bool		IsFinalStageForEveryHumanPlayer() const;
 	bool		IsAnExtraStage() const;
 	bool		IsAnExtraStageAndSelectionLocked() const;
 	bool		IsExtraStage() const;
@@ -250,7 +260,7 @@ public:
 	static const float MUSIC_SECONDS_INVALID;
 
 	void ResetMusicStatistics();	// Call this when it's time to play a new song.  Clears the values above.
-	void UpdateSongPosition( float fPositionSeconds, const TimingData &timing, const RageTimer &timestamp = RageZeroTimer, bool bUpdatePlayers = false );
+	void UpdateSongPosition( float fPositionSeconds, const TimingData &timing, const RageTimer &timestamp = RageZeroTimer );
 	float GetSongPercent( float beat ) const;
 
 	bool AllAreInDangerOrWorse() const;
@@ -260,6 +270,10 @@ public:
 	float	m_fHasteRate; // [-1,+1]; 0 = normal speed
 	float	m_fLastHasteUpdateMusicSeconds;
 	float	m_fAccumulatedHasteSeconds;
+
+	// used by themes that support heart rate entry.
+	RageTimer m_DanceStartTime;
+	float m_DanceDuration;
 
 	// Random Attacks & Attack Mines
 	vector<RString>		m_RandomAttacks;
@@ -303,7 +317,7 @@ public:
 	bool CurrentOptionsDisqualifyPlayer( PlayerNumber pn );
 	bool PlayerIsUsingModifier( PlayerNumber pn, const RString &sModifier );
 
-	PlayerOptions::FailType GetPlayerFailType( const PlayerState *pPlayerState ) const;
+	FailType GetPlayerFailType( const PlayerState *pPlayerState ) const;
 
 	// character stuff
 	Character* m_pCurCharacters[NUM_PLAYERS];
@@ -419,7 +433,7 @@ MultiPlayer GetNextEnabledMultiPlayer( MultiPlayer mp );
 
 
 
-extern GameState*	GAMESTATE;	// global and accessable from anywhere in our program
+extern GameState*	GAMESTATE;	// global and accessible from anywhere in our program
 
 #endif
 

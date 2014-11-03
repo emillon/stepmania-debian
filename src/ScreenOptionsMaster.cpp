@@ -4,6 +4,7 @@
 #include "RageUtil.h"
 #include "RageLog.h"
 #include "ThemeManager.h"
+#include "GameManager.h"
 #include "GameState.h"
 #include "ScreenManager.h"
 #include "SongManager.h"
@@ -29,7 +30,9 @@ void ScreenOptionsMaster::Init()
 	vector<RString> asLineNames;
 	split( LINE_NAMES, ",", asLineNames );
 	if( asLineNames.empty() )
-		RageException::Throw( "\"%s::LineNames\" is empty.", m_sName.c_str() );
+	{
+		LuaHelpers::ReportScriptErrorFmt("\"%s:LineNames\" is empty.", m_sName.c_str());
+	}
 
 	if( FORCE_ALL_PLAYERS )
 	{
@@ -54,16 +57,18 @@ void ScreenOptionsMaster::Init()
 		RString sRowCommands = LINE(sLineName);
 		
 		Commands cmds;
-		ParseCommands( sRowCommands, cmds );
+		ParseCommands( sRowCommands, cmds, false );
 
 		OptionRowHandler *pHand = OptionRowHandlerUtil::Make( cmds );
 		if( pHand == NULL )
-			RageException::Throw( "Invalid OptionRowHandler \"%s\" in \"%s::Line%i\".", cmds.GetOriginalCommandString().c_str(), m_sName.c_str(), i );
-		OptionRowHandlers.push_back( pHand );
+		{
+			LuaHelpers::ReportScriptErrorFmt("Invalid OptionRowHandler \"%s\" in \"%s:Line:%s\".", cmds.GetOriginalCommandString().c_str(), m_sName.c_str(), sLineName.c_str());
+		}
+		else
+		{
+			OptionRowHandlers.push_back( pHand );
+		}
 	}
-
-	ASSERT( OptionRowHandlers.size() == asLineNames.size() );
-
 	InitMenu( OptionRowHandlers );
 }
 
@@ -122,9 +127,7 @@ void ScreenOptionsMaster::HandleScreenMessage( const ScreenMessage SM )
 			/* If the resolution or aspect ratio changes, always reload the theme.
 			 * Otherwise, only reload it if it changed. */
 			RString sNewTheme = PREFSMAN->m_sTheme.Get();
-			bool bForceThemeReload = !!(m_iChangeMask & OPT_APPLY_ASPECT_RATIO) || !!(m_iChangeMask & OPT_APPLY_GRAPHICS);
-			GameLoop::ChangeTheme( sNewTheme, this->GetNextScreenName(), bForceThemeReload );
-			StepMania::ApplyGraphicOptions();
+			GameLoop::ChangeTheme(sNewTheme);
 		}
 
 		if( m_iChangeMask & OPT_SAVE_PREFERENCES )
@@ -134,10 +137,9 @@ void ScreenOptionsMaster::HandleScreenMessage( const ScreenMessage SM )
 			PREFSMAN->SavePrefsToDisk();
 		}
 
-		if( m_iChangeMask & OPT_RESET_GAME )
+		if( m_iChangeMask & OPT_CHANGE_GAME )
 		{
-			StepMania::ResetGame();
-			m_sNextScreen = StepMania::GetInitialScreen();
+			GameLoop::ChangeGame(PREFSMAN->GetCurrentGame());
 		}
 
 		if( m_iChangeMask & OPT_APPLY_SOUND )

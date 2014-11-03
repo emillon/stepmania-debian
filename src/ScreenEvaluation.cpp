@@ -75,6 +75,17 @@ static const int NUM_SHOWN_RADAR_CATEGORIES = 5;
 AutoScreenMessage( SM_PlayCheer );
 
 REGISTER_SCREEN_CLASS( ScreenEvaluation );
+
+ScreenEvaluation::ScreenEvaluation()
+{
+	GAMESTATE->m_AdjustTokensBySongCostForFinalStageCheck= false;
+}
+
+ScreenEvaluation::~ScreenEvaluation()
+{
+	GAMESTATE->m_AdjustTokensBySongCostForFinalStageCheck= true;
+}
+
 void ScreenEvaluation::Init()
 {
 	LOG->Trace( "ScreenEvaluation::Init()" );
@@ -297,7 +308,7 @@ void ScreenEvaluation::Init()
 				vector<RString> v;
 				PlayerOptions po = GAMESTATE->m_pPlayerState[p]->m_PlayerOptions.GetPreferred();
 				if( PLAYER_OPTIONS_HIDE_FAIL_TYPE )
-					po.m_FailType = (PlayerOptions::FailType)0;	// blank out the fail type so that it won't show in the mods list
+					po.m_FailType = (FailType)0;	// blank out the fail type so that it won't show in the mods list
 				po.GetLocalizedMods( v );
 				RString sPO = join( PLAYER_OPTIONS_SEPARATOR, v );
 				m_textPlayerOptions[p].SetText( sPO );
@@ -703,8 +714,7 @@ bool ScreenEvaluation::Input( const InputEventPlus &input )
 
 				Profile* pProfile = PROFILEMAN->GetProfile(pn);
 				RString sDir = PROFILEMAN->GetProfileDir((ProfileSlot)pn) + "Screenshots/";
-				int iScreenshotIndex = pProfile->GetNextScreenshotIndex();
-				RString sFileName = StepMania::SaveScreenshot( sDir, true, true, iScreenshotIndex );
+				RString sFileName = StepMania::SaveScreenshot( sDir, true, true, "", "" );
 
 				if( !sFileName.empty() )
 				{

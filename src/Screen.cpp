@@ -7,6 +7,7 @@
 #include "ScreenManager.h"
 #include "ActorUtil.h"
 #include "InputEventPlus.h"
+#include "InputMapper.h"
 
 #define NEXT_SCREEN		THEME->GetMetric (m_sName,"NextScreen")
 #define PREV_SCREEN		THEME->GetMetric (m_sName,"PrevScreen")
@@ -53,6 +54,8 @@ void Screen::Init()
 
 	m_smSendOnPop = SM_None;
 	m_bRunning = false;
+
+	m_CallingInputCallbacks= false;
 
 	ActorUtil::LoadAllCommandsFromName( *this, m_sName, "Screen" );
 
@@ -219,6 +222,7 @@ bool Screen::Input( const InputEventPlus &input )
 			return false;
 		case GAME_BUTTON_START:  return this->MenuStart ( input );
 		case GAME_BUTTON_SELECT: return this->MenuSelect( input );
+		case GAME_BUTTON_COIN:   return this->MenuCoin  ( input );
 		default: return false;
 	}
 }
@@ -230,7 +234,17 @@ void Screen::HandleScreenMessage( const ScreenMessage SM )
 		if( SCREENMAN->IsStackedScreen(this) )
 			SCREENMAN->PopTopScreen( m_smSendOnPop );
 		else
-			SCREENMAN->SetNewScreen( SM == SM_GoToNextScreen? GetNextScreenName():GetPrevScreen() );
+		{
+			RString ToScreen= (SM == SM_GoToNextScreen? GetNextScreenName():GetPrevScreen());
+			if(ToScreen == "")
+			{
+				LuaHelpers::ReportScriptError("Error:  Tried to go to empty screen.");
+			}
+			else
+			{
+				SCREENMAN->SetNewScreen(ToScreen);
+			}
+		}
 	}
 	else if( SM == SM_GainFocus )
 	{
@@ -252,6 +266,11 @@ RString Screen::GetNextScreenName() const
 	if( !m_sNextScreen.empty() )
 		return m_sNextScreen;
 	return NEXT_SCREEN;
+}
+
+void Screen::SetNextScreenName(RString const& name)
+{
+	m_sNextScreen= name;
 }
 
 RString Screen::GetPrevScreen() const
@@ -283,6 +302,104 @@ void Screen::ClearMessageQueue( const ScreenMessage SM )
 			m_QueuedMessages.erase( m_QueuedMessages.begin()+i ); 
 }
 
+bool Screen::PassInputToLua(const InputEventPlus& input)
+{
+	if(m_InputCallbacks.empty())
+	{
+		return false;
+	}
+	m_CallingInputCallbacks= true;
+	bool handled= false;
+	Lua* L= LUA->Get();
+
+	// Construct the table once, and reuse it.
+	lua_createtable(L, 0, 7);
+	{ // This block is meant to improve clarity.  A subtable is created for
+		// storing the DeviceInput member.
+		lua_createtable(L, 0, 8);
+		Enum::Push(L, input.DeviceI.device);
+		lua_setfield(L, -2, "device");
+		Enum::Push(L, input.DeviceI.button);
+		lua_setfield(L, -2, "button");
+		lua_pushnumber(L, input.DeviceI.level);
+		lua_setfield(L, -2, "level");
+		lua_pushinteger(L, input.DeviceI.z);
+		lua_setfield(L, -2, "z");
+		lua_pushboolean(L, input.DeviceI.bDown);
+		lua_setfield(L, -2, "down");
+		lua_pushnumber(L, input.DeviceI.ts.Ago());
+		lua_setfield(L, -2, "ago");
+		lua_pushboolean(L, input.DeviceI.IsJoystick());
+		lua_setfield(L, -2, "is_joystick");
+		lua_pushboolean(L, input.DeviceI.IsMouse());
+		lua_setfield(L, -2, "is_mouse");
+	}
+	lua_setfield(L, -2, "DeviceInput");
+	Enum::Push(L, input.GameI.controller);
+	lua_setfield(L, -2, "controller");
+	LuaHelpers::Push(L, GameButtonToString(INPUTMAPPER->GetInputScheme(), input.GameI.button));
+	lua_setfield(L, -2, "button");
+	Enum::Push(L, input.type);
+	lua_setfield(L, -2, "type");
+	LuaHelpers::Push(L, GameButtonToString(INPUTMAPPER->GetInputScheme(), input.MenuI));
+	lua_setfield(L, -2, "GameButton");
+	Enum::Push(L, input.pn);
+	lua_setfield(L, -2, "PlayerNumber");
+	Enum::Push(L, input.mp);
+	lua_setfield(L, -2, "MultiPlayer");
+	for(map<callback_key_t, LuaReference>::iterator callback= m_InputCallbacks.begin();
+			callback != m_InputCallbacks.end() && !handled; ++callback)
+	{
+		callback->second.PushSelf(L);
+		lua_pushvalue(L, -2);
+		RString error= "Error running input callback: ";
+		LuaHelpers::RunScriptOnStack(L, error, 1, 1, true);
+		handled= lua_toboolean(L, -1);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+	LUA->Release(L);
+	m_CallingInputCallbacks= false;
+	if(!m_DelayedCallbackRemovals.empty())
+	{
+		for(vector<callback_key_t>::iterator key= m_DelayedCallbackRemovals.begin();
+				key != m_DelayedCallbackRemovals.end(); ++key)
+		{
+			InternalRemoveCallback(*key);
+		}
+	}
+	return handled;
+}
+
+void Screen::AddInputCallbackFromStack(lua_State* L)
+{
+	callback_key_t key= lua_topointer(L, -1);
+	m_InputCallbacks[key]= LuaReference(L);
+}
+
+void Screen::RemoveInputCallback(lua_State* L)
+{
+	callback_key_t key= lua_topointer(L, -1);
+	if(m_CallingInputCallbacks)
+	{
+		m_DelayedCallbackRemovals.push_back(key);
+	}
+	else
+	{
+		InternalRemoveCallback(key);
+	}
+}
+
+void Screen::InternalRemoveCallback(callback_key_t key)
+{
+	map<callback_key_t, LuaReference>::iterator iter= m_InputCallbacks.find(key);
+	if(iter != m_InputCallbacks.end())
+	{
+		m_InputCallbacks.erase(iter);
+	}
+}
+
+
 // lua start
 #include "LuaBinding.h"
 
@@ -291,6 +408,7 @@ class LunaScreen: public Luna<Screen>
 {
 public:
 	static int GetNextScreenName( T* p, lua_State *L ) { lua_pushstring(L, p->GetNextScreenName() ); return 1; }
+	static int SetNextScreenName( T* p, lua_State *L ) { p->SetNextScreenName(SArg(1)); return 0; }
 	static int GetPrevScreenName( T* p, lua_State *L ) { lua_pushstring(L, p->GetPrevScreen() ); return 1; }
 	static int lockinput( T* p, lua_State *L ) { p->SetLockInputSecs(FArg(1)); return 0; }
 	DEFINE_METHOD( GetScreenType,	GetScreenType() )
@@ -303,13 +421,36 @@ public:
 		return 0;
 	}
 
+	static int AddInputCallback(T* p, lua_State* L)
+	{
+		if(!lua_isfunction(L, -1))
+		{
+			luaL_error(L, "Input callback must be a function.");
+		}
+		p->AddInputCallbackFromStack(L);
+		return 0;
+	}
+
+	static int RemoveInputCallback(T* p, lua_State* L)
+	{
+		if(!lua_isfunction(L, -1))
+		{
+			luaL_error(L, "Input callback must be a function.");
+		}
+		p->RemoveInputCallback(L);
+		return 0;
+	}
+
 	LunaScreen()
 	{
 		ADD_METHOD( GetNextScreenName );
+		ADD_METHOD( SetNextScreenName );
 		ADD_METHOD( GetPrevScreenName );
 		ADD_METHOD( PostScreenMessage );
 		ADD_METHOD( lockinput );
 		ADD_METHOD( GetScreenType );
+		ADD_METHOD( AddInputCallback );
+		ADD_METHOD( RemoveInputCallback );
 	}
 };
 

@@ -19,7 +19,7 @@
 #include "GameManager.h"
 #include "Style.h"
 
-UnlockManager*	UNLOCKMAN = NULL;	// global and accessable from anywhere in our program
+UnlockManager*	UNLOCKMAN = NULL;	// global and accessible from anywhere in our program
 
 #define UNLOCK_NAMES		THEME->GetMetric ("UnlockManager","UnlockNames")
 #define UNLOCK(x)		THEME->GetMetricR("UnlockManager", ssprintf("Unlock%sCommand",x.c_str()));
@@ -106,7 +106,7 @@ RString UnlockManager::FindEntryID( const RString &sName ) const
 
 	if( pEntry == NULL )
 	{
-		LOG->Warn( "Couldn't find locked entry \"%s\"", sName.c_str() );
+		LuaHelpers::ReportScriptErrorFmt( "Couldn't find locked entry \"%s\"", sName.c_str() );
 		return "";
 	}
 
@@ -502,7 +502,8 @@ void UnlockManager::Load()
 		current.PushSelf( L );
 		
 		// call function with 1 argument and 0 results
-		lua_call( L, 1, 0 ); 
+		RString error= "Lua error in command: ";
+		LuaHelpers::RunScriptOnStack(L, error, 1, 0, true);
 
 		if( current.m_bRoulette )
 			m_RouletteCodes.insert( current.m_sEntryID );
@@ -577,20 +578,20 @@ void UnlockManager::Load()
 		case UnlockRewardType_Song:
 			e->m_Song.FromSong( SONGMAN->FindSong( e->m_cmd.GetArg(0).s ) );
 			if( !e->m_Song.IsValid() )
-				LOG->Warn( "Unlock: Cannot find song matching \"%s\"", e->m_cmd.GetArg(0).s.c_str() );
+				LuaHelpers::ReportScriptErrorFmt( "Unlock: Cannot find song matching \"%s\"", e->m_cmd.GetArg(0).s.c_str() );
 			break;
 		case UnlockRewardType_Steps:
 			e->m_Song.FromSong( SONGMAN->FindSong( e->m_cmd.GetArg(0).s ) );
 			if( !e->m_Song.IsValid() )
 			{
-				LOG->Warn( "Unlock: Cannot find song matching \"%s\"", e->m_cmd.GetArg(0).s.c_str() );
+				LuaHelpers::ReportScriptErrorFmt( "Unlock: Cannot find song matching \"%s\"", e->m_cmd.GetArg(0).s.c_str() );
 				break;
 			}
 
 			e->m_dc = StringToDifficulty( e->m_cmd.GetArg(1).s );
 			if( e->m_dc == Difficulty_Invalid )
 			{
-				LOG->Warn( "Unlock: Invalid difficulty \"%s\"", e->m_cmd.GetArg(1).s.c_str() );
+				LuaHelpers::ReportScriptErrorFmt( "Unlock: Invalid difficulty \"%s\"", e->m_cmd.GetArg(1).s.c_str() );
 				break;
 			}
 
@@ -600,21 +601,21 @@ void UnlockManager::Load()
 			e->m_Song.FromSong( SONGMAN->FindSong( e->m_cmd.GetArg(0).s ) );
 			if( !e->m_Song.IsValid() )
 			{
-				LOG->Warn( "Unlock: Cannot find song matching \"%s\"", e->m_cmd.GetArg(0).s.c_str() );
+				LuaHelpers::ReportScriptErrorFmt( "Unlock: Cannot find song matching \"%s\"", e->m_cmd.GetArg(0).s.c_str() );
 				break;
 			}
 			
 			e->m_dc = StringToDifficulty( e->m_cmd.GetArg(1).s );
 			if( e->m_dc == Difficulty_Invalid )
 			{
-				LOG->Warn( "Unlock: Invalid difficulty \"%s\"", e->m_cmd.GetArg(1).s.c_str() );
+				LuaHelpers::ReportScriptErrorFmt( "Unlock: Invalid difficulty \"%s\"", e->m_cmd.GetArg(1).s.c_str() );
 				break;
 			}
 			
 			e->m_StepsType = GAMEMAN->StringToStepsType(e->m_cmd.GetArg(2).s);
 			if (e->m_StepsType == StepsType_Invalid)
 			{
-				LOG->Warn( "Unlock: Invalid steps type \"%s\"", e->m_cmd.GetArg(2).s.c_str() );
+				LuaHelpers::ReportScriptErrorFmt( "Unlock: Invalid steps type \"%s\"", e->m_cmd.GetArg(2).s.c_str() );
 				break;
 			}
 			break;
@@ -622,7 +623,7 @@ void UnlockManager::Load()
 		case UnlockRewardType_Course:
 			e->m_Course.FromCourse( SONGMAN->FindCourse(e->m_cmd.GetArg(0).s) );
 			if( !e->m_Course.IsValid() )
-				LOG->Warn( "Unlock: Cannot find course matching \"%s\"", e->m_cmd.GetArg(0).s.c_str() );
+				LuaHelpers::ReportScriptErrorFmt( "Unlock: Cannot find course matching \"%s\"", e->m_cmd.GetArg(0).s.c_str() );
 			break;
 		case UnlockRewardType_Modifier:
 			// nothing to cache
@@ -692,6 +693,18 @@ void UnlockManager::UnlockEntryIndex( int iEntryIndex )
 {
 	RString sEntryID = m_UnlockEntries[iEntryIndex].m_sEntryID;
 	UnlockEntryID( sEntryID );
+}
+
+void UnlockManager::LockEntryID( RString entryID )
+{
+	PROFILEMAN->GetMachineProfile()->m_UnlockedEntryIDs.erase( entryID );
+	SONGMAN->InvalidateCachedTrails();
+}
+
+void UnlockManager::LockEntryIndex( int entryIndex )
+{
+	RString entryID = m_UnlockEntries[entryIndex].m_sEntryID;
+	LockEntryID( entryID );
 }
 
 void UnlockManager::PreferUnlockEntryID( RString sUnlockEntryID )
@@ -915,6 +928,18 @@ public:
 	static int FindEntryID( T* p, lua_State *L )			{ RString sName = SArg(1); RString s = p->FindEntryID(sName); if( s.empty() ) lua_pushnil(L); else lua_pushstring(L, s); return 1; }
 	static int UnlockEntryID( T* p, lua_State *L )			{ RString sUnlockEntryID = SArg(1); p->UnlockEntryID(sUnlockEntryID); return 0; }
 	static int UnlockEntryIndex( T* p, lua_State *L )		{ int iUnlockEntryID = IArg(1); p->UnlockEntryIndex(iUnlockEntryID); return 0; }
+	static int LockEntryID( T * p, lua_State * L)
+	{
+		RString entryID = SArg(1);
+		p->LockEntryID( entryID );
+		return 0;
+	}
+	static int LockEntryIndex( T * p, lua_State * L)
+	{
+		int entryIndex = IArg(1);
+		p->LockEntryIndex( entryIndex );
+		return 0;
+	}
 	static int PreferUnlockEntryID( T* p, lua_State *L )		{ RString sUnlockEntryID = SArg(1); p->PreferUnlockEntryID(sUnlockEntryID); return 0; }
 	static int GetNumUnlocks( T* p, lua_State *L )			{ lua_pushnumber( L, p->GetNumUnlocks() ); return 1; }
 	static int GetNumUnlocked( T* p, lua_State *L )			{ lua_pushnumber( L, p->GetNumUnlocked() ); return 1; }
@@ -977,6 +1002,8 @@ public:
 		ADD_METHOD( PreferUnlockEntryID );
 		ADD_METHOD( UnlockEntryID );
 		ADD_METHOD( UnlockEntryIndex );
+		ADD_METHOD( LockEntryID );
+		ADD_METHOD( LockEntryIndex );
 		ADD_METHOD( IsSongLocked );
 		//ADD_METHOD( UnlockSong );
 		//ADD_METHOD( GetUnlocksByType );

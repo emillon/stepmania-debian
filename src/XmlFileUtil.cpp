@@ -7,6 +7,7 @@
 #include "RageLog.h"
 #include "arch/Dialog/Dialog.h"
 #include "Foreach.h"
+#include "LuaManager.h"
 
 bool XmlFileUtil::LoadFromFileShowErrors( XNode &xml, RageFileBasic &f )
 {
@@ -20,8 +21,7 @@ bool XmlFileUtil::LoadFromFileShowErrors( XNode &xml, RageFileBasic &f )
 		return true;
 
 	RString sWarning = ssprintf( "XML: LoadFromFile failed: %s", sError.c_str() );
-	LOG->Warn( "%s", sWarning.c_str() );
-	Dialog::OK( sWarning, "XML_PARSE_ERROR" );
+	LuaHelpers::ReportScriptError(sWarning, "XML_PARSE_ERROR");
 	return false;
 }
 
@@ -30,7 +30,7 @@ bool XmlFileUtil::LoadFromFileShowErrors( XNode &xml, const RString &sFile )
 	RageFile f;
 	if( !f.Open(sFile, RageFile::READ) )
 	{
-		LOG->Warn("Couldn't open %s for reading: %s", sFile.c_str(), f.GetError().c_str() );
+		LuaHelpers::ReportScriptErrorFmt("Couldn't open %s for reading: %s", sFile.c_str(), f.GetError().c_str() );
 		return false;
 	}
 
@@ -38,8 +38,7 @@ bool XmlFileUtil::LoadFromFileShowErrors( XNode &xml, const RString &sFile )
 	if( !bSuccess )
 	{
 		RString sWarning = ssprintf( "XML: LoadFromFile failed for file: %s", sFile.c_str() );
-		LOG->Warn( "%s", sWarning.c_str() );
-		Dialog::OK( sWarning, "XML_PARSE_ERROR" );
+		LuaHelpers::ReportScriptError(sWarning, "XML_PARSE_ERROR");
 	}
 	return bSuccess;
 }
@@ -518,14 +517,13 @@ bool XmlFileUtil::SaveToFile( const XNode *pNode, const RString &sFile, const RS
 	RageFile f;
 	if( !f.Open(sFile, RageFile::WRITE) )
 	{
-		LOG->Warn( "Couldn't open %s for writing: %s", sFile.c_str(), f.GetError().c_str() );
+		LuaHelpers::ReportScriptErrorFmt( "Couldn't open %s for writing: %s", sFile.c_str(), f.GetError().c_str() );
 		return false;
 	}
 
 	return SaveToFile( pNode, f, sStylesheet, bWriteTabs );
 }
 
-#include "LuaManager.h"
 #include "LuaReference.h"
 class XNodeLuaValue: public XNodeValue
 {
@@ -580,22 +578,48 @@ namespace
 
 		if( EndsWith(sName, "Command") )
 		{
-			LuaHelpers::ParseCommandList( L, sExpression, sFile );
+			// Use legacy parsing
+			LuaHelpers::ParseCommandList( L, sExpression, sFile, true );
 		}
 		else if( sExpression.size() > 0 && sExpression[0] == '@' )
 		{
-			// This is a raw string.
+			// Lua expression
 			sExpression.erase( 0, 1 );
-			LuaHelpers::Push( L, sExpression );
+			LuaHelpers::RunExpression( L, sExpression, sFile );
 		}
 		else
 		{
-			LuaHelpers::RunExpression( L, sExpression, sFile );
+			// This is a raw string.
+			LuaHelpers::Push( L, sExpression );
 		}
 
 		XNodeLuaValue *pRet = new XNodeLuaValue;
 		pRet->SetValueFromStack( L );
 		return pRet;
+	}
+}
+
+void XmlFileUtil::AnnotateXNodeTree( XNode *pNode, const RString &sFile )
+{
+	RString sDir = Dirname( sFile );
+
+	vector<XNode *> queue;
+	queue.push_back( pNode );
+	while( !queue.empty() )
+	{
+		pNode = queue.back();
+		queue.pop_back();
+		FOREACH_Child( pNode, pChild )
+			queue.push_back( pChild );
+
+		/* Source file, for error messages: */
+		pNode->AppendAttr( "_Source", sFile );
+
+		/* Directory of caller, for relative paths: */
+		pNode->AppendAttr( "_Dir", sDir );
+
+		/* Note that this node came from a legacy XML file */
+		pNode->AppendAttr( "_LegacyXml", true );
 	}
 }
 

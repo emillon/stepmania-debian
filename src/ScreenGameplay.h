@@ -170,6 +170,15 @@ public:
 	PlayerInfo *GetDummyPlayerInfo( int iDummyIndex );
 	void Pause(bool bPause) { PauseGame(bPause); }
 	bool IsPaused() const { return m_bPaused; }
+	float GetHasteRate();
+
+	void FailFadeRemovePlayer(PlayerInfo* pi);
+	void FailFadeRemovePlayer(PlayerNumber pn);
+
+	vector<float> m_HasteTurningPoints; // Values at which the meaning of GAMESTATE->m_fHasteRate changes.
+	vector<float> m_HasteAddAmounts; // Amounts that are added to speed depending on what turning point has been passed.
+	float m_fHasteTimeBetweenUpdates; // Seconds between haste updates.
+	float m_fHasteLifeSwitchPoint; // Life amount below which GAMESTATE->m_fHasteRate is based on the life amount.
 
 protected:
 	virtual void UpdateStageStats( MultiPlayer /* mp */ ) {};	// overridden for multiplayer
@@ -182,6 +191,7 @@ protected:
 	LocalizedString GIVE_UP_START_TEXT;
 	LocalizedString GIVE_UP_BACK_TEXT;
 	LocalizedString GIVE_UP_ABORTED_TEXT;
+	ThemeMetric<float> GIVE_UP_SECONDS;
 	ThemeMetric<float> MUSIC_FADE_OUT_SECONDS;
 	ThemeMetric<float> OUT_TRANSITION_LENGTH;
 	ThemeMetric<float> COURSE_TRANSITION_LENGTH;
@@ -212,7 +222,6 @@ protected:
 	void UpdateLights();
 	void SendCrossedMessages();
 	void BeginBackingOutFromGameplay();
-	float GetHasteRate();
 
 	void PlayTicks();
 	void UpdateSongPosition( float fDeltaTime );
@@ -225,6 +234,10 @@ protected:
 	bool AllAreFailing();
 
 	virtual void InitSongQueues();
+
+	void UpdateHasteRate();
+	float m_fCurrHasteRate;
+	// These exist so that the haste rate isn't recalculated every time GetHasteRate is called, which is at least once per frame. -Kyz
 
 	/** @brief The different game states of ScreenGameplay. */
 	enum DancingState { 
@@ -300,6 +313,12 @@ protected:
 	virtual PlayerInfo &GetPlayerInfoForInput( const InputEventPlus& iep )  { return m_vPlayerInfo[iep.pn]; }
 
 	RageTimer		m_timerGameplaySeconds;
+	
+	// HACK: We have no idea whether we're actually using SMOnline or not.
+	// No, seriously, NOWHERE is it stored what room we're in or whether we're in a room at all.
+	// Apparently we just hope the server is keeping track.
+	// All we can do is guess based on what subclass we are.
+	bool m_bForceNoNetwork;
 };
 
 vector<PlayerInfo>::iterator GetNextEnabledPlayerInfo		( vector<PlayerInfo>::iterator iter, vector<PlayerInfo> &v );

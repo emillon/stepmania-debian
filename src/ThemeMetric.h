@@ -146,9 +146,16 @@ public:
 
 			// call function with 0 arguments and 1 result
 			m_Value.PushSelf( L );
-			lua_call(L, 0, 1);
-			ASSERT( !lua_isnil(L, -1) );
-			LuaHelpers::Pop( L, m_currentValue );
+			RString error= m_sGroup + ": " + m_sName + ": ";
+			LuaHelpers::RunScriptOnStack(L, error, 0, 1, true);
+			if(!lua_isnil(L, -1))
+			{
+				LuaHelpers::Pop( L, m_currentValue );
+			}
+			else
+			{
+				lua_pop(L, 1);
+			}
 			LUA->Release(L);
 		}
 
@@ -163,10 +170,12 @@ public:
 	bool IsLoaded() const	{ return m_Value.IsSet(); }
 
 	// Hacks for VC6 for all boolean operators.
-	// todo: get rid of these -aj
-	bool operator ! () const { return !GetValue(); }
-	bool operator && ( const T& input ) const { return GetValue() && input; }
-	bool operator || ( const T& input ) const { return GetValue() || input; }
+	// These three no longer appear to be required:
+	//bool operator ! () const { return !GetValue(); }
+	//bool operator && ( const T& input ) const { return GetValue() && input; }
+	//bool operator || ( const T& input ) const { return GetValue() || input; }
+
+	// This one is still required in at least Visual Studio 2008:
 	bool operator == ( const T& input ) const { return GetValue() == input; }
 };
 

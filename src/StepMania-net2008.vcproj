@@ -445,6 +445,14 @@
 				>
 			</File>
 			<File
+				RelativePath="ScreenBookkeeping.cpp"
+				>
+			</File>
+			<File
+				RelativePath="ScreenBookkeeping.h"
+				>
+			</File>
+			<File
 				RelativePath="ScreenContinue.cpp"
 				>
 			</File>
@@ -2423,6 +2431,14 @@
 						>
 					</File>
 					<File
+						RelativePath="arch\Lights\LightsDriver_Win32Minimaid.cpp"
+						>
+					</File>
+					<File
+						RelativePath="arch\Lights\LightsDriver_Win32Minimaid.h"
+						>
+					</File>
+					<File
 						RelativePath="arch\Lights\LightsDriver_Win32Parallel.cpp"
 						>
 					</File>
@@ -3821,6 +3837,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ActorMultiVertex.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ActorMultiVertex.h"
+				>
+			</File>
+			<File
 				RelativePath="ActorProxy.cpp"
 				>
 			</File>
@@ -3934,6 +3958,14 @@
 			</File>
 			<File
 				RelativePath="AnnouncerManager.h"
+				>
+			</File>
+			<File
+				RelativePath="Bookkeeper.cpp"
+				>
+			</File>
+			<File
+				RelativePath="Bookkeeper.h"
 				>
 			</File>
 			<File

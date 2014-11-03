@@ -242,6 +242,10 @@ public:
 	 * aborted actors.
 	 * @return false, as by default Actors shouldn't be aborted on drawing. */
 	virtual bool EarlyAbortDraw() const { return false; }
+	/** @brief Calculate values that may be needed  for drawing. */
+	virtual void PreDraw();
+	/** @brief Reset internal diffuse and glow. */
+	virtual void PostDraw();
 	/** @brief Start the drawing and push the transform on the world matrix stack. */
 	virtual void BeginDraw();
 	/**
@@ -268,6 +272,10 @@ public:
 	virtual void Update( float fDeltaTime );		// this can short circuit UpdateInternal
 	virtual void UpdateInternal( float fDeltaTime );	// override this
 	void UpdateTweening( float fDeltaTime );
+	// These next functions should all be overridden by a derived class that has its own tweening states to handl.
+	virtual void SetCurrentTweenStart() {}
+	virtual void EraseHeadTween() {}
+	virtual void UpdatePercentThroughTween( float PercentThroughTween ) {}
 
 	/**
 	 * @brief Retrieve the Actor's name.
@@ -447,9 +455,9 @@ public:
 	void SetAux( float f )				{ DestTweenState().aux = f; }
 	float GetAux() const				{ return m_current.aux; }
 
-	void BeginTweening( float time, ITween *pInterp );
+	virtual void BeginTweening( float time, ITween *pInterp );
 	void BeginTweening( float time, TweenType tt = TWEEN_LINEAR );
-	void StopTweening();
+	virtual void StopTweening();
 	void Sleep( float time );
 	void QueueCommand( const RString& sCommandName );
 	void QueueMessage( const RString& sMessageName );
@@ -511,44 +519,19 @@ public:
 	void SetEffectMagnitude( RageVector3 vec )	{ m_vEffectMagnitude = vec; }
 	RageVector3 GetEffectMagnitude() const		{ return m_vEffectMagnitude; }
 
-	void SetEffectDiffuseBlink( 
-		float fEffectPeriodSeconds = 1.0f,
-		RageColor c1 = RageColor(0.5f,0.5f,0.5f,1), 
-		RageColor c2 = RageColor(1,1,1,1) );
-	void SetEffectDiffuseShift( float fEffectPeriodSeconds = 1.f,
-		RageColor c1 = RageColor(0,0,0,1), 
-		RageColor c2 = RageColor(1,1,1,1) );
-	void SetEffectDiffuseRamp( float fEffectPeriodSeconds = 1.f,
-		RageColor c1 = RageColor(0,0,0,1), 
-		RageColor c2 = RageColor(1,1,1,1) );
-	void SetEffectGlowBlink( float fEffectPeriodSeconds = 1.f,
-		RageColor c1 = RageColor(1,1,1,0.2f),
-		RageColor c2 = RageColor(1,1,1,0.8f) );
-	void SetEffectGlowShift( 
-		float fEffectPeriodSeconds = 1.0f,
-		RageColor c1 = RageColor(1,1,1,0.2f),
-		RageColor c2 = RageColor(1,1,1,0.8f) );
-	void SetEffectGlowRamp( 
-		float fEffectPeriodSeconds = 1.0f,
-		RageColor c1 = RageColor(1,1,1,0.2f),
-		RageColor c2 = RageColor(1,1,1,0.8f) );
-	void SetEffectRainbow( 
-		float fEffectPeriodSeconds = 2.0f );
-	void SetEffectWag( 
-		float fPeriod = 2.f, 
-		RageVector3 vect = RageVector3(0,0,20) );
-	void SetEffectBounce( 
-		float fPeriod = 2.f, 
-		RageVector3 vect = RageVector3(0,20,0) );
-	void SetEffectBob( 
-		float fPeriod = 2.f, 
-		RageVector3 vect = RageVector3(0,20,0) );
-	void SetEffectPulse( 
-		float fPeriod = 2.f,
-		float fMinZoom = 0.5f,
-		float fMaxZoom = 1.f );
-	void SetEffectSpin( RageVector3 vect = RageVector3(0,0,180) );
-	void SetEffectVibrate( RageVector3 vect = RageVector3(10,10,10) );
+	void SetEffectDiffuseBlink( float fEffectPeriodSeconds, RageColor c1, RageColor c2 );
+	void SetEffectDiffuseShift( float fEffectPeriodSeconds, RageColor c1, RageColor c2 );
+	void SetEffectDiffuseRamp( float fEffectPeriodSeconds, RageColor c1, RageColor c2 );
+	void SetEffectGlowBlink( float fEffectPeriodSeconds, RageColor c1, RageColor c2 );
+	void SetEffectGlowShift( float fEffectPeriodSeconds, RageColor c1, RageColor c2 );
+	void SetEffectGlowRamp( float fEffectPeriodSeconds, RageColor c1, RageColor c2 );
+	void SetEffectRainbow( float fEffectPeriodSeconds );
+	void SetEffectWag( float fPeriod, RageVector3 vect );
+	void SetEffectBounce( float fPeriod, RageVector3 vect );
+	void SetEffectBob( float fPeriod, RageVector3 vect );
+	void SetEffectPulse( float fPeriod, float fMinZoom, float fMaxZoom );
+	void SetEffectSpin( RageVector3 vect );
+	void SetEffectVibrate( RageVector3 vect );
 
 
 	// other properties
@@ -572,6 +555,7 @@ public:
 
 	// render states
 	void SetBlendMode( BlendMode mode )		{ m_BlendMode = mode; } 
+	void SetTextureTranslate( float x, float y )	{ m_texTranslate.x = x; m_texTranslate.y = y; }
 	void SetTextureWrapping( bool b ) 			{ m_bTextureWrapping = b; } 
 	void SetTextureFiltering( bool b ) 		{ m_bTextureFiltering = b; } 
 	void SetClearZBuffer( bool b ) 			{ m_bClearZBuffer = b; } 
@@ -708,6 +692,7 @@ protected:
 	BlendMode	m_BlendMode;
 	ZTestMode	m_ZTestMode;
 	CullMode	m_CullMode;
+	RageVector2	m_texTranslate;
 	bool		m_bTextureWrapping;
 	bool		m_bTextureFiltering;
 	bool		m_bClearZBuffer;

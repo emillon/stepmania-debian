@@ -129,10 +129,10 @@ void ArchHooks_MacOSX::Init()
 
 RString ArchHooks_MacOSX::GetArchName() const
 {
-#if defined(__ppc__)
-	return "Mac OS X (ppc)";
-#elif defined(__i386__)
+#if defined(__i386__)
 	return "Mac OS X (i386)";
+#elif defined(__x86_64__)
+	return "Mac OS X (x86_64)";
 #else
 #error What arch?
 #endif
@@ -344,11 +344,9 @@ RString ArchHooks::GetPreferredLanguage()
 		// MacRoman agrees with ASCII in the low-order 7 bits.
 		const char *str = CFStringGetCStringPtr( lang, kCFStringEncodingMacRoman );
 		if( str )
-			ret = str;
+			ret = RString( str, 2 );
 		else
 			LOG->Warn( "Unable to determine system language. Using English." );
-
-		ret = RString( str, 2 );
 	}
 
 	CFRelease( languages );
@@ -428,7 +426,7 @@ void ArchHooks::MountUserFilesystems( const RString &sDirOfExecutable )
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/CDTitles", dir), "/CDTitles" );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/Characters", dir), "/Characters" );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/Courses", dir), "/Courses" );
-	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/Noteskins", dir), "/Noteskins" );
+	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/NoteSkins", dir), "/NoteSkins" );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/Packages", dir), "/" + SpecialFiles::USER_PACKAGES_DIR );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/Songs", dir), "/Songs" );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/RandomMovies", dir), "/RandomMovies" );

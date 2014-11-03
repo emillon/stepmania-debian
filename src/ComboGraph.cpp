@@ -22,26 +22,47 @@ ComboGraph::ComboGraph()
 void ComboGraph::Load( RString sMetricsGroup )
 {
 	BODY_WIDTH.Load( sMetricsGroup, "BodyWidth" );
+	BODY_HEIGHT.Load( sMetricsGroup, "BodyHeight" );
+
+	// These need to be set so that a theme can use zoomtowidth/zoomtoheight and get correct behavior.
+	this->SetWidth(BODY_WIDTH);
+	this->SetHeight(BODY_HEIGHT);
 
 	Actor *pActor = NULL;
 
 	m_pBacking = ActorUtil::MakeActor( THEME->GetPathG(sMetricsGroup,"Backing") );
-	m_pBacking->ZoomToWidth( BODY_WIDTH );
-	this->AddChild( m_pBacking );
+	if( m_pBacking != NULL )
+	{
+		m_pBacking->ZoomToWidth( BODY_WIDTH );
+		m_pBacking->ZoomToHeight( BODY_HEIGHT );
+		this->AddChild( m_pBacking );
+	}
 
 	m_pNormalCombo = ActorUtil::MakeActor( THEME->GetPathG(sMetricsGroup,"NormalCombo") );
-	m_pNormalCombo->ZoomToWidth( BODY_WIDTH );
-	this->AddChild( m_pNormalCombo );
+	if( m_pNormalCombo != NULL )
+	{
+		m_pNormalCombo->ZoomToWidth( BODY_WIDTH );
+		m_pNormalCombo->ZoomToHeight( BODY_HEIGHT );
+		this->AddChild( m_pNormalCombo );
+	}
 
 	m_pMaxCombo = ActorUtil::MakeActor( THEME->GetPathG(sMetricsGroup,"MaxCombo") );
-	m_pMaxCombo->ZoomToWidth( BODY_WIDTH );
-	this->AddChild( m_pMaxCombo );
+	if( m_pMaxCombo != NULL )
+	{
+		m_pMaxCombo->ZoomToWidth( BODY_WIDTH );
+		m_pMaxCombo->ZoomToHeight( BODY_HEIGHT );
+		this->AddChild( m_pMaxCombo );
+	}
 
 	pActor = ActorUtil::MakeActor( THEME->GetPathG(sMetricsGroup,"ComboNumber") );
-	m_pComboNumber = dynamic_cast<BitmapText *>( pActor );
-	if( m_pComboNumber == NULL )
-		RageException::Throw( "ComboGraph: \"sMetricsGroup\" \"ComboNumber\" must be a BitmapText" );
-	this->AddChild( m_pComboNumber );
+	if( pActor != NULL )
+	{
+		m_pComboNumber = dynamic_cast<BitmapText *>( pActor );
+		if( m_pComboNumber != NULL )
+			this->AddChild( m_pComboNumber );
+		else
+			LuaHelpers::ReportScriptErrorFmt( "ComboGraph: \"sMetricsGroup\" \"ComboNumber\" must be a BitmapText" );
+	}
 }	
 
 void ComboGraph::Set( const StageStats &s, const PlayerStageStats &pss )

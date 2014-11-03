@@ -22,6 +22,10 @@ enum InputEventType
 	InputEventType_Invalid
 };
 
+const RString& InputEventTypeToString(InputEventType cat);
+const RString& InputEventTypeToLocalizedString(InputEventType cat);
+LuaDeclareType(InputEventType);
+
 struct InputEvent
 {
 	InputEvent(): type(IET_FIRST_PRESS) {}
@@ -92,7 +96,7 @@ private:
 	InputFilter& operator=(const InputFilter& rhs);
 };
 
-extern InputFilter*	INPUTFILTER;	// global and accessable from anywhere in our program
+extern InputFilter*	INPUTFILTER;	// global and accessible from anywhere in our program
 
 #endif
 

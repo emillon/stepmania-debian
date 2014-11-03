@@ -10,25 +10,6 @@ function AreStageSongModsForced()
 	return GAMESTATE:IsAnExtraStage() or bOni or bBattle or bRave
 end
 
-function SetFail()
-	local sFail = ""
-
-	if GetGamePref("DefaultFail") then
-		sFail = string.format("Fail%s", GetGamePref("DefaultFail"))
-	else
-		sFail = "FailOff"
-	end
-
-	sFail = tostring(sFail)
-
-	for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
-		MESSAGEMAN:Broadcast( "PlayerOptionsChanged", {PlayerNumber = pn} )
-	end
-
-	GAMESTATE:ApplyGameCommand( "mod," .. sFail)
-	MESSAGEMAN:Broadcast( "SongOptionsChanged" )
-end
-
 function ScreenSelectMusic:setupmusicstagemods()
 	Trace( "setupmusicstagemods" )
 	local pm = GAMESTATE:GetPlayMode()

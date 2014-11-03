@@ -25,6 +25,7 @@ public:
 	void SetVertSpacing( int iSpacing );
 	void SetMaxWidth( float fMaxWidth );
 	void SetMaxHeight( float fMaxHeight );
+	void SetMaxDimUseZoom(bool use);
 	void SetWrapWidthPixels( int iWrapWidthPixels );
 	void CropToWidth( int iWidthInSourcePixels );
 
@@ -34,6 +35,8 @@ public:
 	void SetUppercase( bool b );
 	void SetRainbowScroll( bool b )	{ m_bRainbowScroll = b; }
 	void SetJitter( bool b )	{ m_bJitter = b; }
+	void SetDistortion( float f );
+	void UnSetDistortion();
 
 	void SetHorizAlign( float f );
 
@@ -75,8 +78,11 @@ protected:
 	int			m_iWrapWidthPixels;		// -1 = no wrap
 	float		m_fMaxWidth;			// 0 = no max
 	float		m_fMaxHeight;			// 0 = no max
+	bool		m_MaxDimensionUsesZoom;
 	bool		m_bRainbowScroll;
 	bool		m_bJitter;
+	bool		m_bUsingDistortion;
+	float		m_fDistortion;
 	int			m_iVertSpacing;
 
 	vector<RageSpriteVertex>	m_aVertices;

@@ -13,8 +13,10 @@ class PlayerStageStats
 {
 public:
 	/** @brief Set up the PlayerStageStats with default values. */
-	PlayerStageStats() { Init(); }
-	void Init();
+	PlayerStageStats() { InternalInit(); }
+	void InternalInit();
+	void Init(PlayerNumber pn);
+	void Init(MultiPlayer pn);
 
 	/**
 	 * @brief Add stats from one PlayerStageStats to another.
@@ -30,6 +32,10 @@ public:
 	int GetLessonScoreActual() const;
 	int GetLessonScoreNeeded() const;
 	void ResetScoreForLesson();
+
+	bool m_for_multiplayer;
+	PlayerNumber m_player_number;
+	MultiPlayer m_multiplayer_number;
 
 	bool		m_bJoined;
   bool    m_bPlayerCanAchieveFullCombo;
@@ -99,6 +105,7 @@ public:
 
 	struct Combo_t
 	{
+		// Update GetComboList in PlayerStageStats.cpp when adding new members that should be visible from the Lua side.
 		/** 
 		 * @brief The start time of the combo.
 		 *

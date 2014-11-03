@@ -210,6 +210,11 @@ function IsFreePlay()
 	return IsArcade() and (GAMESTATE:GetCoinMode() == 'CoinMode_Free') or false
 end
 
+function IsCourse()
+	local pm = GAMESTATE:GetPlayMode();
+	return pm == "PlayMode_Nonstop" or "PlayMode_Oni" or "PlayMode_Endless"
+end
+
 function ArgsIfPlayerJoinedOrNil(arg1,arg2)
 	if arg1==nil then arg1=arg2
 	elseif arg2==nil then arg2=arg1 end
@@ -218,8 +223,8 @@ end
 
 function Center1Player()
 	local styleType = GAMESTATE:GetCurrentStyle():GetStyleType()
-	-- always center in OnePlayerTwoSides.
-	if styleType == "StyleType_OnePlayerTwoSides" then
+	-- always center in OnePlayerTwoSides ( Doubles ) or TwoPlayersSharedSides ( Couples )
+	if styleType == "StyleType_OnePlayerTwoSides" or styleType == "StyleType_TwoPlayersSharedSides" then
 		return true
 	-- only Center1P if Pref enabled and OnePlayerOneSide.
 	-- (implicitly excludes Rave, Battle, Versus, Routine)
@@ -228,6 +233,16 @@ function Center1Player()
 	else
 		return false
 	end
+end
+
+function IsRoutine()
+	local styleType = GAMESTATE:GetCurrentStyle():GetStyleType()
+
+	if styleType == "StyleType_TwoPlayersSharedSides" then
+		return true
+	end
+
+	return false
 end
 
 Date = {
@@ -360,6 +375,80 @@ function IsUsingWideScreen()
 		end;
 	end;
 end;
+
+-- Minor text formatting functions from Kyzentun.
+-- TODO:  Figure out why BitmapText:maxwidth doesn't do what I want.
+-- Intentionally undocumented because they should be moved to BitmapText ASAP
+function width_limit_text(text, limit, natural_zoom)
+	natural_zoom= natural_zoom or 1
+	if text:GetWidth() * natural_zoom > limit then
+		text:zoomx(limit / text:GetWidth())
+	else
+		text:zoomx(natural_zoom)
+	end
+end
+
+function width_clip_text(text, limit)
+	local full_text= text:GetText()
+	local fits= text:GetZoomedWidth() <= limit
+	local prev_max= #full_text - 1
+	local prev_min= 0
+	if not fits then
+		while prev_max - prev_min > 1 do
+			local new_max= math.round((prev_max + prev_min) / 2)
+			text:settext(full_text:sub(1, 1+new_max))
+			if text:GetZoomedWidth() <= limit then
+				prev_min= new_max
+			else
+				prev_max= new_max
+			end
+		end
+		text:settext(full_text:sub(1, 1+prev_min))
+	end
+end
+
+function width_clip_limit_text(text, limit, natural_zoom)
+	natural_zoom= natural_zoom or text:GetZoomY()
+	local text_width= text:GetWidth() * natural_zoom
+	if text_width > limit * 2 then
+		text:zoomx(natural_zoom * .5)
+		width_clip_text(text, limit)
+	else
+		width_limit_text(text, limit, natural_zoom)
+	end
+end
+
+function convert_text_to_indented_lines(text, indent, width, text_zoom)
+	local text_as_lines= split("\n", text:GetText())
+	local indented_lines= {}
+	for i, line in ipairs(text_as_lines) do
+		local remain= line
+		local sub_lines= 0
+		repeat
+			text:settext(remain)
+			local clipped= false
+			local indent_mult= 0
+			if i > 1 then
+				indent_mult= indent_mult + 1
+			end
+			if sub_lines > 0 then
+				indent_mult= 2
+			end
+			-- On larger resolutions, the font can be squished a bit to fit more on a line.
+			local resolution_width_mult= math.max(1, DISPLAY:GetDisplayHeight() / 720)
+			local usable_width= (width - (indent * indent_mult)) * resolution_width_mult
+			if text:GetWidth() * text_zoom > usable_width then
+				clipped= true
+				width_clip_text(text, usable_width)
+			end
+			indented_lines[#indented_lines+1]= {
+				indent_mult, text:GetText()}
+			remain= remain:sub(#text:GetText()+1)
+			sub_lines= sub_lines + 1
+		until not clipped
+	end
+	return indented_lines
+end
 
 -- (c) 2005-2011 Glenn Maynard, Chris Danford, SSC
 -- All rights reserved.

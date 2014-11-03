@@ -1,7 +1,10 @@
 #include "global.h"
+#include "StepMania.h"
+#include "arch/Dialog/Dialog.h"
 #include "GameManager.h"
 #include "GameConstantsAndTypes.h"
 #include "GameInput.h"	// for GameButton constants
+#include "GameLoop.h"  // for ChangeGame
 #include "RageLog.h"
 #include "RageUtil.h"
 #include "NoteSkinManager.h"
@@ -12,7 +15,7 @@
 #include "Style.h"
 #include "Foreach.h"
 
-GameManager*	GAMEMAN = NULL;	// global and accessable from anywhere in our program
+GameManager*	GAMEMAN = NULL;	// global and accessible from anywhere in our program
 
 enum 
 {
@@ -503,6 +506,7 @@ static const Game g_Game_Dance =
 	"dance",					// m_szName
 	g_apGame_Dance_Styles,				// m_apStyles
 	false,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"dance",				// m_szName
 		NUM_DANCE_BUTTONS,			// m_iButtonsPerController
@@ -873,6 +877,7 @@ static const Game g_Game_Pump =
 	"pump",						// m_szName
 	g_apGame_Pump_Styles,				// m_apStyles
 	false,						// m_bCountNotesSeparately
+	true, // m_bTickHolds
 	{						// m_InputScheme
 		"pump",					// m_szName
 		NUM_PUMP_BUTTONS,			// m_iButtonsPerController
@@ -1055,6 +1060,7 @@ static const Game g_Game_KB7 =
 	"kb7",						// m_szName
 	g_apGame_KB7_Styles,				// m_apStyles
 	true,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"kb7",					// m_szName
 		NUM_KB7_BUTTONS,			// m_iButtonsPerController
@@ -1326,6 +1332,7 @@ static const Game g_Game_Ez2 =
 	"ez2",						// m_szName
 	g_apGame_Ez2_Styles,				// m_apStyles
 	true,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"ez2",					// m_szName
 		NUM_EZ2_BUTTONS,			// m_iButtonsPerController
@@ -1458,6 +1465,7 @@ static const Game g_Game_Para =
 	"para",						// m_szName
 	g_apGame_Para_Styles,				// m_apStyles
 	false,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"para",					// m_szName
 		NUM_PARA_BUTTONS,			// m_iButtonsPerController
@@ -1555,6 +1563,7 @@ static const Game g_Game_DS3DDX =
 	"ds3ddx",					// m_szName
 	g_apGame_DS3DDX_Styles,				// m_apStyles
 	false,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"ds3ddx",				// m_szName
 		NUM_DS3DDX_BUTTONS,			// m_iButtonsPerController
@@ -1900,6 +1909,7 @@ static const Game g_Game_Beat =
 	"beat",						// m_szName
 	g_apGame_Beat_Styles,				// m_apStyles
 	true,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"beat",					// m_szName
 		NUM_BEAT_BUTTONS,			// m_iButtonsPerController
@@ -2079,6 +2089,7 @@ static const Game g_Game_Maniax =
 	"maniax",					// m_szName
 	g_apGame_Maniax_Styles,				// m_apStyles
 	false,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"maniax",				// m_szName
 		NUM_MANIAX_BUTTONS,			// m_iButtonsPerController
@@ -2558,6 +2569,7 @@ static const Game g_Game_Techno =
 	"techno",					// m_szName
 	g_apGame_Techno_Styles,				// m_apStyles
 	false,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"techno",				// m_szName
 		NUM_TECHNO_BUTTONS,			// m_iButtonsPerController
@@ -2708,6 +2720,7 @@ static const Game g_Game_Popn =
 	"popn",						// m_szName
 	g_apGame_Popn_Styles,				// m_apStyles
 	true,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"popn",					// m_szName
 		NUM_POPN_BUTTONS,			// m_iButtonsPerController
@@ -2813,6 +2826,7 @@ static const Game g_Game_Lights =
 	"lights",					// m_szName
 	g_apGame_Lights_Styles,				// m_apStyles
 	false,						// m_bCountNotesSeparately
+	false, // m_bTickHolds
 	{						// m_InputScheme
 		"lights",				// m_szName
 		NUM_LIGHTS_BUTTONS,			// m_iButtonsPerController
@@ -2927,19 +2941,19 @@ const Style* GameManager::GetEditorStyleForStepsType( StepsType st )
 
 void GameManager::GetStepsTypesForGame( const Game *pGame, vector<StepsType>& aStepsTypeAddTo )
 {
-	FOREACH_ENUM( StepsType, st )
+	for( int i=0; pGame->m_apStyles[i]; ++i )
 	{
+		StepsType st = pGame->m_apStyles[i]->m_StepsType;
+		ASSERT(st < NUM_StepsType);
+		
+		// Some Styles use the same StepsType (e.g. single and versus) so check
+		// that we aren't doubling up.
 		bool found = false;
-		for( int s=0; pGame->m_apStyles[s]; ++s ) 
-		{
-			const Style *style = pGame->m_apStyles[s];
-			if( style->m_StepsType != st )
-				continue;
-
-			found = true;
-		}
-		if( found )
-			aStepsTypeAddTo.push_back( st );
+		for( unsigned j=0; j < aStepsTypeAddTo.size(); j++ )
+			if( st == aStepsTypeAddTo[j] ) { found = true; break; }
+		if(found) continue;
+			
+		aStepsTypeAddTo.push_back( st );
 	}
 }
 
@@ -3145,12 +3159,66 @@ public:
 
 		return 1;
 	}
-
+	static int GetStylesForGame( T* p, lua_State *L )
+	{
+		RString game_name= SArg(1);
+		const Game *pGame = p->StringToGame(game_name);
+		if(!pGame)
+		{
+			luaL_error(L, "GetStylesForGame: Invalid Game: '%s'", game_name.c_str());
+		}
+		vector<Style*> aStyles;
+		lua_createtable(L, 0, 0);
+		for( int s=0; pGame->m_apStyles[s]; ++s ) 
+		{
+			Style *pStyle = const_cast<Style *>( pGame->m_apStyles[s] );
+			pStyle->PushSelf(L);
+			lua_rawseti(L, -2, s+1);
+		}		
+		return 1;
+	}
+	static int GetEnabledGames( T* p, lua_State *L )
+	{
+		vector<const Game*> aGames;
+		p->GetEnabledGames( aGames );
+		lua_createtable(L, aGames.size(), 0);
+		for(size_t i= 0; i < aGames.size(); ++i)
+		{
+			lua_pushstring(L, aGames[i]->m_szName);
+			lua_rawseti(L, -2, i+1);
+		}
+		return 1;	
+	}
+	
+	static int SetGame( T* p, lua_State *L )
+	{
+		RString game_name= SArg(1);
+		const Game *pGame = p->StringToGame(game_name);
+		if(!pGame)
+		{
+			luaL_error(L, "SetGame: Invalid Game: '%s'", game_name.c_str());
+		}
+		RString theme;
+		if( lua_gettop(L) >= 2 && !lua_isnil(L, 2) )
+		{
+			theme = SArg(2);
+			if(!THEME->IsThemeSelectable(theme))
+			{
+				luaL_error(L, "SetGame: Invalid Theme: '%s'", theme.c_str());
+			}
+		}
+		GameLoop::ChangeGame(game_name, theme);
+		return 0;
+	}
+	
 	LunaGameManager()
 	{
 		ADD_METHOD( StepsTypeToLocalizedString );
 		ADD_METHOD( GetFirstStepsTypeForGame );
 		ADD_METHOD( IsGameEnabled );
+		ADD_METHOD( GetStylesForGame );
+		ADD_METHOD( GetEnabledGames );
+		ADD_METHOD( SetGame );
 	};
 };
 

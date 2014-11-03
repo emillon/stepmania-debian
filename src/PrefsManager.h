@@ -2,6 +2,7 @@
 #define PREFSMANAGER_H
 
 #include "Preference.h"
+#include "GameConstantsAndTypes.h"
 
 class IniFile;
 
@@ -111,15 +112,15 @@ enum CourseSortOrders
 	NUM_CourseSortOrders,
 	CourseSortOrders_Invalid
 };
-
-enum DefaultFailType
+enum BackgroundFitMode
 {
-	FAIL_IMMEDIATE,
-	FAIL_IMMEDIATECONTINUE,
-	FAIL_ENDOFSONG,
-	FAIL_OFF,
-	NUM_DefaultFailType,
-	DefaultFailType_Invalid
+	BFM_CoverDistort,
+	BFM_CoverPreserve,
+	BFM_FitInside,
+	BFM_FitInsideAvoidLetter,
+	BFM_FitInsideAvoidPillar,
+	NUM_BackgroundFitMode,
+	BackgroundFitMode_Invalid
 };
 
 /** @brief Holds user-chosen preferences that are saved between sessions. */
@@ -164,6 +165,7 @@ public:
 	Preference<int>	m_iTextureColorDepth;
 	Preference<int>	m_iMovieColorDepth;
 	Preference<bool>	m_bStretchBackgrounds;
+	Preference<BackgroundFitMode> m_BGFitMode;
 	Preference<HighResolutionTextures>	m_HighResolutionTextures;
 	Preference<int>	m_iMaxTextureResolution;
 	Preference<int>	m_iRefreshRate;
@@ -174,6 +176,7 @@ public:
 
 	Preference<bool>	m_bHiddenSongs;
 	Preference<bool>	m_bVsync;
+	Preference<bool>	m_FastNoteRendering;
 	Preference<bool>	m_bInterlaced;
 	Preference<bool>	m_bPAL;
 	Preference<bool>	m_bDelayedTextureDelete;
@@ -201,11 +204,15 @@ public:
 	Preference<bool>	m_bShowCaution;
 	Preference<bool>	m_bShowNativeLanguage;
 	Preference<int>	m_iArcadeOptionsNavigation;
+	Preference<bool>	m_ThreeKeyNavigation;
 	Preference<MusicWheelUsesSections>		m_MusicWheelUsesSections;
 	Preference<int>	m_iMusicWheelSwitchSpeed;
 	Preference<AllowW1>	m_AllowW1; // this should almost always be on, given use cases. -aj
 	Preference<bool>	m_bEventMode;
+	Preference<int>	m_iCoinsPerCredit;
 	Preference<int>	m_iSongsPerPlay;
+	Preference<bool>	m_bDelayedCreditsReconcile; // zuh?
+	Preference<bool>	m_bComboContinuesBetweenSongs;
 	Preference<Maybe>	m_ShowSongOptions;
 	Preference<bool>	m_bDancePointsForOni;
 	Preference<bool>	m_bPercentageScoring;
@@ -239,6 +246,7 @@ public:
 	Preference<bool>	m_bAllowMultipleHighScoreWithSameName;
 	Preference<bool>	m_bCelShadeModels;
 	Preference<bool>	m_bPreferredSortUsesGroups;
+	Preference<float>	m_fDebounceCoinInputTime; // allow users to apply a distinct debounce to coin input
 
 	// Number of seconds it takes for a button on the controller to release
 	// after pressed.
@@ -286,7 +294,7 @@ public:
 
 	/** @brief Enable some quirky behavior used by some older versions of StepMania. */
 	Preference<bool>	m_bQuirksMode;
-	// Preference<RString> m_sDefaultFailType; // XXX: Fix fail bug?
+	Preference<FailType> m_DefaultFailType;
 
 	// Debug:
 	Preference<bool>	m_bLogToDisk;
@@ -337,7 +345,7 @@ protected:
  * pointer anyway). */
 extern bool			g_bAutoRestart;
 
-extern PrefsManager*	PREFSMAN;	// global and accessable from anywhere in our program
+extern PrefsManager*	PREFSMAN;	// global and accessible from anywhere in our program
 
 #endif
 

@@ -2,12 +2,11 @@
 #include "EnumHelper.h"
 #include "LuaManager.h"
 #include "RageUtil.h"
+#include "RageLog.h"
 
-int CheckEnum( lua_State *L, LuaReference &table, int iPos, int iInvalid, const char *szType, bool bAllowInvalid )
+int CheckEnum( lua_State *L, LuaReference &table, int iPos, int iInvalid, const char *szType, bool bAllowInvalid, bool bAllowAnything )
 {
-	luaL_checkany( L, iPos );
-
-	if( lua_isnil(L, iPos) )
+	if( lua_isnoneornil(L, iPos) )
 	{
 		if( bAllowInvalid )
 			return iInvalid;
@@ -21,6 +20,24 @@ int CheckEnum( lua_State *L, LuaReference &table, int iPos, int iInvalid, const 
 	table.PushSelf( L );
 	lua_pushvalue( L, iPos );
 	lua_gettable( L, -2 );
+
+	// If not found, check case-insensitively for legacy compatibility
+	if( lua_isnil(L, -1) && lua_isstring(L, iPos) ) {
+		RString sLower;
+
+		// Get rid of nil value on stack
+		lua_pop( L, 1 );
+
+		// Get the string and lowercase it
+		lua_pushvalue( L, iPos );
+		LuaHelpers::Pop( L, sLower );
+		sLower.MakeLower();
+
+		// Try again to read the value
+		table.PushSelf( L );
+		LuaHelpers::Push( L, sLower );
+		lua_gettable( L, -2 );
+	}
 
 	// If the result is nil, then a string was passed that is not a member of this enum.  Throw
 	// an error.  To specify the invalid value, pass nil.  That way, typos will throw an error,
@@ -43,6 +60,18 @@ int CheckEnum( lua_State *L, LuaReference &table, int iPos, int iInvalid, const 
 			LuaHelpers::Pop( L, sGot );
 		}
 		LuaHelpers::Push( L, ssprintf("Expected %s; got %s", szType, sGot.c_str() ) );
+		// There are a couple places where CheckEnum is used outside of a
+		// function called from lua.  If we use lua_error from one of them,
+		// StepMania crashes out completely.  bAllowAnything allows those places
+		// to avoid crashing over theme mistakes.
+		if(bAllowAnything)
+		{
+			RString errmsg;
+			LuaHelpers::Pop(L, errmsg);
+			LuaHelpers::ReportScriptError(errmsg);
+			lua_pop(L, 2);
+			return iInvalid;
+		}
 		lua_error( L );
 	}
 	int iRet = lua_tointeger( L, -1 );

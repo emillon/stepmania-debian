@@ -555,7 +555,7 @@ void GameSoundManager::Update( float fDeltaTime )
 	{
 		/* There's no song playing.  Fake it. */
 		CHECKPOINT_M( ssprintf("%f, delta %f", GAMESTATE->m_Position.m_fMusicSeconds, fDeltaTime) );
-		GAMESTATE->UpdateSongPosition( GAMESTATE->m_Position.m_fMusicSeconds + fDeltaTime, g_Playing->m_Timing );
+		GAMESTATE->UpdateSongPosition( GAMESTATE->m_Position.m_fMusicSeconds + fDeltaTime * g_Playing->m_Music->GetPlaybackRate() , g_Playing->m_Timing );
 		return;
 	}
 
@@ -567,9 +567,7 @@ void GameSoundManager::Update( float fDeltaTime )
 	RageTimer tm;
 	const float fSeconds = g_Playing->m_Music->GetPositionSeconds( &m_bApproximate, &tm );
 
-	//
 	// Check for song timing skips.
-	//
 	if( PREFSMAN->m_bLogSkips && !g_Playing->m_bTimingDelayed )
 	{
 		const float fExpectedTimePassed = (tm - GAMESTATE->m_Position.m_LastBeatUpdate) * g_Playing->m_Music->GetPlaybackRate();
@@ -586,10 +584,8 @@ void GameSoundManager::Update( float fDeltaTime )
 		sLastFile = ThisFile;
 	}
 
-	//
 	// If g_Playing->m_bTimingDelayed, we're waiting for the new music to actually start
 	// playing.
-	//
 	if( g_Playing->m_bTimingDelayed && !m_bApproximate )
 	{
 		/* Load up the new timing data. */
@@ -608,10 +604,7 @@ void GameSoundManager::Update( float fDeltaTime )
 		GAMESTATE->UpdateSongPosition( fSeconds + fAdjust, g_Playing->m_Timing, tm + fAdjust );
 	}
 
-
-	//
 	// Send crossed messages
-	//
 	if( GAMESTATE->m_pCurSong )
 	{
 		static int iBeatLastCrossed = 0;
@@ -633,10 +626,7 @@ void GameSoundManager::Update( float fDeltaTime )
 		iBeatLastCrossed = iBeatNow;
 	}
 
-
-	//
 	// Update lights
-	//
 	NoteData &lights = g_Playing->m_Lights;
 	if( lights.GetNumTracks() > 0 )	// lights data was loaded
 	{
@@ -657,7 +647,7 @@ void GameSoundManager::Update( float fDeltaTime )
 			// Otherwise, for each index we crossed since the last update:
 			FOREACH_NONEMPTY_ROW_IN_TRACK_RANGE( lights, cl, r, iRowLastCrossed+1, iSongRow+1 )
 			{
-				if( lights.GetTapNote( cl, r ).type != TapNote::empty )
+				if( lights.GetTapNote( cl, r ).type != TapNoteType_Empty )
 				{
 					LIGHTSMAN->BlinkCabinetLight( cl );
 					break;
@@ -684,7 +674,8 @@ void GameSoundManager::PlayMusic(
 	float fLengthSeconds, 
 	float fFadeInLengthSeconds, 
 	float fFadeOutLengthSeconds, 
-	bool bAlignBeat
+	bool bAlignBeat,
+	bool bApplyMusicRate
 	)
 {
 	PlayMusicParams params;
@@ -696,7 +687,7 @@ void GameSoundManager::PlayMusic(
 	params.fFadeInLengthSeconds = fFadeInLengthSeconds;
 	params.fFadeOutLengthSeconds = fFadeOutLengthSeconds;
 	params.bAlignBeat = bAlignBeat;
-	params.bApplyMusicRate = false;
+	params.bApplyMusicRate = bApplyMusicRate;
 	PlayMusic( params );
 }
 
@@ -831,19 +822,37 @@ public:
 		float musicLength = FArg(3);
 		float fadeIn = 0;
 		float fadeOut = 0;
-		if (lua_gettop(L) >= 4 && !lua_isnil(L,4))
+		bool loop= false;
+		bool applyRate= false;
+		bool alignBeat= true;
+		if(!lua_isnoneornil(L, 4))
 		{
 			fadeIn = FArg(4);
-			if (lua_gettop(L) >= 5 && !lua_isnil(L,5))
-			{
-				fadeOut = FArg(5);
-			}
 		}
-		p->PlayMusic(musicPath, NULL, false, musicStart, musicLength,
-					 fadeIn, fadeOut);
+		if(!lua_isnoneornil(L, 5))
+		{
+			fadeOut = FArg(5);
+		}
+		if(!lua_isnoneornil(L, 6))
+		{
+			loop = BArg(6);
+		}
+		if(!lua_isnoneornil(L, 7))
+		{
+			applyRate = BArg(7);
+		}
+		if(!lua_isnoneornil(L, 8))
+		{
+			alignBeat = BArg(8);
+		}
+		p->PlayMusic(musicPath, NULL, loop, musicStart, musicLength,
+			fadeIn, fadeOut, alignBeat, applyRate);
 		return 0;
 	}
 
+	static int StopMusic( T* p, lua_State *L )			{ p->StopMusic(); return 0; }
+	static int IsTimingDelayed( T* p, lua_State *L )	{ lua_pushboolean( L, g_Playing->m_bTimingDelayed ); return 1; }
+	
 	LunaGameSoundManager()
 	{
 		ADD_METHOD( DimMusic );
@@ -851,6 +860,8 @@ public:
 		ADD_METHOD( PlayAnnouncer );
 		ADD_METHOD( GetPlayerBalance );
 		ADD_METHOD( PlayMusicPart );
+		ADD_METHOD( StopMusic );
+		ADD_METHOD( IsTimingDelayed );
 	}
 };
 
