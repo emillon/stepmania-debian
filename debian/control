@@ -17,6 +17,7 @@ Build-Depends:
  libjpeg-dev,
  libmad0-dev,
  libpng-dev,
+ libtomcrypt-dev,
  libvorbis-dev,
  libxrandr-dev,
  pkg-config,

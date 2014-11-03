@@ -1,0 +1,77 @@
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -705,8 +705,6 @@
+ 
+ libtomcrypt_a_CPPFLAGS = -I$(srcdir)/libtomcrypt/src/headers $(AM_CPPFLAGS)
+ 
+-noinst_LIBRARIES += libtomcrypt.a
+-
+ main_CPPFLAGS = \
+ 	$(VIDEO_CFLAGS) \
+ 	-I$(top_srcdir)/extern/jsoncpp/include
+@@ -732,7 +730,7 @@
+ 		$(VIDEO_LIBS) \
+ 		$(AUDIO_LIBS) \
+ 		$(GL_LIBS) \
+-		libtomcrypt.a libtommath.a
++		libtommath.a
+ 
+ nodist_stepmania_SOURCES = ver.cpp
+ 
+--- a/src/CryptHelpers.h
++++ b/src/CryptHelpers.h
+@@ -3,7 +3,7 @@
+ 
+ #if !defined(DISABLE_CRYPTO)
+ 
+-#include "libtomcrypt/src/headers/tomcrypt.h"
++#include <tomcrypt.h>
+ 
+ class PRNGWrapper
+ {
+--- a/src/CryptManager.cpp
++++ b/src/CryptManager.cpp
+@@ -1,3 +1,5 @@
++#define LTM_DESC
++
+ #include "global.h"
+ #include "CryptManager.h"
+ #include "RageUtil.h"
+@@ -9,7 +11,7 @@
+ #include "LuaReference.h"
+ #include "LuaManager.h"
+ 
+-#include "libtomcrypt/src/headers/tomcrypt.h"
++#include <tomcrypt.h>
+ 
+ CryptManager*	CRYPTMAN	= NULL;	// global and accessible from anywhere in our program
+ 
+@@ -258,7 +260,7 @@
+ 	int iRet = rsa_sign_hash_ex(
+ 			buf_hash, sizeof(buf_hash),
+ 			signature, &signature_len,
+-			LTC_PKCS_1_V1_5, &g_pPRNG->m_PRNG, g_pPRNG->m_iPRNG, iHash,
++			LTC_LTC_PKCS_1_V1_5, &g_pPRNG->m_PRNG, g_pPRNG->m_iPRNG, iHash,
+ 			0, &key.m_Key);
+ 	if( iRet != CRYPT_OK )
+ 	{
+@@ -335,7 +337,7 @@
+ 	int iMatch;
+ 	int iRet = rsa_verify_hash_ex( (const unsigned char *) sSignature.data(), sSignature.size(),
+ 			buf_hash, sizeof(buf_hash),
+-			LTC_PKCS_1_EMSA, iHash, 0, &iMatch, &key.m_Key );
++			LTC_LTC_PKCS_1_EMSA, iHash, 0, &iMatch, &key.m_Key );
+ 
+ 	if( iRet != CRYPT_OK )
+ 	{
+--- a/configure.ac
++++ b/configure.ac
+@@ -386,6 +386,8 @@
+ 
+ LIBS="$LIBS -ljsoncpp"
+ 
++LIBS="$LIBS -ltomcrypt"
++
+ AC_CONFIG_FILES(Makefile)
+ AC_CONFIG_FILES(bundle/Makefile)
+ AC_CONFIG_FILES(src/Makefile)
