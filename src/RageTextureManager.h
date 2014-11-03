@@ -4,6 +4,7 @@
 #define RAGE_TEXTURE_MANAGER_H
 
 #include "RageTexture.h"
+#include "RageSurface.h"
 
 struct RageTextureManagerPrefs
 {
@@ -81,6 +82,8 @@ public:
 	bool GetOddDimensionWarning() const { return m_iNoWarnAboutOddDimensions == 0; }
 
 	RageTextureID GetDefaultTextureID();
+	RageTextureID GetScreenTextureID();
+	RageSurface* GetScreenSurface();
 
 private:
 	void DeleteTexture( RageTexture *t );
@@ -93,7 +96,7 @@ private:
 	RageTextureID::TexPolicy m_TexturePolicy;
 };
 
-extern RageTextureManager*	TEXTUREMAN;	// global and accessable from anywhere in our program
+extern RageTextureManager*	TEXTUREMAN;	// global and accessible from anywhere in our program
 
 #endif
 

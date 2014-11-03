@@ -25,7 +25,7 @@
 #include "CharacterManager.h"
 
 
-ProfileManager*	PROFILEMAN = NULL;	// global and accessable from anywhere in our program
+ProfileManager*	PROFILEMAN = NULL;	// global and accessible from anywhere in our program
 
 static void DefaultLocalProfileIDInit( size_t /*PlayerNumber*/ i, RString &sNameOut, RString &defaultValueOut )
 {
@@ -148,7 +148,7 @@ ProfileLoadResult ProfileManager::LoadProfile( PlayerNumber pn, RString sProfile
 
 	// Try to load the original, non-backup data.
 	ProfileLoadResult lr = GetProfile(pn)->LoadAllFromDir( m_sProfileDir[pn], PREFSMAN->m_bSignProfileData );
-	
+
 	RString sBackupDir = m_sProfileDir[pn] + LAST_GOOD_SUBDIR;
 
 	if( lr == ProfileLoadResult_Success )
@@ -201,6 +201,8 @@ bool ProfileManager::LoadLocalProfileFromMachine( PlayerNumber pn )
 		return false;
 	}
 
+	GetProfile(pn)->LoadCustomFunction( m_sProfileDir[pn] );
+	
 	return true;
 }
 
@@ -247,7 +249,7 @@ bool ProfileManager::LoadProfileFromMemoryCard( PlayerNumber pn, bool bLoadEdits
 				m_sProfileDirImportedFrom[pn] = asDirsToTry[i];
 			break;
 		}
-		
+
 		if( res == ProfileLoadResult_FailedTampered )
 		{
 			m_bNewProfile[pn] = false;
@@ -277,7 +279,7 @@ bool ProfileManager::LoadProfileFromMemoryCard( PlayerNumber pn, bool bLoadEdits
 
 	return true; // If a card is inserted, we want to use the memory card to save - even if the Profile load failed.
 }
-			
+
 bool ProfileManager::LoadFirstAvailableProfile( PlayerNumber pn, bool bLoadEdits )
 {
 	if( LoadProfileFromMemoryCard(pn, bLoadEdits) )
@@ -349,6 +351,12 @@ bool ProfileManager::SaveLocalProfile( RString sProfileID )
 
 void ProfileManager::UnloadProfile( PlayerNumber pn )
 {
+	if( m_sProfileDir[pn].empty() )
+	{
+		// Don't bother unloading a profile that wasn't loaded in the first place.
+		// Saves us an expensive and pointless trip through all the songs.
+		return;
+	}
 	m_sProfileDir[pn] = "";
 	m_sProfileDirImportedFrom[pn] = "";
 	m_bWasLoadedFromMemoryCard[pn] = false;

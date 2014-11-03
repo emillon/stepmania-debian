@@ -207,42 +207,14 @@ void Course::Init()
 
 bool Course::IsPlayableIn( StepsType st ) const
 {
-	// Stripped down version of GetTrailUnsorted
-	FOREACH_CONST( CourseEntry, m_vEntries, e )
+	Trail t;
+	FOREACH_ShownCourseDifficulty( cd )
 	{
-		SongCriteria soc = e->songCriteria;
-
-		Song *pSong = e->songID.ToSong();
-		if( pSong )
-		{
-			soc.m_bUseSongAllowedList = true;
-			soc.m_vpSongAllowedList.push_back( pSong );
-		}
-		soc.m_Tutorial = SongCriteria::Tutorial_No;
-		soc.m_Locked = SongCriteria::Locked_Unlocked;
-		if( !soc.m_bUseSongAllowedList )
-			soc.m_iMaxStagesForSong = 1;
-
-		StepsCriteria stc = e->stepsCriteria;
-		stc.m_st = st;
-		stc.m_Locked = StepsCriteria::Locked_Unlocked;
-
-		const bool bSameSongCriteria  = e != m_vEntries.begin() && (e-1)->songCriteria == soc;
-		const bool bSameStepsCriteria = e != m_vEntries.begin() && (e-1)->stepsCriteria == stc;
-
-		if( pSong )
-		{
-			if( StepsUtil::HasMatching(pSong, stc) )
-				return true;
-		}
-		else if( !(bSameSongCriteria && bSameStepsCriteria) )
-		{
-			if( StepsUtil::HasMatching(soc, stc) )
-				return true;
-		}
-
+		if( GetTrailUnsorted( st, cd, t ) )
+			return true;
 	}
 
+	// No valid trail for this StepsType.
 	return false;
 }
 
@@ -432,6 +404,9 @@ bool Course::GetTrailUnsorted( StepsType st, CourseDifficulty cd, Trail &trail )
 	trail.Init();
 
 	// XXX: Why are beginner and challenge excluded here? -Wolfman2000
+	// No idea, probably an obsolete design decision from ITG, removing
+	// exclusion here, but there's some other area that prevents it too. -Kyz
+	/*
 	switch( cd )
 	{
 		case Difficulty_Beginner:
@@ -440,6 +415,7 @@ bool Course::GetTrailUnsorted( StepsType st, CourseDifficulty cd, Trail &trail )
 			return false;
 		default: break;
 	}
+	*/
 
 	// Construct a new Trail, add it to the cache, then return it.
 	// Different seed for each course, but the same for the whole round:
@@ -661,7 +637,7 @@ bool Course::GetTrailUnsorted( StepsType st, CourseDifficulty cd, Trail &trail )
 
 	/* If the course difficulty never actually changed anything, then this difficulty
 	 * is equivalent to Difficulty_Medium; it doesn't exist. */
-	return bCourseDifficultyIsSignificant;
+	return bCourseDifficultyIsSignificant && trail.m_vEntries.size() > 0;
 }
 
 void Course::GetTrails( vector<Trail*> &AddTo, StepsType st ) const
@@ -851,9 +827,24 @@ bool Course::GetTotalSeconds( StepsType st, float& fSecondsOut ) const
 	if( !AllSongsAreFixed() )
 		return false;
 
-	Trail* pTrail = GetTrail( st, Difficulty_Medium );
+	Trail* trail = GetTrail( st, Difficulty_Medium );
+	if(!trail)
+	{
+		for(int cd= 0; cd < NUM_CourseDifficulty; ++cd)
+		{
+			trail= GetTrail(st, (CourseDifficulty)cd);
+			if(trail)
+			{
+				break;
+			}
+		}
+		if(!trail)
+		{
+			return false;
+		}
+	}
 
-	fSecondsOut = pTrail->GetLengthSeconds();
+	fSecondsOut = trail->GetLengthSeconds();
 	return true;
 }
 
@@ -861,9 +852,9 @@ bool Course::CourseHasBestOrWorst() const
 {
 	FOREACH_CONST( CourseEntry, m_vEntries, e )
 	{
-		if( e->iChooseIndex == SongSort_MostPlays  &&  e->iChooseIndex != -1 )
+		if( e->songSort == SongSort_MostPlays  &&  e->iChooseIndex != -1 )
 			return true;
-		if( e->iChooseIndex == SongSort_FewestPlays  &&  e->iChooseIndex != -1 )
+		if( e->songSort == SongSort_FewestPlays  &&  e->iChooseIndex != -1 )
 			return true;
 	}
 

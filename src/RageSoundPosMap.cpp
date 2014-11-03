@@ -5,6 +5,7 @@
 #include "RageTimer.h"
 #include "Foreach.h"
 
+#include <limits.h>
 #include <list>
 
 /* The number of frames we should keep pos_map data for.  This being too high
@@ -45,14 +46,16 @@ pos_map_queue::pos_map_queue( const pos_map_queue &cpy )
 
 pos_map_queue &pos_map_queue::operator=( const pos_map_queue &rhs )
 {
-	delete m_pImpl;
-	m_pImpl = new pos_map_impl( *rhs.m_pImpl );
+	if (this != &rhs){
+		delete m_pImpl;
+		m_pImpl = new pos_map_impl( *rhs.m_pImpl );
+	}
 	return *this;
 }
 
 void pos_map_queue::Insert( int64_t iSourceFrame, int iFrames, int64_t iDestFrame, float fSourceToDestRatio )
 {
-	if( m_pImpl->m_Queue.size() )
+	if( !m_pImpl->m_Queue.empty() )
 	{
 		/* Optimization: If the last entry lines up with this new entry, just merge them. */
 		pos_map_t &last = m_pImpl->m_Queue.back();

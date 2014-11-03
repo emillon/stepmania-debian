@@ -156,11 +156,6 @@ void LuaBinding::Register( lua_State *L )
 
 void LuaBinding::CreateMethodsTable( lua_State *L, const RString &sName )
 {
-	lua_getfield( L, LUA_GLOBALSINDEX, sName );
-	if( !lua_isnil(L, -1) )
-		return;
-
-	lua_pop( L, 1 );
 	lua_newtable( L );
 	lua_pushvalue( L, -1 );
 	lua_setfield( L, LUA_GLOBALSINDEX, sName );
@@ -375,6 +370,25 @@ LuaClass::~LuaClass()
 
 	LUA->Release( L );
 }
+
+void DefaultNilArgs(lua_State* L, int n)
+{
+	while(lua_gettop(L) < n)
+	{
+		lua_pushnil(L);
+	}
+}
+
+float FArgGTEZero(lua_State* L, int index)
+{
+	float s= FArg(index);
+	if(s < 0)
+	{
+		luaL_error(L, "Arg must be greater than or equal to zero.");
+	}
+	return s;
+}
+
 
 /*
  * (c) 2005 Glenn Maynard

@@ -20,7 +20,8 @@ int CheckEnum(lua_State *L,
 	      int iPos,
 	      int iInvalid,
 	      const char *szType,
-	      bool bAllowInvalid);
+	      bool bAllowInvalid,
+	      bool bAllowAnything= false);
 
 template<typename T>
 struct EnumTraits
@@ -36,14 +37,15 @@ template<typename T> LuaReference EnumTraits<T>::EnumToString;
 namespace Enum
 {
 	template<typename T>
-	static T Check( lua_State *L, int iPos, bool bAllowInvalid = false )
+	static T Check( lua_State *L, int iPos, bool bAllowInvalid = false, bool bAllowAnything= false )
 	{
 		return (T) CheckEnum(L,
 				     EnumTraits<T>::StringToEnum,
 				     iPos,
 				     EnumTraits<T>::Invalid,
 				     EnumTraits<T>::szName,
-				     bAllowInvalid);
+				     bAllowInvalid,
+				     bAllowAnything);
 	}
 	template<typename T>
 	static void Push( lua_State *L, T iVal )
@@ -135,6 +137,14 @@ static void Lua##X(lua_State* L) \
 		lua_pushstring( L, (#X "_")+s ); \
 		lua_pushnumber( L, i ); /* 0-based */ \
 		lua_rawset( L, -3 ); \
+		/* Compatibility with old, case-insensitive values */ \
+		s.MakeLower(); \
+		lua_pushstring( L, s ); \
+		lua_pushnumber( L, i ); /* 0-based */ \
+		lua_rawset( L, -3 ); \
+		/* Compatibility with old, raw values */ \
+		lua_pushnumber( L, i ); \
+		lua_rawseti( L, -2, i ); \
 	} \
 	EnumTraits<X>::StringToEnum.SetFromStack( L ); \
 	EnumTraits<X>::StringToEnum.PushSelf( L ); \

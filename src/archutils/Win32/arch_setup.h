@@ -1,7 +1,9 @@
 #ifndef ARCH_SETUP_WINDOWS_H
 #define ARCH_SETUP_WINDOWS_H
 
+#if defined(_MSC_VER)
 #define HAVE_FFMPEG
+#endif
 
 #define SUPPORT_OPENGL
 #if defined(_MSC_VER)
@@ -140,7 +142,11 @@ static inline int64_t llabs( int64_t i ) { return i >= 0? i: -i; }
 #endif
 
 // MinGW provides us with this function already
-#if !defined(__MINGW32__)
+
+#if !defined(__MINGW32__) \
+		/* VC++ 2013 added the support of lrintf	*/\
+		&& (!defined(_MSC_VER) || _MSC_VER < 1800)
+
 inline long int lrintf( float f )
 {
 	int retval;
@@ -161,7 +167,10 @@ inline long int lrintf( float f )
 #define CRASH_HANDLER
 #endif
 
+// autoconf does this for us
+#if !defined(__MINGW32__)
 #define ENDIAN_LITTLE
+#endif
 
 #define OGG_LIB_DIR "../extern/vorbis/win32/"
 

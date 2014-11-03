@@ -4,19 +4,35 @@
 #include "GameState.h"
 #include "CommonMetrics.h"
 
+static const char *AutosyncTypeNames[] = {
+	"Off",
+	"Song",
+	"Machine",
+	"Tempo",
+};
+XToString( AutosyncType );
+XToLocalizedString( AutosyncType );
+LuaXType( AutosyncType );
+
+static const char *SoundEffectTypeNames[] = {
+	"Off",
+	"Speed",
+	"Pitch",
+};
+XToString( SoundEffectType );
+XToLocalizedString( SoundEffectType );
+LuaXType( SoundEffectType );
+
 void SongOptions::Init() 
 {
-	m_LifeType = LIFE_BAR;
-	m_DrainType = DRAIN_NORMAL;
-	m_iBatteryLives = 4;
 	m_bAssistClap = false;
 	m_bAssistMetronome = false;
 	m_fMusicRate = 1.0f;
 	m_SpeedfMusicRate = 1.0f;
 	m_fHaste = 0.0f;
 	m_SpeedfHaste = 1.0f;
-	m_AutosyncType = AUTOSYNC_OFF;
-	m_SoundEffectType = SOUNDEFFECT_OFF;
+	m_AutosyncType = AutosyncType_Off;
+	m_SoundEffectType = SoundEffectType_Off;
 	m_bStaticBackground = false;
 	m_bRandomBGOnly = false;
 	m_bSaveScore = true;
@@ -30,9 +46,6 @@ void SongOptions::Approach( const SongOptions& other, float fDeltaSeconds )
 #define DO_COPY( x ) \
 	x = other.x;
 
-	DO_COPY( m_LifeType );
-	DO_COPY( m_DrainType );
-	DO_COPY( m_iBatteryLives );
 	APPROACH( fMusicRate );
 	APPROACH( fHaste );
 	DO_COPY( m_bAssistClap );
@@ -59,27 +72,6 @@ static void AddPart( vector<RString> &AddTo, float level, RString name )
 
 void SongOptions::GetMods( vector<RString> &AddTo ) const
 {
-	switch( m_LifeType )
-	{
-	case LIFE_BAR:		
-		switch( m_DrainType )
-		{
-		case DRAIN_NORMAL:						break;
-		case DRAIN_NO_RECOVER:		AddTo.push_back("NoRecover");	break;
-		case DRAIN_SUDDEN_DEATH:	AddTo.push_back("SuddenDeath");	break;
-		}
-		break;
-	case LIFE_BATTERY:
-		AddTo.push_back( ssprintf( "%dLives", m_iBatteryLives ) );
-		break;
-	case LIFE_TIME:
-		AddTo.push_back( "LifeTime" );
-		break;
-	default:
-		FAIL_M(ssprintf("Invalid LifeType: %i", m_LifeType));
-	}
-
-
 	if( m_fMusicRate != 1 )
 	{
 		RString s = ssprintf( "%2.2f", m_fMusicRate );
@@ -92,19 +84,19 @@ void SongOptions::GetMods( vector<RString> &AddTo ) const
 
 	switch( m_AutosyncType )
 	{
-	case AUTOSYNC_OFF:	                                	break;
-	case AUTOSYNC_SONG:	AddTo.push_back("AutosyncSong");	break;
-	case AUTOSYNC_MACHINE:	AddTo.push_back("AutosyncMachine");	break;
-	case AUTOSYNC_TEMPO:	AddTo.push_back("AutosyncTempo");	break;
+	case AutosyncType_Off:	                                	break;
+	case AutosyncType_Song:	AddTo.push_back("AutosyncSong");	break;
+	case AutosyncType_Machine:	AddTo.push_back("AutosyncMachine");	break;
+	case AutosyncType_Tempo:	AddTo.push_back("AutosyncTempo");	break;
 	default:
 		FAIL_M(ssprintf("Invalid autosync type: %i", m_AutosyncType));
 	}
 
 	switch( m_SoundEffectType )
 	{
-	case SOUNDEFFECT_OFF:	                                	break;
-	case SOUNDEFFECT_SPEED:	AddTo.push_back("EffectSpeed");		break;
-	case SOUNDEFFECT_PITCH:	AddTo.push_back("EffectPitch");		break;
+	case SoundEffectType_Off:	                                	break;
+	case SoundEffectType_Speed:	AddTo.push_back("EffectSpeed");		break;
+	case SoundEffectType_Pitch:	AddTo.push_back("EffectPitch");		break;
 	default:
 		FAIL_M(ssprintf("Invalid sound effect type: %i", m_SoundEffectType));
 	}
@@ -173,12 +165,6 @@ bool SongOptions::FromOneModString( const RString &sOneMod, RString &sErrorOut )
 	}
 
 	matches.clear();
-	Regex lives("^([0-9]+) ?(lives|life)$");
-	if( lives.Compare(sBit, matches) )
-	{
-		m_iBatteryLives = StringToInt( matches[0] );
-		return true;
-	}
 
 	vector<RString> asParts;
 	split( sBit, " ", asParts, true );
@@ -190,26 +176,18 @@ bool SongOptions::FromOneModString( const RString &sOneMod, RString &sErrorOut )
 			on = false;
 	}
 
-	if(	 sBit == "norecover" )				m_DrainType = DRAIN_NO_RECOVER;
-	else if( sBit == "suddendeath" || sBit == "death" )	m_DrainType = DRAIN_SUDDEN_DEATH;
-	else if( sBit == "power-drop" )				m_DrainType = DRAIN_NO_RECOVER;
-	else if( sBit == "normal-drain" )			m_DrainType = DRAIN_NORMAL;
-
-	else if( sBit == "clap" )				m_bAssistClap = on;
+	if( sBit == "clap" )				m_bAssistClap = on;
 	else if( sBit == "metronome" )				m_bAssistMetronome = on;
-	else if( sBit == "autosync" || sBit == "autosyncsong" )	m_AutosyncType = on ? AUTOSYNC_SONG : AUTOSYNC_OFF;
-	else if( sBit == "autosyncmachine" )			m_AutosyncType = on ? AUTOSYNC_MACHINE : AUTOSYNC_OFF; 
-	else if( sBit == "autosynctempo" )			m_AutosyncType = on ? AUTOSYNC_TEMPO : AUTOSYNC_OFF;
-	else if( sBit == "effect" && !on )			m_SoundEffectType = SOUNDEFFECT_OFF;
-	else if( sBit == "effectspeed" )			m_SoundEffectType = on ? SOUNDEFFECT_SPEED : SOUNDEFFECT_OFF;
-	else if( sBit == "effectpitch" )			m_SoundEffectType = on ? SOUNDEFFECT_PITCH : SOUNDEFFECT_OFF;
+	else if( sBit == "autosync" || sBit == "autosyncsong" )	m_AutosyncType = on ? AutosyncType_Song : AutosyncType_Off;
+	else if( sBit == "autosyncmachine" )			m_AutosyncType = on ? AutosyncType_Machine : AutosyncType_Off; 
+	else if( sBit == "autosynctempo" )			m_AutosyncType = on ? AutosyncType_Tempo : AutosyncType_Off;
+	else if( sBit == "effect" && !on )			m_SoundEffectType = SoundEffectType_Off;
+	else if( sBit == "effectspeed" )			m_SoundEffectType = on ? SoundEffectType_Speed : SoundEffectType_Off;
+	else if( sBit == "effectpitch" )			m_SoundEffectType = on ? SoundEffectType_Pitch : SoundEffectType_Off;
 	else if( sBit == "staticbg" )				m_bStaticBackground = on;
 	else if( sBit == "randombg" )				m_bRandomBGOnly = on;
 	else if( sBit == "savescore" )				m_bSaveScore = on;
 	else if( sBit == "savereplay" )			m_bSaveReplay = on;
-	else if( sBit == "bar" )				m_LifeType = LIFE_BAR;
-	else if( sBit == "battery" )				m_LifeType = LIFE_BATTERY;
-	else if( sBit == "lifetime" )				m_LifeType = LIFE_TIME;
 	else if( sBit == "haste" )				m_fHaste = on? 1.0f:0.0f;
 	else
 		return false;
@@ -220,9 +198,6 @@ bool SongOptions::FromOneModString( const RString &sOneMod, RString &sErrorOut )
 bool SongOptions::operator==( const SongOptions &other ) const
 {
 #define COMPARE(x) { if( x != other.x ) return false; }
-	COMPARE( m_LifeType );
-	COMPARE( m_DrainType );
-	COMPARE( m_iBatteryLives );
 	COMPARE( m_fMusicRate );
 	COMPARE( m_fHaste );
 	COMPARE( m_bAssistClap );
@@ -236,6 +211,45 @@ bool SongOptions::operator==( const SongOptions &other ) const
 #undef COMPARE
 	return true;
 }
+
+// lua start
+#include "LuaBinding.h"
+#include "OptionsBinding.h"
+
+/** @brief Allow Lua to have access to SongOptions. */
+class LunaSongOptions: public Luna<SongOptions>
+{
+public:
+
+	ENUM_INTERFACE(AutosyncSetting, AutosyncType, AutosyncType);
+	//ENUM_INTERFACE(SoundEffectSetting, SoundEffectType, SoundEffectType);
+	// Broken, SoundEffectType_Speed disables rate mod, other settings have no effect. -Kyz
+	BOOL_INTERFACE(AssistClap, AssistClap);
+	BOOL_INTERFACE(AssistMetronome, AssistMetronome);
+	BOOL_INTERFACE(StaticBackground, StaticBackground);
+	BOOL_INTERFACE(RandomBGOnly, RandomBGOnly);
+	BOOL_INTERFACE(SaveScore, SaveScore);
+	BOOL_INTERFACE(SaveReplay, SaveReplay);
+	FLOAT_INTERFACE(MusicRate, MusicRate, (v > 0.0f && v <= 3.0f)); // Greater than 3 seems to crash frequently, haven't investigated why. -Kyz
+	FLOAT_INTERFACE(Haste, Haste, (v >= -1.0f && v <= 1.0f));
+
+	LunaSongOptions()
+	{
+		ADD_METHOD(AutosyncSetting);
+		//ADD_METHOD(SoundEffectSetting);
+		ADD_METHOD(AssistClap);
+		ADD_METHOD(AssistMetronome);
+		ADD_METHOD(StaticBackground);
+		ADD_METHOD(RandomBGOnly);
+		ADD_METHOD(SaveScore);
+		ADD_METHOD(SaveReplay);
+		ADD_METHOD(MusicRate);
+		ADD_METHOD(Haste);
+	}
+};
+
+LUA_REGISTER_CLASS( SongOptions )
+// lua end
 
 /*
  * (c) 2001-2004 Chris Danford, Glenn Maynard

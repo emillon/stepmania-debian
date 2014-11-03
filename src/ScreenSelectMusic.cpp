@@ -239,7 +239,14 @@ void ScreenSelectMusic::BeginScreen()
 	}
 
 	if( GAMESTATE->GetCurrentStyle() == NULL )
-		RageException::Throw( "The Style has not been set.  A theme must set the Style before loading ScreenSelectMusic." );
+	{
+		LuaHelpers::ReportScriptError("The Style has not been set.  A theme must set the Style before loading ScreenSelectMusic.");
+		// Instead of crashing, set the first compatible style.
+		vector<StepsType> vst;
+		GAMEMAN->GetStepsTypesForGame( GAMESTATE->m_pCurGame, vst );
+		const Style *pStyle = GAMEMAN->GetFirstCompatibleStyle( GAMESTATE->m_pCurGame, GAMESTATE->GetNumSidesJoined(), vst[0] );
+		GAMESTATE->SetCurrentStyle( pStyle );
+	}
 
 	if( GAMESTATE->m_PlayMode == PlayMode_Invalid )
 	{
@@ -572,7 +579,7 @@ bool ScreenSelectMusic::Input( const InputEventPlus &input )
 				default: break;
 			}
 		}
-		else if( input.type == IET_FIRST_PRESS && input.MenuI != GAME_BUTTON_SELECT )
+		if( input.type == IET_FIRST_PRESS && input.MenuI != GAME_BUTTON_SELECT )
 		{
 			Message msg("SelectMenuInput");
 			msg.SetParam( "Player", input.pn );
@@ -1247,11 +1254,19 @@ bool ScreenSelectMusic::MenuStart( const InputEventPlus &input )
 			// apply #LIVES
 			if( pCourse->m_iLives != -1 )
 			{
-				SO_GROUP_ASSIGN( GAMESTATE->m_SongOptions, ModsLevel_Stage, m_LifeType, SongOptions::LIFE_BATTERY );
-				SO_GROUP_ASSIGN( GAMESTATE->m_SongOptions, ModsLevel_Stage, m_iBatteryLives, pCourse->m_iLives );
+				FOREACH_EnabledPlayer(pn)
+				{
+					PO_GROUP_ASSIGN(GAMESTATE->m_pPlayerState[pn]->m_PlayerOptions, ModsLevel_Stage, m_LifeType, LifeType_Battery);
+					PO_GROUP_ASSIGN(GAMESTATE->m_pPlayerState[pn]->m_PlayerOptions, ModsLevel_Stage, m_BatteryLives, pCourse->m_iLives);
+				}
 			}
 			if( pCourse->GetCourseType() == COURSE_TYPE_SURVIVAL)
-				SO_GROUP_ASSIGN( GAMESTATE->m_SongOptions, ModsLevel_Stage, m_LifeType, SongOptions::LIFE_TIME );
+			{
+				FOREACH_EnabledPlayer(pn)
+				{
+					PO_GROUP_ASSIGN(GAMESTATE->m_pPlayerState[pn]->m_PlayerOptions, ModsLevel_Stage, m_LifeType, LifeType_Time);
+				}
+			}
 		}
 		else
 		{

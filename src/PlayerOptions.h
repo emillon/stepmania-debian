@@ -11,6 +11,31 @@ struct lua_State;
 
 #include "GameConstantsAndTypes.h"
 #include "PlayerNumber.h"
+
+enum LifeType
+{
+	LifeType_Bar,
+	LifeType_Battery,
+	LifeType_Time,
+	NUM_LifeType,
+	LifeType_Invalid
+};
+const RString& LifeTypeToString( LifeType cat );
+const RString& LifeTypeToLocalizedString( LifeType cat );
+LuaDeclareType( LifeType );
+
+enum DrainType
+{
+	DrainType_Normal,
+	DrainType_NoRecover,
+	DrainType_SuddenDeath,
+	NUM_DrainType,
+	DrainType_Invalid
+};
+const RString& DrainTypeToString( DrainType cat );
+const RString& DrainTypeToLocalizedString( DrainType cat );
+LuaDeclareType( DrainType );
+
 /** @brief Per-player options that are not saved between sessions. */
 class PlayerOptions
 {
@@ -19,7 +44,9 @@ public:
 	 * @brief Set up the PlayerOptions with some reasonable defaults.
 	 *
 	 * This code was taken from Init() to use proper initialization. */
-	PlayerOptions(): m_bSetScrollSpeed(false),
+	PlayerOptions(): m_LifeType(LifeType_Bar), m_DrainType(DrainType_Normal),
+		m_BatteryLives(4),
+		m_bSetScrollSpeed(false),
 		m_fTimeSpacing(0), m_SpeedfTimeSpacing(1.0f),
 		m_fMaxScrollBPM(0), m_SpeedfMaxScrollBPM(1.0f),
 		m_fScrollSpeed(1.0f), m_SpeedfScrollSpeed(1.0f),
@@ -30,12 +57,11 @@ public:
 		m_fRandAttack(0), m_SpeedfRandAttack(1.0f),
 		m_fNoAttack(0), m_SpeedfNoAttack(1.0f),
 		m_fPlayerAutoPlay(0), m_SpeedfPlayerAutoPlay(1.0f),
-		m_bSetTiltOrSkew(false),
 		m_fPerspectiveTilt(0), m_SpeedfPerspectiveTilt(1.0f),
 		m_fSkew(0), m_SpeedfSkew(1.0f),
 		m_fPassmark(0), m_SpeedfPassmark(1.0f),
 		m_fRandomSpeed(0), m_SpeedfRandomSpeed(1.0f),
-		m_bMuteOnError(false), m_FailType(FAIL_IMMEDIATE)
+		m_bMuteOnError(false), m_FailType(FailType_Immediate)
 	{
 		m_sNoteSkin = "";
 		ZERO( m_fAccels );	ONE( m_SpeedfAccels );
@@ -155,6 +181,9 @@ public:
 
 	float GetReversePercentForColumn( int iCol ) const; // accounts for all Directions
 
+	LifeType m_LifeType;
+	DrainType m_DrainType;	// only used with LifeBar
+	int m_BatteryLives;
 	/* All floats have a corresponding speed setting, which determines how fast
 	 * PlayerOptions::Approach approaches. */
 	bool	m_bSetScrollSpeed;				// true if the scroll speed was set by FromString
@@ -172,7 +201,6 @@ public:
 	float	m_fRandAttack,			m_SpeedfRandAttack;
 	float	m_fNoAttack,			m_SpeedfNoAttack;
 	float	m_fPlayerAutoPlay,		m_SpeedfPlayerAutoPlay;
-	bool	m_bSetTiltOrSkew;				// true if the tilt or skew was set by FromString
 	float	m_fPerspectiveTilt,		m_SpeedfPerspectiveTilt;		// -1 = near, 0 = overhead, +1 = space
 	float	m_fSkew,			m_SpeedfSkew;		// 0 = vanish point is in center of player, 1 = vanish point is in center of screen
 
@@ -185,13 +213,6 @@ public:
 	bool		m_bTurns[NUM_TURNS];
 	bool		m_bTransforms[NUM_TRANSFORMS];
 	bool		m_bMuteOnError;
-	/** @brief How can the Player fail a song? */
-	enum FailType {
-		FAIL_IMMEDIATE=0,		/**< fail immediately when life touches 0 */
-		FAIL_IMMEDIATE_CONTINUE,	/**< Same as above, but allow playing the rest of the song */
-		FAIL_AT_END,			/**< fail if life is at 0 when the song ends */
-		FAIL_OFF			/**< never fail */
-	};
 	/** @brief The method for which a player can fail a song. */
 	FailType m_FailType;
 

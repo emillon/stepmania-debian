@@ -123,6 +123,11 @@ protected:
 public:
 	RString GetNextScreenName() const;
 	RString GetPrevScreen() const;
+	void SetNextScreenName(RString const& name);
+
+	bool PassInputToLua(const InputEventPlus& input);
+	void AddInputCallbackFromStack(lua_State* L);
+	void RemoveInputCallback(lua_State* L);
 
 	// let subclass override if they want
 	virtual bool MenuUp(const InputEventPlus &) { return false; }
@@ -139,6 +144,15 @@ public:
 	//virtual bool MiddleClick(const InputEventPlus &) { }
 	//virtual bool MouseWheelUp(const InputEventPlus &) { }
 	//virtual bool MouseWheelDown(const InputEventPlus &) { }
+
+private:
+	// void* is the key so that we can use lua_topointer to find the callback
+	// to remove when removing a callback.
+	typedef void const* callback_key_t;
+	map<callback_key_t, LuaReference> m_InputCallbacks;
+	vector<callback_key_t> m_DelayedCallbackRemovals;
+	bool m_CallingInputCallbacks;
+	void InternalRemoveCallback(callback_key_t key);
 };
 
 #endif

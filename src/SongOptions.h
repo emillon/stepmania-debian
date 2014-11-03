@@ -3,43 +3,41 @@
 #ifndef SONG_OPTIONS_H
 #define SONG_OPTIONS_H
 
+#include "EnumHelper.h"
+
+enum AutosyncType
+{
+	AutosyncType_Off,
+	AutosyncType_Song,
+	AutosyncType_Machine,
+	AutosyncType_Tempo,
+	NUM_AutosyncType,
+	AutosyncType_Invalid
+};
+const RString& AutosyncTypeToString( AutosyncType cat );
+const RString& AutosyncTypeToLocalizedString( AutosyncType cat );
+LuaDeclareType( AutosyncType );
+
+enum SoundEffectType
+{
+	SoundEffectType_Off,
+	SoundEffectType_Speed,
+	SoundEffectType_Pitch,
+	NUM_SoundEffectType,
+	SoundEffectType_Invalid
+};
+const RString& SoundEffectTypeToString( SoundEffectType cat );
+const RString& SoundEffectTypeToLocalizedString( SoundEffectType cat );
+LuaDeclareType( SoundEffectType );
+
 class SongOptions
 {
 public:
-	enum LifeType
-	{
-		LIFE_BAR=0,
-		LIFE_BATTERY,
-		LIFE_TIME,
-		NUM_LIFE_TYPES
-	};
-	LifeType m_LifeType;
-	enum DrainType
-	{
-		DRAIN_NORMAL,
-		DRAIN_NO_RECOVER,
-		DRAIN_SUDDEN_DEATH
-	};
-	DrainType m_DrainType;	// only used with LifeBar
-	int m_iBatteryLives;
 	bool m_bAssistClap;
 	bool m_bAssistMetronome;
 	float m_fMusicRate,	m_SpeedfMusicRate;
 	float m_fHaste, m_SpeedfHaste;
-	enum AutosyncType { 
-		AUTOSYNC_OFF,
-		AUTOSYNC_SONG,
-		AUTOSYNC_MACHINE,
-		AUTOSYNC_TEMPO,
-		NUM_AUTOSYNC_TYPES
-	};
 	AutosyncType m_AutosyncType;
-	enum SoundEffectType {
-		SOUNDEFFECT_OFF,
-		SOUNDEFFECT_SPEED,
-		SOUNDEFFECT_PITCH,
-		NUM_SOUNDEFFECT
-	};
 	SoundEffectType m_SoundEffectType;
 	bool m_bStaticBackground;
 	bool m_bRandomBGOnly;
@@ -51,12 +49,11 @@ public:
 	 *
 	 * This is taken from Init(), but uses the intended
 	 * initialization lists. */
-	SongOptions(): m_LifeType(LIFE_BAR), m_DrainType(DRAIN_NORMAL),
-		m_iBatteryLives(4), m_bAssistClap(false),
+	SongOptions(): m_bAssistClap(false),
 		m_bAssistMetronome(false), m_fMusicRate(1.0f),
 		m_SpeedfMusicRate(1.0f), m_fHaste(0.0f),
-		m_SpeedfHaste(1.0f), m_AutosyncType(AUTOSYNC_OFF),
-		m_SoundEffectType(SOUNDEFFECT_OFF),
+		m_SpeedfHaste(1.0f), m_AutosyncType(AutosyncType_Off),
+		m_SoundEffectType(SoundEffectType_Off),
 		m_bStaticBackground(false), m_bRandomBGOnly(false),
 		m_bSaveScore(true), m_bSaveReplay(false) {};
 	void Init();
@@ -70,6 +67,9 @@ public:
 
 	bool operator==( const SongOptions &other ) const;
 	bool operator!=( const SongOptions &other ) const { return !operator==(other); }
+
+	// Lua
+	void PushSelf( lua_State *L );
 };
 
 #endif

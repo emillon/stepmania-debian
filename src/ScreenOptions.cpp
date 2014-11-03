@@ -120,6 +120,7 @@ void ScreenOptions::Init()
 	m_SoundPrevRow.Load( THEME->GetPathS(m_sName,"prev"), true );
 	m_SoundToggleOn.Load( THEME->GetPathS(m_sName,"toggle on"), true );
 	m_SoundToggleOff.Load( THEME->GetPathS(m_sName,"toggle off"), true );
+	m_SoundStart.Load( THEME->GetPathS(m_sName,"start"), true );
 
 	// add everything to m_frameContainer so we can animate everything at once
 	m_frameContainer.SetName( "Container" );
@@ -553,7 +554,7 @@ void ScreenOptions::HandleScreenMessage( const ScreenMessage SM )
 		// If options set a NextScreen or one is specified in metrics, then fade out
 		if( GetNextScreenName() == "" )
 		{
-			LOG->Warn( "%s::HandleScreenMessage: Tried to fade out, but we have no next screen", m_sName.c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "%s::HandleScreenMessage: Tried to fade out, but we have no next screen", m_sName.c_str() );
 			return;
 		}
 
@@ -830,7 +831,7 @@ void ScreenOptions::ProcessMenuStart( const InputEventPlus &input )
 	if( iCurRow < 0 )
 	{
 		// this shouldn't be happening, but it is, so we need to bail out. -aj
-		SCREENMAN->PlayStartSound();
+		m_SoundStart.PlayCopy();
 		this->BeginFadingOut();
 		return;
 	}
@@ -874,7 +875,7 @@ void ScreenOptions::ProcessMenuStart( const InputEventPlus &input )
 
 		if( bEndThisScreen )
 		{
-			SCREENMAN->PlayStartSound();
+			m_SoundStart.PlayCopy();
 			this->BeginFadingOut();
 			return;
 		}
@@ -894,7 +895,11 @@ void ScreenOptions::ProcessMenuStart( const InputEventPlus &input )
 	{
 		int iChoiceInRow = row.GetChoiceInRowWithFocus(pn);
 		bool bSelected = !row.GetSelected( pn, iChoiceInRow );
-		row.SetSelected( pn, iChoiceInRow, bSelected );
+		bool changed= row.SetSelected( pn, iChoiceInRow, bSelected );
+		if(changed)
+		{
+			AfterChangeValueOrRow(pn);
+		}
 
 		if( bSelected )
 			m_SoundToggleOn.Play();
@@ -911,7 +916,7 @@ void ScreenOptions::ProcessMenuStart( const InputEventPlus &input )
 		msg.SetParam( "Selected", bSelected );
 		MESSAGEMAN->Broadcast( msg );
 
-		if( row.GetFirstItemGoesDown() )
+		if(row.GetFirstItemGoesDown() && row.GoToFirstOnStart())
 		{
 			// move to the first choice in the row
 			ChangeValueInRowRelative( m_iCurrentRow[pn], pn, -row.GetChoiceInRowWithFocus(pn), input.type != IET_FIRST_PRESS );

@@ -4,7 +4,7 @@
 #include "GameState.h"
 #include "PrefsManager.h"
 #include "ThemeMetric.h"
-
+#include "ActorUtil.h"
 
 ThemeMetric<float> METER_WIDTH		("CombinedLifeMeterTug","MeterWidth");
 
@@ -14,7 +14,7 @@ static void TugMeterPercentChangeInit( size_t /*ScoreEvent*/ i, RString &sNameOu
 	switch( i )
 	{
 	default:
-		FAIL_M(ssprintf("Invalid ScoreEvent: %i", i));
+		FAIL_M(ssprintf("Invalid ScoreEvent: %i", static_cast<int>(i)));
 	case SE_W1:			defaultValueOut = +0.010f;	break;
 	case SE_W2:			defaultValueOut = +0.008f;	break;
 	case SE_W3:			defaultValueOut = +0.004f;	break;
@@ -26,6 +26,7 @@ static void TugMeterPercentChangeInit( size_t /*ScoreEvent*/ i, RString &sNameOu
 	case SE_CheckpointMiss:	defaultValueOut = -0.002f;	break;
 	case SE_Held:		defaultValueOut = +0.008f;	break;
 	case SE_LetGo:		defaultValueOut = -0.020f;	break;
+	case SE_Missed:		defaultValueOut = +0.000f;	break;
 	}
 }
 
@@ -43,9 +44,13 @@ CombinedLifeMeterTug::CombinedLifeMeterTug()
 	m_Stream[PLAYER_2].SetZoomX( -1 );
 
 	m_sprSeparator.Load( THEME->GetPathG("CombinedLifeMeterTug","separator") );
+	m_sprSeparator->SetName( "Separator" );
+	LOAD_ALL_COMMANDS( m_sprSeparator );
 	this->AddChild( m_sprSeparator );
 
 	m_sprFrame.Load( THEME->GetPathG("CombinedLifeMeterTug","frame") );
+	m_sprFrame->SetName( "Frame" );
+	LOAD_ALL_COMMANDS( m_sprFrame );
 	this->AddChild( m_sprFrame );
 }
 
@@ -97,6 +102,7 @@ void CombinedLifeMeterTug::ChangeLife( PlayerNumber pn, HoldNoteScore score, Tap
 	{
 	case HNS_Held:			fPercentToMove = g_fTugMeterPercentChange[SE_Held];	break;
 	case HNS_LetGo:			fPercentToMove = g_fTugMeterPercentChange[SE_LetGo];	break;
+	case HNS_Missed:			fPercentToMove = g_fTugMeterPercentChange[SE_Missed];	break;
 	default:
 		FAIL_M(ssprintf("Invalid HoldNoteScore: %i", score));
 	}

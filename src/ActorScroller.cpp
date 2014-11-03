@@ -27,6 +27,7 @@ ActorScroller::ActorScroller()
 	m_fNumItemsToDraw = 7;
 	m_iFirstSubActorIndex = 0;
 	m_bLoop = false;
+	m_bWrap = false;
 	m_bFastCatchup = false;
 	m_bFunctionDependsOnPositionOffset = true;
 	m_bFunctionDependsOnItemIndex = true;
@@ -97,7 +98,7 @@ void ActorScroller::DisableMask()
 
 void ActorScroller::ScrollThroughAllItems()
 {
-	m_fCurrentItem = m_bLoop ? +m_fNumItemsToDraw/2.0f : -(m_fNumItemsToDraw/2.0f)-1;
+	m_fCurrentItem = ( m_bLoop || m_bWrap )? +m_fNumItemsToDraw/2.0f : -(m_fNumItemsToDraw/2.0f)-1;
 	m_fDestinationItem = (float)(m_iNumItems+m_fNumItemsToDraw/2.0f+1);
 }
 
@@ -158,6 +159,8 @@ void ActorScroller::LoadFromNode( const XNode *pNode )
 	}
 
 	pNode->GetAttrValue( "QuantizePixels", m_fQuantizePixels );
+	pNode->GetAttrValue( "LoopScroller", m_bLoop );
+	pNode->GetAttrValue( "WrapScroller", m_bWrap );
 }
 
 void ActorScroller::UpdateInternal( float fDeltaTime )
@@ -204,8 +207,17 @@ void ActorScroller::UpdateInternal( float fDeltaTime )
 	if( (int)fOldItemAtTop != (int)m_fCurrentItem )
 		m_fPauseCountdownSeconds = m_fSecondsPauseBetweenItems;
 
-	if( m_bLoop )
+	if( m_bWrap )
+	{
+		float Delta = m_fDestinationItem - m_fCurrentItem;
 		m_fCurrentItem = fmodf( m_fCurrentItem, (float) m_iNumItems );
+		m_fDestinationItem = m_fCurrentItem + Delta;
+	}
+
+	if( m_bLoop )
+	{
+		m_fCurrentItem = fmodf( m_fCurrentItem, (float) m_iNumItems );
+	}
 }
 
 void ActorScroller::DrawPrimitives()
@@ -251,13 +263,12 @@ void ActorScroller::PositionItemsAndDrawPrimitives( bool bDrawPrimitives )
 	float fLastItemToDraw = m_fCurrentItem + fNumItemsToDraw/2.f;
 	int iFirstItemToDraw = (int) ceilf( fFirstItemToDraw );
 	int iLastItemToDraw = (int) ceilf( fLastItemToDraw );
-	if( !m_bLoop )
+	if( !m_bLoop && !m_bWrap )
 	{
 		iFirstItemToDraw = clamp( iFirstItemToDraw, 0, m_iNumItems );
 		iLastItemToDraw = clamp( iLastItemToDraw, 0, m_iNumItems );
 	}
 
-	bool bDelayedDraw = m_bDrawByZPosition && !m_bLoop;
 	vector<Actor*> subs;
 
 	{
@@ -274,7 +285,7 @@ void ActorScroller::PositionItemsAndDrawPrimitives( bool bDrawPrimitives )
 		int iItem = i + iFirstItemToDraw;
 		float fPosition = iItem - m_fCurrentItem;
 		int iIndex = i; // index into m_SubActors
-		if( m_bLoop )
+		if( m_bLoop || m_bWrap )
 			wrap( iIndex, m_SubActors.size() );
 		else if( iIndex < 0 || iIndex >= (int)m_SubActors.size() )
 			continue;
@@ -291,14 +302,14 @@ void ActorScroller::PositionItemsAndDrawPrimitives( bool bDrawPrimitives )
 		m_exprTransformFunction.TransformItemCached( *m_SubActors[iIndex], fPosition, iItem, m_iNumItems );
 		if( bDrawPrimitives )
 		{
-			if( bDelayedDraw )
+			if( m_bDrawByZPosition )
 				subs.push_back( m_SubActors[iIndex] );
 			else
 				m_SubActors[iIndex]->Draw();
 		}
 	}
 
-	if( bDelayedDraw )
+	if( m_bDrawByZPosition )
 	{
 		ActorUtil::SortByZPosition( subs );
 		FOREACH( Actor*, subs, a )
@@ -327,6 +338,7 @@ public:
 	static int SetDestinationItem( T* p, lua_State *L )		{ p->SetDestinationItem( FArg(1) ); return 0; }
 	static int GetSecondsToDestination( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetSecondsToDestination() ); return 1; }
 	static int SetSecondsPerItem( T* p, lua_State *L )		{ p->SetSecondsPerItem(FArg(1)); return 0; }
+	static int GetSecondsPauseBetweenItems( T* p, lua_State *L )	{ lua_pushnumber( L, p->GetSecondsPauseBetweenItems() ); return 1; }
 	static int SetSecondsPauseBetweenItems( T* p, lua_State *L )	{ p->SetSecondsPauseBetweenItems(FArg(1)); return 0; }
 	static int SetPauseCountdownSeconds( T* p, lua_State *L )	{ p->SetPauseCountdownSeconds(FArg(1)); return 0; }
 	static int SetNumSubdivisions( T* p, lua_State *L )		{ p->SetNumSubdivisions(IArg(1)); return 0; }
@@ -334,6 +346,7 @@ public:
 	static int ScrollWithPadding( T* p, lua_State *L )		{ p->ScrollWithPadding(FArg(1),FArg(2)); return 0; }
 	static int SetFastCatchup( T* p, lua_State *L )			{ p->SetFastCatchup(BArg(1)); return 0; }
 	static int SetLoop( T* p, lua_State *L )			{ p->SetLoop(BArg(1)); return 0; }
+	static int SetWrap( T* p, lua_State *L )			{ p->SetWrap(BArg(1)); return 0; }
 	static int SetMask( T* p, lua_State *L )			{ p->EnableMask(FArg(1), FArg(2)); return 0; }
 
 	static int SetNumItemsToDraw( T* p, lua_State *L )		{ p->SetNumItemsToDraw(FArg(1)); return 0; }
@@ -341,7 +354,7 @@ public:
 	static int GetCurrentItem( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetCurrentItem() ); return 1; }
 	static int GetDestinationItem( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetDestinationItem() ); return 1; }
 	static int GetNumItems( T* p, lua_State *L )			{ lua_pushnumber( L, p->GetNumItems() ); return 1; }
-
+	
 	LunaActorScroller()
 	{
 		ADD_METHOD( PositionItems );
@@ -353,12 +366,14 @@ public:
 		ADD_METHOD( GetSecondsToDestination );
 		ADD_METHOD( SetSecondsPerItem );
 		ADD_METHOD( SetSecondsPauseBetweenItems );
+		ADD_METHOD( GetSecondsPauseBetweenItems );
 		ADD_METHOD( SetPauseCountdownSeconds );
 		ADD_METHOD( SetNumSubdivisions );
 		ADD_METHOD( ScrollThroughAllItems );
 		ADD_METHOD( ScrollWithPadding );
 		ADD_METHOD( SetFastCatchup );
 		ADD_METHOD( SetLoop );
+		ADD_METHOD( SetWrap );
 		ADD_METHOD( SetMask );
 		ADD_METHOD( SetNumItemsToDraw );
 		ADD_METHOD( GetFullScrollLengthSeconds );

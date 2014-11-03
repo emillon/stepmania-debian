@@ -140,6 +140,10 @@ public:
 	void UnlockEntryID( RString sEntryID );
 	void UnlockEntryIndex( int iEntryIndex );
 
+	// Lock an entry by code.
+	void LockEntryID( RString entryID );
+	void LockEntryIndex( int entryIndex );
+
 	/*
 	 * If a code is associated with at least one song or course, set the preferred song
 	 * and/or course in GAMESTATE to them.
@@ -175,7 +179,7 @@ private:
 	set<RString> m_RouletteCodes; // "codes" which are available in roulette and which unlock if rouletted
 };
 
-extern UnlockManager*	UNLOCKMAN;  // global and accessable from anywhere in program
+extern UnlockManager*	UNLOCKMAN;  // global and accessible from anywhere in program
 
 #endif
 

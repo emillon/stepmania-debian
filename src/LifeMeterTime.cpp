@@ -1,6 +1,7 @@
 #include "global.h"
 #include "LifeMeterTime.h"
 #include "ThemeManager.h"
+#include "Song.h"
 #include "Steps.h"
 #include "ActorUtil.h"
 #include "Course.h"
@@ -32,6 +33,7 @@ static const float g_fTimeMeterSecondsChangeInit[] =
 	-0.0f, // SE_CheckpointMiss
 	-0.0f, // SE_Held
 	-4.0f, // SE_LetGo
+	-0.0f, // SE_Missed
 };
 COMPILE_ASSERT( ARRAYLEN(g_fTimeMeterSecondsChangeInit) == NUM_ScoreEvent );
 
@@ -71,9 +73,7 @@ void LifeMeterTime::Load( const PlayerState *pPlayerState, PlayerStageStats *pPl
 	m_quadDangerGlow.ZoomToWidth( METER_WIDTH );
 	m_quadDangerGlow.ZoomToHeight( METER_HEIGHT );
 	// hardcoded effects...
-	m_quadDangerGlow.SetEffectDiffuseShift();
-	m_quadDangerGlow.SetEffectColor1( RageColor(1,0,0,0.8f) );
-	m_quadDangerGlow.SetEffectColor2( RageColor(1,0,0,0) );
+	m_quadDangerGlow.SetEffectDiffuseShift( 1.0f, RageColor(1,0,0,0.8f), RageColor(1,0,0,0) );
 	m_quadDangerGlow.SetEffectClock( Actor::CLOCK_BGM_BEAT );
 	this->AddChild( &m_quadDangerGlow );
 
@@ -95,11 +95,36 @@ void LifeMeterTime::OnLoadSong()
 	if( GetLifeSeconds() <= 0 && GAMESTATE->GetCourseSongIndex() > 0 )
 		return;
 
-	Course* pCourse = GAMESTATE->m_pCurCourse;
-	ASSERT( pCourse != NULL );
-
 	float fOldLife = m_fLifeTotalLostSeconds;
-	float fGainSeconds = pCourse->m_vEntries[GAMESTATE->GetCourseSongIndex()].fGainSeconds;
+	float fGainSeconds = 0;
+	if(GAMESTATE->IsCourseMode())
+	{
+		Course* pCourse = GAMESTATE->m_pCurCourse;
+		ASSERT( pCourse != NULL );
+		fGainSeconds= pCourse->m_vEntries[GAMESTATE->GetCourseSongIndex()].fGainSeconds;
+	}
+	else
+	{
+		// Placeholderish, at least this way it won't crash when someone tries it
+		// out in non-course mode. -Kyz
+		Song* song= GAMESTATE->m_pCurSong;
+		ASSERT(song != NULL);
+		float song_len= song->m_fMusicLengthSeconds;
+		Steps* steps= GAMESTATE->m_pCurSteps[m_pPlayerState->m_PlayerNumber];
+		ASSERT(steps != NULL);
+		RadarValues radars= steps->GetRadarValues(m_pPlayerState->m_PlayerNumber);
+		float scorable_things= radars[RadarCategory_TapsAndHolds] +
+			radars[RadarCategory_Lifts];
+		if(g_fTimeMeterSecondsChange[SE_Held] > 0.0f)
+		{
+			scorable_things+= radars[RadarCategory_Holds] +
+				radars[RadarCategory_Rolls];
+		}
+		// Calculate the amount of time to give for the player to need 80% W1.
+		float gainable_score_time= scorable_things * g_fTimeMeterSecondsChange[SE_W1];
+		fGainSeconds= song_len - (gainable_score_time * INITIAL_VALUE);
+	}
+
 	if( MIN_LIFE_TIME > fGainSeconds )
 		fGainSeconds = MIN_LIFE_TIME;
 	m_fLifeTotalGainedSeconds += fGainSeconds;
@@ -145,6 +170,7 @@ void LifeMeterTime::ChangeLife( HoldNoteScore hns, TapNoteScore tns )
 		FAIL_M(ssprintf("Invalid HoldNoteScore: %i", hns));
 	case HNS_Held:	fMeterChange = g_fTimeMeterSecondsChange[SE_Held];	break;
 	case HNS_LetGo:	fMeterChange = g_fTimeMeterSecondsChange[SE_LetGo];	break;
+	case HNS_Missed:	fMeterChange = g_fTimeMeterSecondsChange[SE_Missed];	break;
 	}
 
 	float fOldLife = m_fLifeTotalLostSeconds;

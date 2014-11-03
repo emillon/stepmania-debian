@@ -36,7 +36,7 @@ static ThemeMetric<bool> USE_STATIC_BG		("Background","UseStaticBackground");
 static Preference<bool>	g_bShowDanger( "ShowDanger", true );
 static Preference<float> g_fBGBrightness( "BGBrightness", 0.7f );
 static Preference<RandomBackgroundMode> g_RandomBackgroundMode( "RandomBackgroundMode",	BGMODE_RANDOMMOVIES );
-static Preference<int> g_iNumBackgrounds( "NumBackgrounds", 8 );
+static Preference<int> g_iNumBackgrounds( "NumBackgrounds", 10 );
 static Preference<bool> g_bSongBackgrounds( "SongBackgrounds", true );
 
 // Width of the region separating the left and right brightness areas:
@@ -328,16 +328,25 @@ bool BackgroundImpl::Layer::CreateBackground( const Song *pSong, const Backgroun
 		switch( ft )
 		{
 		default:
-			LOG->Warn( "CreateBackground() Unknown file type '%s'", vsResolved[0].c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "CreateBackground() Unknown file type '%s'", vsResolved[0].c_str() );
 			// fall through
 		case FT_Bitmap:
+		case FT_Sprite:
 		case FT_Movie:
 			sEffect = SBE_StretchNormal;
 			break;
-		case FT_Directory:
 		case FT_Lua:
 		case FT_Model:
 			sEffect = SBE_UpperLeft;
+			break;
+		case FT_Xml:
+			sEffect = SBE_Centered;
+			break;
+		case FT_Directory:
+			if( DoesFileExist(vsResolved[0] + "/default.lua") )
+				sEffect = SBE_UpperLeft;
+			else
+				sEffect = SBE_Centered;
 			break;
 		}
 	}
@@ -355,12 +364,12 @@ bool BackgroundImpl::Layer::CreateBackground( const Song *pSong, const Backgroun
 		BackgroundUtil::GetBackgroundEffects( sEffect, vsPaths, vsThrowAway );
 		if( vsPaths.empty() )
 		{
-			LOG->Warn( "BackgroundEffect '%s' is missing.",sEffect.c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "BackgroundEffect '%s' is missing.",sEffect.c_str() );
 			sEffect = SBE_Centered;
 		}
 		else if( vsPaths.size() > 1 )
 		{
-			LOG->Warn( "BackgroundEffect '%s' has more than one match.",sEffect.c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "BackgroundEffect '%s' has more than one match.",sEffect.c_str() );
 			sEffect = SBE_Centered;
 		}
 		else
@@ -373,7 +382,8 @@ bool BackgroundImpl::Layer::CreateBackground( const Song *pSong, const Backgroun
 
 	Actor *pActor = ActorUtil::MakeActor( sEffectFile );
 
-	ASSERT( pActor != NULL );
+	if( pActor == NULL )
+		pActor = new Actor;
 	m_BGAnimations[bd] = pActor;
 
 	for( unsigned i=0; i<vsResolvedRef.size(); i++ )
@@ -734,7 +744,7 @@ void BackgroundImpl::Layer::UpdateCurBGChange( const Song *pSong, float fLastMus
 			XNode *pNode = change.m_def.CreateNode();
 			RString xml = XmlFileUtil::GetXML( pNode );
 			Trim( xml );
-			LOG->Warn( "Tried to switch to a background that was never loaded:\n%s", xml.c_str() );
+			LuaHelpers::ReportScriptErrorFmt( "Tried to switch to a background that was never loaded:\n%s", xml.c_str() );
 			SAFE_DELETE( pNode );
 			return;
 		}
@@ -858,7 +868,7 @@ bool BackgroundImpl::IsDangerAllVisible()
 {
 	// The players are never in danger in FAIL_OFF.
 	FOREACH_PlayerNumber( p )
-		if( GAMESTATE->GetPlayerFailType(GAMESTATE->m_pPlayerState[p]) == PlayerOptions::FAIL_OFF )
+		if( GAMESTATE->GetPlayerFailType(GAMESTATE->m_pPlayerState[p]) == FailType_Off )
 			return false;
 	if( !g_bShowDanger )
 		return false;

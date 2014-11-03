@@ -12,6 +12,7 @@ enum MessageID
 	Message_CurrentGameChanged,
 	Message_CurrentStyleChanged,
 	Message_PlayModeChanged,
+	Message_CoinsChanged,
 	Message_CurrentSongChanged,
 	Message_CurrentStepsP1Changed,
 	Message_CurrentStepsP2Changed,
@@ -89,6 +90,7 @@ const RString& MessageIDToString( MessageID m );
 struct Message
 {
 	explicit Message( const RString &s );
+	explicit Message(const MessageID id);
 	Message( const RString &s, const LuaReference &params );
 	~Message();
 
@@ -121,6 +123,15 @@ struct Message
 		Lua *L = LUA->Get();
 		LuaHelpers::Push( L, val );
 		SetParamFromStack( L, sName );
+		LUA->Release( L );
+	}
+
+	template<typename T>
+	void SetParam( const RString &sName, const vector<T> &val )
+	{
+		Lua *L = LUA->Get();
+		LuaHelpers::CreateTableFromArray( val, L );
+		SetParamFromStack( L , sName );
 		LUA->Release( L );
 	}
 
@@ -188,11 +199,14 @@ public:
 	bool IsSubscribedToMessage( IMessageSubscriber* pSubscriber, const RString &sMessage ) const;
 	inline bool IsSubscribedToMessage( IMessageSubscriber* pSubscriber, MessageID message ) const { return IsSubscribedToMessage( pSubscriber, MessageIDToString(message) ); }
 
+	void SetLogging(bool set) { m_Logging= set; }
+	bool m_Logging;
+
 	// Lua
 	void PushSelf( lua_State *L );
 };
 
-extern MessageManager*	MESSAGEMAN;	// global and accessable from anywhere in our program
+extern MessageManager*	MESSAGEMAN;	// global and accessible from anywhere in our program
 
 template<class T>
 class BroadcastOnChange

@@ -214,15 +214,6 @@ inline void	ssasn(std::string& sDst, PCSTR pA)
 		sDst.assign(pA);
 #endif
 }
-/**
- * @brief Erase the destination string.
- * @param sDst the destination string.
- * @param nNull the null value.
- */
-inline void ssasn(std::string& sDst, const int nNull)
-{
-	sDst.erase();
-}	
 #undef StrSizeType
 
 
@@ -776,6 +767,14 @@ public:
 	}
        
 	const CT& operator[](long unsigned int nIdx) const {
+	  return MYBASE::operator[](static_cast<MYSIZE>(nIdx));
+	}
+	
+	CT& operator[](long long unsigned int nIdx){
+	  return MYBASE::operator[](static_cast<MYSIZE>(nIdx));
+	}
+	
+	const CT& operator[](long long unsigned int nIdx) const {
 	  return MYBASE::operator[](static_cast<MYSIZE>(nIdx));
 	}
 #ifndef SS_NO_IMPLICIT_CASTS

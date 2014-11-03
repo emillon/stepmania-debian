@@ -57,7 +57,7 @@ Jason Felds (Wolfman2000)
  * Mac OS X maintainer
  * Various fixes/changes. (see Changelogs for more details)
 
-djpohly
+Devin J. Pohly (djpohly)
  * Various patches/fixes
 
 ==other contributors==
@@ -89,7 +89,7 @@ Macgravel
 
 hanubeki (@803832, formerly sy567)
  * Small beginner helper fix
- (http://www.stepmania.com/forums/showpost.php?p=158721&postcount=12)
+ (http://old.stepmania.com/forums/showpost.php?p=158721&postcount=12)
  * Lots of code changes from hanubeki-modified-sm-ssc:
  http://code.google.com/r/hanubeki-modified-sm-ssc/
 

@@ -41,6 +41,10 @@ void ScreenJukebox::SetSong()
 
 	if ( vSongs.size() == 0 )
 		vSongs = SONGMAN->GetSongs( GAMESTATE->m_sPreferredSongGroup );
+	// Still nothing?
+	if( vSongs.size() == 0 )
+		return;
+
 
 	// Calculate what difficulties to show
 	vector<Difficulty> vDifficultiesToShow;
@@ -68,9 +72,6 @@ void ScreenJukebox::SetSong()
 	// Search for a Song and Steps to play during the demo.
 	for( int i=0; i<1000; i++ )
 	{
-		if( vSongs.size() == 0 )
-			return;
-
 		Song* pSong = vSongs[RandomInt(vSongs.size())];
 
 		ASSERT( pSong != NULL );
@@ -169,6 +170,7 @@ ScreenJukebox::ScreenJukebox()
 	m_pCourseEntry = NULL;
 }
 
+static LocalizedString NO_MATCHING_STEPS("ScreenJukebox", "NoMatchingSteps");
 void ScreenJukebox::Init()
 {
 	// ScreenJukeboxMenu must set this
@@ -195,8 +197,8 @@ void ScreenJukebox::Init()
 			PO_GROUP_ASSIGN( GAMESTATE->m_pPlayerState[p]->m_PlayerOptions, ModsLevel_Stage, m_fScrollSpeed, .25f );
 			PO_GROUP_ASSIGN( GAMESTATE->m_pPlayerState[p]->m_PlayerOptions, ModsLevel_Stage, m_fPerspectiveTilt, -1.0f );
 			PO_GROUP_ASSIGN_N( GAMESTATE->m_pPlayerState[p]->m_PlayerOptions, ModsLevel_Stage, m_fEffects, PlayerOptions::EFFECT_TINY, 1.0f );
+			PO_GROUP_ASSIGN( GAMESTATE->m_pPlayerState[p]->m_PlayerOptions, ModsLevel_Stage, m_LifeType, LifeType_Battery );
 		}
-		SO_GROUP_ASSIGN( GAMESTATE->m_SongOptions, ModsLevel_Stage, m_LifeType, SongOptions::LIFE_BATTERY );
 	}
 
 	FOREACH_EnabledPlayer( p )
@@ -219,7 +221,7 @@ void ScreenJukebox::Init()
 	GAMESTATE->m_SongOptions.Assign( ModsLevel_Stage, so );
 
 	FOREACH_EnabledPlayer( p )
-		PO_GROUP_ASSIGN( GAMESTATE->m_pPlayerState[p]->m_PlayerOptions, ModsLevel_Stage, m_FailType, PlayerOptions::FAIL_OFF );
+		PO_GROUP_ASSIGN( GAMESTATE->m_pPlayerState[p]->m_PlayerOptions, ModsLevel_Stage, m_FailType, FailType_Off );
 
 	GAMESTATE->m_bDemonstrationOrJukebox = true;
 
@@ -228,7 +230,8 @@ void ScreenJukebox::Init()
 
 	if( GAMESTATE->m_pCurSong == NULL )	// we didn't find a song.
 	{
-		this->PostScreenMessage( SM_GoToNextScreen, 0 );	// Abort demonstration.
+		SCREENMAN->SystemMessage( NO_MATCHING_STEPS );
+		this->PostScreenMessage( SM_GoToPrevScreen, 0 );	// Abort demonstration.
 		return;
 	}
 

@@ -17,6 +17,10 @@ const int MIN_METER = 1;
  */
 const int MAX_METER = 35;
 
+/** @brief The maximum number of credits for coin mode. */
+const int MAX_NUM_CREDITS = 20;
+
+
 /**
  * @brief The various radar categories available.
  *
@@ -245,6 +249,7 @@ enum HoldNoteScore
 	HNS_None,		/**< The HoldNote was not scored yet. */
 	HNS_LetGo,		/**< The HoldNote has passed, but the player missed it. */
 	HNS_Held,		/**< The HoldNote has passed, and was successfully held all the way. */
+	HNS_Missed,		/**< The HoldNote has passed, and was never initialized. */
 	NUM_HoldNoteScore,	/**< The number of hold note scores. */
 	HoldNoteScore_Invalid,
 };
@@ -298,6 +303,7 @@ enum ScoreEvent
 	SE_CheckpointMiss,
 	SE_Held,
 	SE_LetGo,
+	SE_Missed,
 	NUM_ScoreEvent
 };
 const RString& ScoreEventToString( ScoreEvent se );
@@ -363,6 +369,7 @@ enum RankingCategory
 };
 const RString& RankingCategoryToString( RankingCategory rc );
 RankingCategory StringToRankingCategory( const RString& rc );
+LuaDeclareType( RankingCategory );
 
 extern const vector<RString> RANKING_TO_FILL_IN_MARKER;
 inline bool IsRankingToFillIn( const RString& sName ) { return !sName.empty() && sName[0]=='#'; }
@@ -428,6 +435,7 @@ const int ITEM_NONE = -1;
 enum CoinMode
 {
 	CoinMode_Home, /**< The full range of options are available. */
+	CoinMode_Pay, /**< Coins must be inserted before a game can begin. */
 	CoinMode_Free, /**< It costs no money to play, but otherwise is similar to Pay mode. */
 	NUM_CoinMode,
 	CoinMode_Invalid
@@ -677,6 +685,21 @@ enum CourseType
 const RString& CourseTypeToString( CourseType i );
 const RString& CourseTypeToLocalizedString( CourseType i );
 LuaDeclareType( CourseType );
+
+/** @brief How can the Player fail a song? */
+enum FailType
+{
+	FailType_Immediate,		/**< fail immediately when life touches 0 */
+	FailType_ImmediateContinue,	/**< Same as above, but allow playing the rest of the song */
+	FailType_EndOfSong,			/**< fail if life is at 0 when the song ends */
+	FailType_Off,			/**< never fail */
+	NUM_FailType,
+	FailType_Invalid
+};
+
+const RString& FailTypeToString( FailType cat );
+const RString& FailTypeToLocalizedString( FailType cat );
+LuaDeclareType( FailType );
 
 
 #endif

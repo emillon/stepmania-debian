@@ -4,7 +4,7 @@
 #include "PlayerNumber.h"
 #include "GameConstantsAndTypes.h"
 #include "ActorFrame.h"
-#include "SongOptions.h"
+#include "PlayerOptions.h"
 
 class PlayerState;
 class PlayerStageStats;
@@ -41,7 +41,7 @@ public:
 	virtual float GetLife() const { return 0; } // for cosmetic use only
 	virtual void UpdateNonstopLifebar() { }
 
-	static LifeMeter *MakeLifeMeter( SongOptions::LifeType t );
+	static LifeMeter *MakeLifeMeter( LifeType t );
 
 	//
 	// Lua

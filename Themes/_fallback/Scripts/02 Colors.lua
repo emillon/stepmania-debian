@@ -47,8 +47,12 @@ setmetatable(Color, { __call = function(self, c) return self[c] end })
 
 GameColor = {
 	PlayerColors = {
-		PLAYER_1 = color("#ef403d"),
-		PLAYER_2 = color("#0089cf"),
+		PLAYER_1 = color("#ed5565"),
+		PLAYER_2 = color("#5d9cec"),
+	},
+	PlayerDarkColors = {
+		PLAYER_1 = color("#da4453"),
+		PLAYER_2 = color("#4a89dc"),
 	},
 	Difficulty = {
 		--[[ These are for 'Custom' Difficulty Ranks. It can be very  useful
@@ -105,10 +109,7 @@ GameColor = {
 GameColor.Difficulty["Crazy"] = GameColor.Difficulty["Hard"]
 GameColor.Difficulty["Freestyle"] = GameColor.Difficulty["Easy"]
 GameColor.Difficulty["Nightmare"] = GameColor.Difficulty["Challenge"]
-GameColor.Difficulty["HalfDoubleEasy"] = GameColor.Difficulty["Easy"]
-GameColor.Difficulty["HalfDoubleMedium"] = GameColor.Difficulty["Medium"]
-GameColor.Difficulty["HalfDoubleHard"] = GameColor.Difficulty["Hard"]
-GameColor.Difficulty["HalfDoubleExpert"] = GameColor.Difficulty["Expert"]
+GameColor.Difficulty["HalfDouble"] = GameColor.Difficulty["Medium"]
 
 --[[ Fallbacks ]]
 function BoostColor( cColor, fBoost )
@@ -129,17 +130,22 @@ function ColorDarkTone(c)
 end
 
 function PlayerColor( pn )
-	if pn == PLAYER_1 then return color("#ef403d") end -- pink-red
-	if pn == PLAYER_2 then return color("#0089cf") end -- sea-blue
-	return color("1,1,1,1")
-end
-function PlayerScoreColor( pn )
-	if pn == PLAYER_1 then return color("#ef403d") end -- pink-red
-	if pn == PLAYER_2 then return color("#0089cf") end -- sea-blue
+	if pn == PLAYER_1 then return GameColor.PlayerColors["PLAYER_1"] end
+	if pn == PLAYER_2 then return GameColor.PlayerColors["PLAYER_2"] end
 	return color("1,1,1,1")
 end
 
-function CustomDifficultyToColor( sCustomDifficulty ) 
+function PlayerScoreColor( pn )
+	return PlayerColor( pn );
+end
+
+function PlayerDarkColor( pn )
+	if pn == PLAYER_1 then return GameColor.PlayerDarkColors["PLAYER_1"] end 
+	if pn == PLAYER_2 then return GameColor.PlayerDarkColors["PLAYER_2"] end
+	return color("1,1,1,1")
+end
+
+function CustomDifficultyToColor( sCustomDifficulty )
 	return GameColor.Difficulty[sCustomDifficulty]
 end
 

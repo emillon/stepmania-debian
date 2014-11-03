@@ -389,7 +389,7 @@ RString vssprintf( const char *szFormat, va_list argList )
 {
 	RString sStr;
 
-#if defined(WIN32) && !defined(__MINGW32__)
+#if defined(WIN32)
 	char *pBuf = NULL;
 	int iChars = 1;
 	int iUsed = 0;
@@ -1749,6 +1749,16 @@ void MakeUpper( wchar_t *p, size_t iLen )
 void MakeLower( wchar_t *p, size_t iLen )
 {
 	UnicodeUpperLower( p, iLen, g_LowerCase );
+}
+
+bool operator>>(const RString& lhs, int& rhs)
+{
+	return !!(istringstream(lhs) >> rhs);
+}
+
+bool operator>>(const RString& lhs, float& rhs)
+{
+	return !!(istringstream(lhs) >> rhs);
 }
 
 int StringToInt( const RString &sString )

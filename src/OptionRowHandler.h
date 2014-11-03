@@ -150,15 +150,15 @@ public:
 		m_Def.Init();
 		m_vsReloadRowMessages.clear();
 	}
-	void Load( const Commands &cmds )
+	bool Load( const Commands &cmds )
 	{
 		Init();
-		this->LoadInternal( cmds );
+		return this->LoadInternal( cmds );
 	}
 	RString OptionTitle() const;
 	RString GetThemedItemText( int iChoice ) const;
 
-	virtual void LoadInternal( const Commands & ) { }
+	virtual bool LoadInternal( const Commands & ) { return true; }
 
 	/* We may re-use OptionRowHandlers. This is called before each use. If the
 	 * contents of the row are dependent on external state (for example, the
@@ -178,6 +178,9 @@ public:
 	virtual int ExportOption( const vector<PlayerNumber> &, const vector<bool> vbSelected[NUM_PLAYERS] ) const { return 0; }
 	virtual void GetIconTextAndGameCommand( int iFirstSelection, RString &sIconTextOut, GameCommand &gcOut ) const;
 	virtual RString GetScreen( int /* iChoice */ ) const { return RString(); }
+	// Exists so that a lua function can act on the selection.  Returns true if the choices should be reloaded.
+	virtual bool NotifyOfSelection(PlayerNumber pn, int choice) { return false; }
+	virtual bool GoToFirstOnStart() { return true; }
 };
 
 /** @brief Utilities for the OptionRowHandlers. */

@@ -356,6 +356,7 @@ cl /Zl /nologo /c verstub.cpp /Fo$(IntDir)</Command>
   <ItemGroup>
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="ScreenAttract.cpp" />
+    <ClCompile Include="ScreenBookkeeping.cpp" />
     <ClCompile Include="ScreenContinue.cpp" />
     <ClCompile Include="ScreenDebugOverlay.cpp" />
     <ClCompile Include="ScreenDemonstration.cpp" />
@@ -579,6 +580,7 @@ cl /Zl /nologo /c verstub.cpp /Fo$(IntDir)</Command>
     <ClCompile Include="arch\Lights\LightsDriver.cpp" />
     <ClCompile Include="arch\Lights\LightsDriver_Export.cpp" />
     <ClCompile Include="arch\Lights\LightsDriver_SystemMessage.cpp" />
+    <ClCompile Include="arch\Lights\LightsDriver_Win32Minimaid.cpp" />
     <ClCompile Include="arch\Lights\LightsDriver_Win32Parallel.cpp" />
     <ClCompile Include="archutils\Win32\AppInstance.cpp" />
     <ClCompile Include="archutils\Win32\arch_setup.cpp" />
@@ -747,6 +749,7 @@ cl /Zl /nologo /c verstub.cpp /Fo$(IntDir)</Command>
     <ClCompile Include="ActorFrame.cpp" />
     <ClCompile Include="ActorFrameTexture.cpp" />
     <ClCompile Include="ActorMultiTexture.cpp" />
+    <ClCompile Include="ActorMultiVertex.cpp" />
     <ClCompile Include="ActorProxy.cpp" />
     <ClCompile Include="ActorScroller.cpp" />
     <ClCompile Include="ActorSound.cpp" />
@@ -761,6 +764,7 @@ cl /Zl /nologo /c verstub.cpp /Fo$(IntDir)</Command>
     <ClCompile Include="RollingNumbers.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="AnnouncerManager.cpp" />
+    <ClCompile Include="Bookkeeper.cpp" />
     <ClCompile Include="CharacterManager.cpp" />
     <ClCompile Include="CommandLineActions.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_VERSION_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1668,6 +1672,7 @@ cl /Zl /nologo /c verstub.cpp /Fo$(IntDir)</Command>
   <ItemGroup>
     <ClInclude Include="Screen.h" />
     <ClInclude Include="ScreenAttract.h" />
+    <ClInclude Include="ScreenBookkeeping.h" />
     <ClInclude Include="ScreenContinue.h" />
     <ClInclude Include="ScreenDebugOverlay.h" />
     <ClInclude Include="ScreenDemonstration.h" />
@@ -1894,6 +1899,7 @@ cl /Zl /nologo /c verstub.cpp /Fo$(IntDir)</Command>
     <ClInclude Include="arch\Lights\LightsDriver.h" />
     <ClInclude Include="arch\Lights\LightsDriver_Export.h" />
     <ClInclude Include="arch\Lights\LightsDriver_SystemMessage.h" />
+    <ClInclude Include="arch\Lights\LightsDriver_Win32Minimaid.h" />
     <ClInclude Include="arch\Lights\LightsDriver_Win32Parallel.h" />
     <ClInclude Include="archutils\Win32\AppInstance.h" />
     <ClInclude Include="archutils\Win32\arch_setup.h" />
@@ -2066,6 +2072,7 @@ cl /Zl /nologo /c verstub.cpp /Fo$(IntDir)</Command>
     <ClInclude Include="ActorFrame.h" />
     <ClInclude Include="ActorFrameTexture.h" />
     <ClInclude Include="ActorMultiTexture.h" />
+    <ClInclude Include="ActorMultiVertex.h" />
     <ClInclude Include="ActorProxy.h" />
     <ClInclude Include="ActorScroller.h" />
     <ClInclude Include="ActorSound.h" />
@@ -2080,6 +2087,7 @@ cl /Zl /nologo /c verstub.cpp /Fo$(IntDir)</Command>
     <ClInclude Include="RollingNumbers.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="AnnouncerManager.h" />
+    <ClInclude Include="Bookkeeper.h" />
     <ClInclude Include="CharacterManager.h" />
     <ClInclude Include="CommandLineActions.h" />
     <ClInclude Include="CryptManager.h" />

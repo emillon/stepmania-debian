@@ -15,6 +15,9 @@ extern "C"
 #include "../extern/lua-5.1/src/lauxlib.h"
 }
 
+// For Dialog::Result
+#include "arch/Dialog/Dialog.h"
+
 class LuaManager
 {
 public:
@@ -58,15 +61,30 @@ namespace LuaHelpers
 	 * and the stack is unchanged. */
 	bool LoadScript( Lua *L, const RString &sScript, const RString &sName, RString &sError );
 
+	/* Report the error three ways:  Broadcast message, Warn, and Dialog. */
+	/* If UseAbort is true, reports the error through Dialog::AbortRetryIgnore
+		 and returns the result. */
+	/* If UseAbort is false, reports the error through Dialog::OK and returns
+		 Dialog::ok. */
+	Dialog::Result ReportScriptError(RString const& Error, RString ErrorType= "LUA_ERROR", bool UseAbort= false);
+	// Just the broadcast message part, for things that need to do the rest differently.
+	void ScriptErrorMessage(RString const& Error);
+	// For convenience when replacing uses of LOG->Warn.
+	void ReportScriptErrorFmt(const char *fmt, ...);
+
 	/* Run the function with arguments at the top of the stack, with the given
 	 * number of arguments. The specified number of return values are left on
 	 * the Lua stack. On error, nils are left on the stack, sError is set and 
-	 * false is returned. */
-	bool RunScriptOnStack( Lua *L, RString &sError, int iArgs = 0, int iReturnValues = 0 );
+	 * false is returned.
+	 * If ReportError is true, Error should contain the string to prepend
+	 * when reporting.  The error is reported through LOG->Warn and
+	 * SCREENMAN->SystemMessage.
+	 */
+	bool RunScriptOnStack( Lua *L, RString &Error, int Args = 0, int ReturnValues = 0, bool ReportError = false );
 
 	/* LoadScript the given script, and RunScriptOnStack it.
 	 * iArgs arguments are at the top of the stack. */
-	bool RunScript( Lua *L, const RString &sScript, const RString &sName, RString &sError, int iArgs = 0, int iReturnValues = 0 );
+	bool RunScript( Lua *L, const RString &Script, const RString &Name, RString &Error, int Args = 0, int ReturnValues = 0, bool ReportError = false );
 
 	/* Run the given expression, returning a single value, and leave the return
 	 * value on the stack.  On error, push nil. */
@@ -88,7 +106,7 @@ namespace LuaHelpers
 	// Read the table at the top of the stack back into a vector.
 	void ReadArrayFromTableB( Lua *L, vector<bool> &aOut );
 
-	void ParseCommandList( lua_State *L, const RString &sCommands, const RString &sName );
+	void ParseCommandList( lua_State *L, const RString &sCommands, const RString &sName, bool bLegacy );
 
 	XNode *GetLuaInformation();
 
@@ -172,19 +190,19 @@ private:
  * Once the loop exits normally, the top of the stack will be where it was before. 
  * If you break out of the loop early, you need to handle that explicitly. */
 #define FOREACH_LUATABLE(L,index) \
-for( const int UNIQUE_NAME(tab) = LuaHelpers::AbsIndex(L,index), \
-     UNIQUE_NAME(top) = (lua_pushnil(L),lua_gettop(L)); \
-     lua_next(L, UNIQUE_NAME(tab)) && (lua_pushvalue(L,-2),true); \
-     lua_settop(L,UNIQUE_NAME(top)) )
+for( const int SM_UNIQUE_NAME(tab) = LuaHelpers::AbsIndex(L,index), \
+     SM_UNIQUE_NAME(top) = (lua_pushnil(L),lua_gettop(L)); \
+     lua_next(L, SM_UNIQUE_NAME(tab)) && (lua_pushvalue(L,-2),true); \
+     lua_settop(L,SM_UNIQUE_NAME(top)) )
 
 /** @brief Iterate over the array elements of a table. */
 #define FOREACH_LUATABLEI(L, index, i) \
-	for( int UNIQUE_NAME(tab) = LuaHelpers::AbsIndex(L,index), \
-		UNIQUE_NAME(top) = lua_gettop(L), i = 1; \
-		lua_rawgeti( L, tab, i ), \
+	for( int SM_UNIQUE_NAME(tab) = LuaHelpers::AbsIndex(L,index), \
+		SM_UNIQUE_NAME(top) = lua_gettop(L), i = 1; \
+		lua_rawgeti( L, SM_UNIQUE_NAME(tab), i ), \
 			lua_isnil(L, -1)? \
 			(lua_pop(L, 1), false):(true); /* if nil, pop the nil and stop traversal */ \
-		lua_settop(L,UNIQUE_NAME(top)), ++i )
+		lua_settop(L,SM_UNIQUE_NAME(top)), ++i )
 
 
 struct RegisterLuaFunction { RegisterLuaFunction( RegisterWithLuaFn pfn ) { LuaManager::Register( pfn ); } };
@@ -211,6 +229,26 @@ inline bool MyLua_checkintboolean( lua_State *L, int iArg )
 	}
 
 	return MyLua_checkboolean( L, iArg );
+}
+
+// Checks the table at index to verify that it contains strings.
+inline bool TableContainsOnlyStrings(lua_State* L, int index)
+{
+	bool passed= true;
+	lua_pushnil(L);
+	while(lua_next(L, index) != 0)
+	{
+		// `key' is at index -2 and `value' at index -1
+		const char *pValue = lua_tostring(L, -1);
+		if(pValue == NULL)
+		{
+			// Was going to print an error to the log with the key that failed,
+			// but didn't want to pull in RageLog. -Kyz
+			passed= false;
+		}
+		lua_pop(L, 1);
+	}
+	return passed;
 }
 
 #define SArg(n) (luaL_checkstring(L,(n)))

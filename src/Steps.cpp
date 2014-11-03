@@ -152,6 +152,17 @@ bool Steps::GetNoteDataFromSimfile()
 	{
 		return BMSLoader::LoadNoteDataFromSimfile(stepFile, *this);
 	}
+	else if (extension == "edit")
+	{
+		// Try SSC, then fallback to SM.
+		SSCLoader ldSSC;
+		if(ldSSC.LoadNoteDataFromSimfile(stepFile, *this) != true)
+		{
+			SMLoader ldSM;
+			return ldSM.LoadNoteDataFromSimfile(stepFile, *this);
+		}
+		else return true;
+	}
 	return false;
 }
 
@@ -578,7 +589,11 @@ public:
 	}
 	static int GetRadarValues( T* p, lua_State *L )
 	{
-		PlayerNumber pn = Enum::Check<PlayerNumber>(L, 1);
+		PlayerNumber pn = PLAYER_1;
+		if (!lua_isnil(L, 1)) {
+			pn = Enum::Check<PlayerNumber>(L, 1);
+		}
+		
 		RadarValues &rv = const_cast<RadarValues &>(p->GetRadarValues(pn));
 		rv.PushSelf(L);
 		return 1;

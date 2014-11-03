@@ -57,6 +57,7 @@
 //#include "BackgroundCache.h"
 #include "UnlockManager.h"
 #include "RageFileManager.h"
+#include "Bookkeeper.h"
 #include "LightsManager.h"
 #include "ModelManager.h"
 #include "CryptManager.h"
@@ -123,10 +124,10 @@ static RString GetActualGraphicOptionsString()
 	RString sLog = ssprintf( sFormat,
 		DISPLAY->GetApiDescription().c_str(),
 		(params.windowed? WINDOWED : FULLSCREEN).GetValue().c_str(),
-		(int)params.width, 
-		(int)params.height, 
-		(int)params.bpp, 
-		(int)PREFSMAN->m_iTextureColorDepth, 
+		(int)params.width,
+		(int)params.height,
+		(int)params.bpp,
+		(int)PREFSMAN->m_iTextureColorDepth,
 		(int)params.rate,
 		(params.vsync? VSYNC : NO_VSYNC).GetValue().c_str(),
 		(PREFSMAN->m_bSmoothLines? SMOOTH_LINES : NO_SMOOTH_LINES).GetValue().c_str() );
@@ -141,7 +142,7 @@ static void StoreActualGraphicOptions()
 	const VideoModeParams &params = DISPLAY->GetActualVideoModeParams();
 	PREFSMAN->m_bWindowed.Set( params.windowed );
 
-	/* If we're windowed, we may have tweaked the width based on the aspect ratio.  
+	/* If we're windowed, we may have tweaked the width based on the aspect ratio.
 	 * Don't save this new value over the preferred value. */
 	if( !PREFSMAN->m_bWindowed )
 	{
@@ -183,17 +184,17 @@ static void StartDisplay()
 	DISPLAY = CreateDisplay();
 
 	DISPLAY->ChangeCentering(
-		PREFSMAN->m_iCenterImageTranslateX, 
+		PREFSMAN->m_iCenterImageTranslateX,
 		PREFSMAN->m_iCenterImageTranslateY,
 		PREFSMAN->m_fCenterImageAddWidth,
 		PREFSMAN->m_fCenterImageAddHeight );
 
 	TEXTUREMAN	= new RageTextureManager;
-	TEXTUREMAN->SetPrefs( 
-		RageTextureManagerPrefs( 
-			PREFSMAN->m_iTextureColorDepth, 
+	TEXTUREMAN->SetPrefs(
+		RageTextureManagerPrefs(
+			PREFSMAN->m_iTextureColorDepth,
 			PREFSMAN->m_iMovieColorDepth,
-			PREFSMAN->m_bDelayedTextureDelete, 
+			PREFSMAN->m_bDelayedTextureDelete,
 			PREFSMAN->m_iMaxTextureResolution,
 			StepMania::GetHighResolutionTextures(),
 			PREFSMAN->m_bForceMipMaps
@@ -201,15 +202,15 @@ static void StartDisplay()
 		);
 
 	MODELMAN	= new ModelManager;
-	MODELMAN->SetPrefs( 
+	MODELMAN->SetPrefs(
 		ModelManagerPrefs(
-			PREFSMAN->m_bDelayedModelDelete 
+			PREFSMAN->m_bDelayedModelDelete
 			)
 		);
 }
 
 void StepMania::ApplyGraphicOptions()
-{ 
+{
 	bool bNeedReload = false;
 
 	VideoModeParams params;
@@ -219,25 +220,25 @@ void StepMania::ApplyGraphicOptions()
 		RageException::Throw( "%s", sError.c_str() );
 
 	DISPLAY->ChangeCentering(
-		PREFSMAN->m_iCenterImageTranslateX, 
+		PREFSMAN->m_iCenterImageTranslateX,
 		PREFSMAN->m_iCenterImageTranslateY,
 		PREFSMAN->m_fCenterImageAddWidth,
 		PREFSMAN->m_fCenterImageAddHeight );
 
-	bNeedReload |= TEXTUREMAN->SetPrefs( 
-		RageTextureManagerPrefs( 
-			PREFSMAN->m_iTextureColorDepth, 
+	bNeedReload |= TEXTUREMAN->SetPrefs(
+		RageTextureManagerPrefs(
+			PREFSMAN->m_iTextureColorDepth,
 			PREFSMAN->m_iMovieColorDepth,
-			PREFSMAN->m_bDelayedTextureDelete, 
+			PREFSMAN->m_bDelayedTextureDelete,
 			PREFSMAN->m_iMaxTextureResolution,
 			StepMania::GetHighResolutionTextures(),
 			PREFSMAN->m_bForceMipMaps
 			)
 		);
 
-	bNeedReload |= MODELMAN->SetPrefs( 
+	bNeedReload |= MODELMAN->SetPrefs(
 		ModelManagerPrefs(
-			PREFSMAN->m_bDelayedModelDelete 
+			PREFSMAN->m_bDelayedModelDelete
 			)
 		);
 
@@ -300,6 +301,7 @@ void ShutdownGame()
 	SAFE_DELETE( NOTESKIN );
 	SAFE_DELETE( THEME );
 	SAFE_DELETE( ANNOUNCER );
+	SAFE_DELETE( BOOKKEEPER );
 	SAFE_DELETE( LIGHTSMAN );
 	SAFE_DELETE( SOUNDMAN );
 	SAFE_DELETE( FONT );
@@ -369,14 +371,14 @@ static void AdjustForChangedSystemCapabilities()
 
 	if( g_iLastSeenMemory == Memory )
 		return;
-	
+
 	LOG->Trace( "Memory changed from %i to %i; settings changed", g_iLastSeenMemory.Get(), Memory );
 	g_iLastSeenMemory.Set( Memory );
 
 	// is this assumption outdated? -aj
 	/* Let's consider 128-meg systems low-memory, and 256-meg systems high-memory.
 	 * Cut off at 192. This is pretty conservative; many 128-meg systems can
-	 * deal with higher memory profile settings, but some can't. 
+	 * deal with higher memory profile settings, but some can't.
 	 *
 	 * Actually, Windows lops off a meg or two; cut off a little lower to treat
 	 * 192-meg systems as high-memory. */
@@ -450,7 +452,7 @@ struct VideoCardDefaults
 		iTextureSize = iTextureSize_;
 		bSmoothLines = bSmoothLines_;
 	}
-} const g_VideoCardDefaults[] = 
+} const g_VideoCardDefaults[] =
 {
 	VideoCardDefaults(
 		"Voodoo *5",
@@ -503,7 +505,7 @@ struct VideoCardDefaults
 	VideoCardDefaults(
 		"Savage",
 		"d3d",
-			// OpenGL is unusable on my Savage IV with even the latest drivers.  
+			// OpenGL is unusable on my Savage IV with even the latest drivers.
 			// It draws 30 frames of gibberish then crashes. This happens even with
 			// simple NeHe demos. -Chris
 		640,480,
@@ -514,8 +516,8 @@ struct VideoCardDefaults
 	VideoCardDefaults(
 		"XPERT@PLAY|IIC|RAGE PRO|RAGE LT PRO",	// Rage Pro chip, Rage IIC chip
 		"d3d",
-			// OpenGL is not hardware accelerated, despite the fact that the 
-			// drivers come with an ICD.  Also, the WinXP driver performance 
+			// OpenGL is not hardware accelerated, despite the fact that the
+			// drivers come with an ICD.  Also, the WinXP driver performance
 			// is terrible and supports only 640. The ATI driver is usable.
 			// -Chris
 		320,240,	// lower resolution for 60fps. In-box WinXP driver doesn't support 400x300.
@@ -649,7 +651,7 @@ bool CheckVideoDefaultSettings()
 		bSetDefaultVideoParams = true;
 		LOG->Trace( "Applying defaults for %s.", sVideoDriver.c_str() );
 	}
-	else if( PREFSMAN->m_sLastSeenVideoDriver.Get() != sVideoDriver ) 
+	else if( PREFSMAN->m_sLastSeenVideoDriver.Get() != sVideoDriver )
 	{
 		bSetDefaultVideoParams = true;
 		LOG->Trace( "Video card has changed from %s to %s.  Applying new defaults.", PREFSMAN->m_sLastSeenVideoDriver.Get().c_str(), sVideoDriver.c_str() );
@@ -721,7 +723,7 @@ RageDisplay *CreateDisplay()
 	VideoModeParams params;
 	StepMania::GetPreferredVideoModeParams( params );
 
-	RString error = ERROR_INITIALIZING_CARD.GetValue()+"\n\n"+ 
+	RString error = ERROR_INITIALIZING_CARD.GetValue()+"\n\n"+
 		ERROR_DONT_FILE_BUG.GetValue()+"\n\n"
 		VIDEO_TROUBLESHOOTING_URL "\n\n"+
 		ssprintf(ERROR_VIDEO_DRIVER.GetValue(), GetVideoDriverName().c_str())+"\n\n";
@@ -803,10 +805,11 @@ static void SwitchToLastPlayedGame()
 
 	ASSERT( GAMEMAN->IsGameEnabled(pGame) );
 
-	StepMania::ChangeCurrentGame( pGame );
+	StepMania::InitializeCurrentGame( pGame );
 }
 
-void StepMania::ChangeCurrentGame( const Game* g )
+// This function is meant to only be called during start up.
+void StepMania::InitializeCurrentGame( const Game* g )
 {
 	ASSERT( g != NULL );
 	ASSERT( GAMESTATE != NULL );
@@ -821,8 +824,8 @@ void StepMania::ChangeCurrentGame( const Game* g )
 
 	if( sAnnouncer.empty() )
 		sAnnouncer = GAMESTATE->GetCurrentGame()->m_szName;
-	if( sTheme.empty() )
-		sTheme = GAMESTATE->GetCurrentGame()->m_szName;
+	// It doesn't matter if sTheme is blank or invalid, THEME->STAL will set
+	// a selectable theme for us. -Kyz
 
 	// process theme and language command line arguments;
 	// these change the preferences in order for transparent loading -aj
@@ -898,10 +901,6 @@ static void WriteLogHeader()
 	LOG->Info( "Compiled %s @ %s (build %lu)", version_date, version_time, version_num );
 #endif
 
-	// this code should only be enabled in distributed builds
-	//LOG->Info("sm-ssc is Copyright �2009 the spinal shark collective, all rights reserved. Commercial use of this binary is prohibited by law and will be prosecuted to the fullest extent of the law.");
-	// end limited code
-
 	time_t cur_time;
 	time(&cur_time);
 	struct tm now;
@@ -955,11 +954,11 @@ int main(int argc, char* argv[])
 	// Almost everything uses this to read and write files.  Load this early.
 	FILEMAN = new RageFileManager( argv[0] );
 	FILEMAN->MountInitialFilesystems();
-	
+
 	bool bPortable = DoesFileExist("Portable.ini");
 	if( !bPortable )
 		FILEMAN->MountUserFilesystems();
-	
+
 	// Set this up next. Do this early, since it's needed for RageException::Throw.
 	LOG		= new RageLog;
 
@@ -1110,11 +1109,12 @@ int main(int argc, char* argv[])
 	SOUNDMAN->Init();
 	SOUNDMAN->SetMixVolume();
 	SOUND		= new GameSoundManager;
+	BOOKKEEPER	= new Bookkeeper;
 	LIGHTSMAN	= new LightsManager;
 	INPUTFILTER	= new InputFilter;
 	INPUTMAPPER	= new InputMapper;
 
-	StepMania::ChangeCurrentGame( GAMESTATE->GetCurrentGame() );
+	StepMania::InitializeCurrentGame( GAMESTATE->GetCurrentGame() );
 
 	INPUTQUEUE	= new InputQueue;
 	SONGINDEX	= new SongCacheIndex;
@@ -1193,32 +1193,32 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-RString StepMania::SaveScreenshot( RString sDir, bool bSaveCompressed, bool bMakeSignature, int iIndex )
+RString StepMania::SaveScreenshot( RString Dir, bool SaveCompressed, bool MakeSignature, RString NamePrefix, RString NameSuffix )
 {
 	/* As of sm-ssc v1.0 rc2, screenshots are no longer named by an arbitrary
 	 * index. This was causing naming issues for some unknown reason, so we have
 	 * changed the screenshot names to a non-blocking format: date and time.
 	 * As before, we ignore the extension. -aj */
-	RString sFileNameNoExtension = DateTime::GetNowDateTime().GetString();
+	RString FileNameNoExtension = NamePrefix + DateTime::GetNowDateTime().GetString() + NameSuffix;
 	// replace space with underscore.
-	sFileNameNoExtension.Replace(" ","_");
+	FileNameNoExtension.Replace(" ","_");
 	// colons are illegal in filenames.
-	sFileNameNoExtension.Replace(":","");
+	FileNameNoExtension.Replace(":","");
 
 	// Save the screenshot. If writing lossy to a memcard, use
 	// SAVE_LOSSY_LOW_QUAL, so we don't eat up lots of space.
 	RageDisplay::GraphicsFileFormat fmt;
-	if( bSaveCompressed && MEMCARDMAN->PathIsMemCard(sDir) )
+	if( SaveCompressed && MEMCARDMAN->PathIsMemCard(Dir) )
 		fmt = RageDisplay::SAVE_LOSSY_LOW_QUAL;
-	else if( bSaveCompressed )
+	else if( SaveCompressed )
 		fmt = RageDisplay::SAVE_LOSSY_HIGH_QUAL;
 	else
 		fmt = RageDisplay::SAVE_LOSSLESS_SENSIBLE;
 
-	RString sFileName = sFileNameNoExtension + "." + (bSaveCompressed ? "jpg" : "png");
-	RString sPath = sDir+sFileName;
-	bool bResult = DISPLAY->SaveScreenshot( sPath, fmt );
-	if( !bResult )
+	RString FileName = FileNameNoExtension + "." + (SaveCompressed ? "jpg" : "png");
+	RString Path = Dir+FileName;
+	bool Result = DISPLAY->SaveScreenshot( Path, fmt );
+	if( !Result )
 	{
 		SCREENMAN->PlayInvalidSound();
 		return RString();
@@ -1226,10 +1226,81 @@ RString StepMania::SaveScreenshot( RString sDir, bool bSaveCompressed, bool bMak
 
 	SCREENMAN->PlayScreenshotSound();
 
-	if( PREFSMAN->m_bSignProfileData && bMakeSignature )
-		CryptManager::SignFileToFile( sPath );
+	if( PREFSMAN->m_bSignProfileData && MakeSignature )
+		CryptManager::SignFileToFile( Path );
 
-	return sFileName;
+	return FileName;
+}
+
+void StepMania::InsertCoin( int iNum, bool bCountInBookkeeping )
+{
+	if( bCountInBookkeeping )
+	{
+		LIGHTSMAN->PulseCoinCounter();
+		BOOKKEEPER->CoinInserted();
+	}
+	int iNumCoinsOld = GAMESTATE->m_iCoins;
+
+	// Don't allow GAMESTATE's coin count to become negative.
+	if (GAMESTATE->m_iCoins + iNum >= 0)
+	{
+		GAMESTATE->m_iCoins.Set( GAMESTATE->m_iCoins + iNum );
+	}
+	
+	int iCredits = GAMESTATE->m_iCoins / PREFSMAN->m_iCoinsPerCredit;
+	bool bMaxCredits = iCredits >= MAX_NUM_CREDITS;
+	if( bMaxCredits )
+	{
+		GAMESTATE->m_iCoins.Set( MAX_NUM_CREDITS * PREFSMAN->m_iCoinsPerCredit );
+	}
+	
+	LOG->Trace("%i coins inserted, %i needed to play", GAMESTATE->m_iCoins.Get(), PREFSMAN->m_iCoinsPerCredit.Get() );
+
+	// If inserting coins, play an appropriate sound; if deducting coins, don't play anything.
+	if (iNum > 0)
+	{
+		if( iNumCoinsOld != GAMESTATE->m_iCoins )
+		{
+			SCREENMAN->PlayCoinSound();
+		} else {
+			SCREENMAN->PlayInvalidSound();
+		}
+	}
+
+	/* If AutoJoin and a player is already joined, then try to join a player.
+	 * (If no players are joined, they'll join on the first JoinInput.) */
+	if( GAMESTATE->m_bAutoJoin.Get() && GAMESTATE->GetNumSidesJoined() > 0 )
+	{
+		if( GAMESTATE->GetNumSidesJoined() > 0 && GAMESTATE->JoinPlayers() )
+			SCREENMAN->PlayStartSound();
+	}
+
+	// TODO: remove this redundant message and things that depend on it
+	Message msg( "CoinInserted" );
+	// below params are unused
+	//msg.SetParam( "Coins", GAMESTATE->m_iCoins );
+	//msg.SetParam( "Inserted", iNum );
+	//msg.SetParam( "MaxCredits", bMaxCredits );
+	MESSAGEMAN->Broadcast( msg );
+}
+
+void StepMania::InsertCredit()
+{
+	InsertCoin( PREFSMAN->m_iCoinsPerCredit, false );
+}
+
+void StepMania::ClearCredits()
+{
+	LOG->Trace("%i coins cleared", GAMESTATE->m_iCoins.Get() );
+	GAMESTATE->m_iCoins.Set( 0 );
+	SCREENMAN->PlayInvalidSound();
+
+	// TODO: remove this redundant message and things that depend on it
+	Message msg( "CoinInserted" );
+	// below params are unused
+	//msg.SetParam( "Coins", GAMESTATE->m_iCoins );
+	//msg.SetParam( "Clear", true );
+	MESSAGEMAN->Broadcast( msg );
 }
 
 /* Returns true if the key has been handled and should be discarded, false if
@@ -1242,7 +1313,7 @@ static LocalizedString RELOADED_OVERLAY_SCREENS( "ThemeManager", "Reloaded overl
 bool HandleGlobalInputs( const InputEventPlus &input )
 {
 	// None of the globals keys act on types other than FIRST_PRESS
-	if( input.type != IET_FIRST_PRESS ) 
+	if( input.type != IET_FIRST_PRESS )
 		return false;
 
 	switch( input.MenuI )
@@ -1260,12 +1331,21 @@ bool HandleGlobalInputs( const InputEventPlus &input )
 			}
 			return true;
 
+		case GAME_BUTTON_COIN:
+			// Handle a coin insertion.
+			if( GAMESTATE->IsEditing() )	// no coins while editing
+			{
+				LOG->Trace( "Ignored coin insertion (editing)" );
+				break;
+			}
+			StepMania::InsertCoin();
+			return false; // Attract needs to know because it goes to TitleMenu on > 1 credit
 		default: break;
 	}
 
 	/* Re-added for StepMania 3.9 theming veterans, plus it's just faster than
 	 * the debug menu. The Shift button only reloads the metrics, unlike in 3.9
-	 * (where it saved machine profile). -aj */
+	 * (where it saved bookkeeping and machine profile). -aj */
 	bool bIsShiftHeld = INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT), &input.InputList) ||
 		INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT), &input.InputList);
 	bool bIsCtrlHeld = INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL), &input.InputList) ||
@@ -1337,21 +1417,21 @@ bool HandleGlobalInputs( const InputEventPlus &input )
 	}
 #endif
 
-	bool bDoScreenshot = 
+	bool bDoScreenshot =
 #if defined(MACOSX)
 	// Notebooks don't have F13. Use cmd-F12 as well.
 		input.DeviceI == DeviceInput( DEVICE_KEYBOARD, KEY_PRTSC ) ||
 		input.DeviceI == DeviceInput( DEVICE_KEYBOARD, KEY_F13 ) ||
-		( input.DeviceI == DeviceInput(DEVICE_KEYBOARD, KEY_F12) && 
+		( input.DeviceI == DeviceInput(DEVICE_KEYBOARD, KEY_F12) &&
 		  (INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LMETA), &input.InputList) ||
 		   INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RMETA), &input.InputList)) );
 #else
 	/* The default Windows message handler will capture the desktop window upon
 	 * pressing PrntScrn, or will capture the foreground with focus upon pressing
-	 * Alt+PrntScrn. Windows will do this whether or not we save a screenshot 
+	 * Alt+PrntScrn. Windows will do this whether or not we save a screenshot
 	 * ourself by dumping the frame buffer. */
 	// "if pressing PrintScreen and not pressing Alt"
-		input.DeviceI == DeviceInput(DEVICE_KEYBOARD, KEY_PRTSC) && 
+		input.DeviceI == DeviceInput(DEVICE_KEYBOARD, KEY_PRTSC) &&
 		!INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LALT), &input.InputList) &&
 		!INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RALT), &input.InputList);
 #endif
@@ -1362,7 +1442,7 @@ bool HandleGlobalInputs( const InputEventPlus &input )
 								|| INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT) ) );
 		bool bSaveCompressed = !bHoldingShift;
 		RageTimer timer;
-		StepMania::SaveScreenshot( "Screenshots/", bSaveCompressed, false, -1 );
+		StepMania::SaveScreenshot( "Screenshots/", bSaveCompressed, false, "", "" );
 		LOG->Trace( "Screenshot took %f seconds.", timer.GetDeltaTime() );
 		return true; // handled
 	}
@@ -1496,6 +1576,48 @@ void HandleInputEvents(float fDeltaTime)
 		StepMania::ApplyGraphicOptions();
 	}
 }
+
+#include "LuaManager.h"
+int LuaFunc_SaveScreenshot(lua_State *L);
+int LuaFunc_SaveScreenshot(lua_State *L)
+{
+	// If pn is provided, save to that player's profile.
+	// Otherwise, save to the machine.
+	PlayerNumber pn= Enum::Check<PlayerNumber>(L, 1, true);
+	bool compress= lua_toboolean(L, 2);
+	bool sign= lua_toboolean(L, 3);
+	RString prefix= luaL_optstring(L, 4, "");
+	RString suffix= luaL_optstring(L, 5, "");
+	RString dir;
+	if(pn == PlayerNumber_Invalid)
+	{
+		dir= "Screenshots/";
+	}
+	else
+	{
+		dir= PROFILEMAN->GetProfileDir((ProfileSlot)pn) + "Screenshots/";
+		if(PROFILEMAN->ProfileWasLoadedFromMemoryCard(pn))
+		{
+			MEMCARDMAN->MountCard(pn);
+		}
+	}
+	RString filename= StepMania::SaveScreenshot(dir, compress, sign, prefix, suffix);
+	if(pn != PlayerNumber_Invalid)
+	{
+		if(PROFILEMAN->ProfileWasLoadedFromMemoryCard(pn))
+		{
+			MEMCARDMAN->UnmountCard(pn);
+		}
+	}
+	RString path= dir + filename;
+	lua_pushboolean(L, !filename.empty());
+	lua_pushstring(L, path);
+	return 2;
+}
+void LuaFunc_Register_SaveScreenshot(lua_State *L);
+void LuaFunc_Register_SaveScreenshot(lua_State *L)
+{ lua_register(L, "SaveScreenshot", LuaFunc_SaveScreenshot); }
+REGISTER_WITH_LUA_FUNCTION(LuaFunc_Register_SaveScreenshot);
 
 /*
  * (c) 2001-2004 Chris Danford, Glenn Maynard
