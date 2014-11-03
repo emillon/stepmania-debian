@@ -4,6 +4,7 @@
 	dh $@
 
 override_dh_auto_configure:
+	rm -rf extern/pcre
 	sh autogen.sh
 	dh_auto_configure -- --with-system-ffmpeg
 
