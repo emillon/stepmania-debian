@@ -23,7 +23,7 @@ Build-Depends:
  libxrandr-dev,
  pkg-config,
  yasm
-Standards-Version: 3.9.3
+Standards-Version: 3.9.6
 Homepage: http://stepmania.com/
 
 Package: stepmania
