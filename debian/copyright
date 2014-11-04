@@ -30,6 +30,13 @@ Copyright: *No copyright*
 License: UNKNOWN
  FIXME
 
+Files:
+ ./extern/lua-5.1/*
+Comment: Lua 5.1 with custom changes
+Copyright: *No copyright*
+License: UNKNOWN
+ FIXME
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile?Common.xsl
  ./Themes/_fallback/Other/Profile?Stats.xsl
@@ -51,64 +58,6 @@ Files: ./Docs/Luadoc/Lua.xsl
  ./extern/crypto/CryptRand.cpp
  ./extern/crypto/CryptSH512.cpp
  ./extern/crypto/CryptSHA.cpp
- ./extern/lua-5.1/etc/all.c
- ./extern/lua-5.1/etc/lua.hpp
- ./extern/lua-5.1/etc/min.c
- ./extern/lua-5.1/etc/noparser.c
- ./extern/lua-5.1/src/lapi.h
- ./extern/lua-5.1/src/lauxlib.c
- ./extern/lua-5.1/src/lauxlib.h
- ./extern/lua-5.1/src/lbaselib.c
- ./extern/lua-5.1/src/lcode.c
- ./extern/lua-5.1/src/lcode.h
- ./extern/lua-5.1/src/ldblib.c
- ./extern/lua-5.1/src/ldebug.c
- ./extern/lua-5.1/src/ldebug.h
- ./extern/lua-5.1/src/ldo.c
- ./extern/lua-5.1/src/ldo.h
- ./extern/lua-5.1/src/ldump.c
- ./extern/lua-5.1/src/lfunc.c
- ./extern/lua-5.1/src/lfunc.h
- ./extern/lua-5.1/src/lgc.c
- ./extern/lua-5.1/src/lgc.h
- ./extern/lua-5.1/src/linit.c
- ./extern/lua-5.1/src/liolib.c
- ./extern/lua-5.1/src/llex.c
- ./extern/lua-5.1/src/llex.h
- ./extern/lua-5.1/src/llimits.h
- ./extern/lua-5.1/src/lmathlib.c
- ./extern/lua-5.1/src/lmem.c
- ./extern/lua-5.1/src/lmem.h
- ./extern/lua-5.1/src/loadlib.c
- ./extern/lua-5.1/src/lobject.c
- ./extern/lua-5.1/src/lobject.h
- ./extern/lua-5.1/src/lopcodes.c
- ./extern/lua-5.1/src/lopcodes.h
- ./extern/lua-5.1/src/loslib.c
- ./extern/lua-5.1/src/lparser.c
- ./extern/lua-5.1/src/lparser.h
- ./extern/lua-5.1/src/lstate.c
- ./extern/lua-5.1/src/lstate.h
- ./extern/lua-5.1/src/lstring.c
- ./extern/lua-5.1/src/lstring.h
- ./extern/lua-5.1/src/lstrlib.c
- ./extern/lua-5.1/src/ltable.c
- ./extern/lua-5.1/src/ltable.h
- ./extern/lua-5.1/src/ltablib.c
- ./extern/lua-5.1/src/ltm.c
- ./extern/lua-5.1/src/ltm.h
- ./extern/lua-5.1/src/lua.c
- ./extern/lua-5.1/src/lua.h
- ./extern/lua-5.1/src/luac.c
- ./extern/lua-5.1/src/luaconf.h
- ./extern/lua-5.1/src/lualib.h
- ./extern/lua-5.1/src/lundump.c
- ./extern/lua-5.1/src/lundump.h
- ./extern/lua-5.1/src/lvm.c
- ./extern/lua-5.1/src/lvm.h
- ./extern/lua-5.1/src/lzio.c
- ./extern/lua-5.1/src/lzio.h
- ./extern/lua-5.1/src/print.c
  ./src/Actor.cpp
  ./src/Actor.h
  ./src/ActorFrame.cpp
@@ -1418,11 +1367,6 @@ License: Expat
 Files: ./src/ScreenSelectProfile.h
 Copyright: 2007, vdl
 License: Expat
- FIXME
-
-Files: ./extern/lua-5.1/src/lapi.c
-Copyright: UNKNOWN
-License: UNKNOWN
  FIXME
 
 Files: ./src/ScreenNetSelectBase.h
@@ -4472,46 +4416,6 @@ Files:
  ./autoconf/m4/x11.m4
  ./autoconf/m4/zlib.m4
  ./configure.ac
- ./extern/lua-5.1/COPYRIGHT
- ./extern/lua-5.1/HISTORY
- ./extern/lua-5.1/INSTALL
- ./extern/lua-5.1/README
- ./extern/lua-5.1/doc/contents.html
- ./extern/lua-5.1/doc/logo.gif
- ./extern/lua-5.1/doc/lua.1
- ./extern/lua-5.1/doc/lua.css
- ./extern/lua-5.1/doc/lua.html
- ./extern/lua-5.1/doc/luac.1
- ./extern/lua-5.1/doc/luac.html
- ./extern/lua-5.1/doc/manual.html
- ./extern/lua-5.1/doc/readme.html
- ./extern/lua-5.1/etc/README
- ./extern/lua-5.1/etc/lua.ico
- ./extern/lua-5.1/etc/lua.pc
- ./extern/lua-5.1/etc/luavs.bat
- ./extern/lua-5.1/etc/strict.lua
- ./extern/lua-5.1/liblua-net2011.vcxproj
- ./extern/lua-5.1/liblua-net2011.vcxproj.filters
- ./extern/lua-5.1/test/README
- ./extern/lua-5.1/test/bisect.lua
- ./extern/lua-5.1/test/cf.lua
- ./extern/lua-5.1/test/echo.lua
- ./extern/lua-5.1/test/env.lua
- ./extern/lua-5.1/test/factorial.lua
- ./extern/lua-5.1/test/fib.lua
- ./extern/lua-5.1/test/fibfor.lua
- ./extern/lua-5.1/test/globals.lua
- ./extern/lua-5.1/test/hello.lua
- ./extern/lua-5.1/test/life.lua
- ./extern/lua-5.1/test/luac.lua
- ./extern/lua-5.1/test/printf.lua
- ./extern/lua-5.1/test/readonly.lua
- ./extern/lua-5.1/test/sieve.lua
- ./extern/lua-5.1/test/sort.lua
- ./extern/lua-5.1/test/table.lua
- ./extern/lua-5.1/test/trace-calls.lua
- ./extern/lua-5.1/test/trace-globals.lua
- ./extern/lua-5.1/test/xd.lua
  ./icons/hicolor/128x128/apps/stepmania-ssc.png
  ./icons/hicolor/16x16/apps/stepmania-ssc.png
  ./icons/hicolor/192x192/apps/stepmania-ssc.png
