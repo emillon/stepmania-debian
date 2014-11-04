@@ -19,9 +19,6 @@ override_dh_auto_configure:
 	sh autogen.sh
 	dh_auto_configure -- --with-system-ffmpeg
 
-override_dh_clean:
-	dh_clean -X'Themes/_themekit-piu/Scripts/02 ini read.lua.bak'
-
 override_dh_auto_test:
 	# Skip tests
 
