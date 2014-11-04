@@ -19,6 +19,10 @@ override_dh_auto_configure:
 	sh autogen.sh
 	dh_auto_configure -- --with-system-ffmpeg
 
+override_dh_fixperms:
+	dh_fixperms
+	chmod -x debian/stepmania-data/usr/share/games/stepmania/Themes/_fallback/Graphics/CreditsLogo\ kyzentun.png
+
 override_dh_auto_test:
 	# Skip tests
 
