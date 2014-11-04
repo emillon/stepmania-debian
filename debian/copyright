@@ -26,6 +26,10 @@ Files:
  ./src/libtommath/*
 Comment: embedded libtommath
 
+Files:
+ ./src/libpng/*
+Comment: embedded libpng
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
  ./Themes/_fallback/Other/Profile Stats.xsl
@@ -55,15 +59,6 @@ Files: ./Docs/Luadoc/Lua.xsl
  ./extern/libjpeg/jcarith.c
  ./extern/libjpeg/jconfig.h
  ./extern/libjpeg/jdarith.c
- ./extern/libpng/include/autogen.sh
- ./extern/libpng/include/contrib/pngminus/png2pnm.sh
- ./extern/libpng/include/contrib/pngminus/pngminus.sh
- ./extern/libpng/include/contrib/pngminus/pnm2png.sh
- ./extern/libpng/include/contrib/visupng/resource.h
- ./extern/libpng/include/example.c
- ./extern/libpng/include/test-pngtest.sh
- ./extern/libpng/include/test-pngvalid-full.sh
- ./extern/libpng/include/test-pngvalid-simple.sh
  ./extern/lua-5.1/etc/all.c
  ./extern/lua-5.1/etc/lua.hpp
  ./extern/lua-5.1/etc/min.c
@@ -1381,28 +1376,6 @@ Files: ./extern/for_mingw/include/libpng15/png.h
  ./extern/for_mingw/include/libpng15/pngconf.h
  ./extern/for_mingw/include/png.h
  ./extern/for_mingw/include/pngconf.h
- ./extern/libpng/include/png.c
- ./extern/libpng/include/png.h
- ./extern/libpng/include/pngconf.h
- ./extern/libpng/include/pngdebug.h
- ./extern/libpng/include/pngerror.c
- ./extern/libpng/include/pngget.c
- ./extern/libpng/include/pnginfo.h
- ./extern/libpng/include/pngmem.c
- ./extern/libpng/include/pngpread.c
- ./extern/libpng/include/pngpriv.h
- ./extern/libpng/include/pngread.c
- ./extern/libpng/include/pngrio.c
- ./extern/libpng/include/pngrtran.c
- ./extern/libpng/include/pngrutil.c
- ./extern/libpng/include/pngset.c
- ./extern/libpng/include/pngstruct.h
- ./extern/libpng/include/pngtest.c
- ./extern/libpng/include/pngtrans.c
- ./extern/libpng/include/pngwio.c
- ./extern/libpng/include/pngwrite.c
- ./extern/libpng/include/pngwtran.c
- ./extern/libpng/include/pngwutil.c
 Copyright: 1995-1996, Guy Eric Schalnat, Group 42, Inc.)
   1996-1997, Andreas Dilger)
   1998-2011, Glenn Randers-Pehrson
@@ -1648,18 +1621,6 @@ Copyright: 2001-2006, Glenn Maynard, Chris Danford
 License: Expat
  FIXME
 
-Files: ./extern/libpng/include/contrib/gregbook/readpng.c
- ./extern/libpng/include/contrib/gregbook/readpng.h
- ./extern/libpng/include/contrib/gregbook/readpng2.c
- ./extern/libpng/include/contrib/gregbook/readpng2.h
- ./extern/libpng/include/contrib/gregbook/readppm.c
- ./extern/libpng/include/contrib/gregbook/writepng.c
- ./extern/libpng/include/contrib/gregbook/writepng.h
-Copyright: 1998-2007, Greg Roelofs.
-  1998-2008, Greg Roelofs.
-License: GPL-2+
- FIXME
-
 Files: ./extern/crypto/CryptMD5.h
  ./extern/crypto/CryptPrime.h
  ./extern/crypto/CryptRSA.h
@@ -1713,29 +1674,6 @@ Files: ./extern/zlib/contrib/minizip/ioapi.c
 Copyright: 1998-2010, Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
   2009-2010, Mathias Svensson ( http://result42.com )
 License: UNKNOWN
- FIXME
-
-Files: ./extern/libpng/include/contrib/gregbook/rpng-win.c
- ./extern/libpng/include/contrib/gregbook/rpng-x.c
- ./extern/libpng/include/contrib/gregbook/rpng2-win.c
- ./extern/libpng/include/contrib/gregbook/rpng2-x.c
- ./extern/libpng/include/contrib/gregbook/wpng.c
-Copyright: 1998-2007, Greg Roelofs.
-  1998-2008, Greg Roelofs.
-License: UNKNOWN
- FIXME
-
-Files: ./extern/libpng/include/contrib/libtests/pngvalid.c
- ./extern/libpng/include/contrib/pngminim/decoder/pngusr.h
- ./extern/libpng/include/contrib/pngminim/encoder/pngusr.h
- ./extern/libpng/include/contrib/pngminim/preader/pngusr.h
- ./extern/libpng/include/pngvalid.c
-Copyright: 1998-2007, Glenn Randers-Pehrson
-  2007, 2010-2011, Glenn Randers-Pehrson
-  2009-2011, Glenn Randers-Pehrson
-  2011, Glenn Randers-Pehrson
-  2012, Glenn Randers-Pehrson
-License: libpng
  FIXME
 
 Files: ./src/arch/Sound/ALSA9Helpers.h
@@ -1811,7 +1749,6 @@ License: UNKNOWN
 
 Files: ./extern/for_mingw/include/libpng15/pnglibconf.h
  ./extern/for_mingw/include/pnglibconf.h
- ./extern/libpng/include/pnglibconf.h
 Copyright: 1998-2011, Glenn Randers-Pehrson */
   1998-2012, Glenn Randers-Pehrson */
 License: libpng
@@ -1862,7 +1799,7 @@ Copyright: 2002-2006, Glenn Maynard, Steve Checkoway
 License: Expat
  FIXME
 
-Files: ./extern/libpng/include/ltmain.sh
+Files:
  ./extern/mad-0.15.1b/ltmain.sh
 Copyright: 1996-2001, 2003
   1996-2001, 2003-2006
@@ -1891,12 +1828,6 @@ Copyright: 1991-2011, Thomas G. Lane, Guido Vollbeding
 License: UNKNOWN
  FIXME
 
-Files: ./extern/libpng/include/contrib/pngminus/png2pnm.c
- ./extern/libpng/include/contrib/pngminus/pnm2png.c
-Copyright: 1999, Willem van Schaik <willem@schaik.com>
-License: UNKNOWN
- FIXME
-
 Files: ./extern/zlib/contrib/inflate86/inffas86.c
  ./extern/zlib/contrib/masmx64/inffas8664.c
 Copyright: 1995-2003, Mark Adler
@@ -1910,12 +1841,6 @@ Files: ./extern/zlib/contrib/infback9/inftree9.c
 Copyright: 1995-2010, Mark Adler
   1995-2010, Mark Adler ";
 License: Zlib
- FIXME
-
-Files: ./extern/libpng/include/contrib/visupng/PngFile.c
- ./extern/libpng/include/contrib/visupng/VisualPng.c
-Copyright: 2000, Willem van Schaik
-License: libpng
  FIXME
 
 Files: ./extern/glew-1.5.8/include/GL/glew.h
@@ -2068,12 +1993,7 @@ License: Public domain
  FIXME
 
 Files: ./extern/lua-5.1/src/lapi.c
-Copyright: 
-License: UNKNOWN
- FIXME
-
-Files: ./extern/libpng/include/contrib/visupng/cexcept.h
-Copyright: 2000-2008, Adam M. Costello and Cosmin Truta
+Copyright:
 License: UNKNOWN
  FIXME
 
@@ -2187,9 +2107,3 @@ Copyright: 1995-2010, Jean-loup Gailly and Mark Adler
   1995-2010, Jean-loup Gailly and Mark Adler ";
 License: Zlib
  FIXME
-
-Files: ./extern/libpng/include/contrib/visupng/PngFile.h
-Copyright: 2000, Willem van Schaik.*/
-License: libpng
- FIXME
-
