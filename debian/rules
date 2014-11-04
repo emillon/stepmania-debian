@@ -6,6 +6,7 @@
 override_dh_auto_configure:
 	rm -rf extern/pcre
 	rm -rf extern/jsoncpp
+	rm -rf extern/libpng
 	rm -rf src/libtomcrypt
 	rm -rf src/libtommath
 	sh autogen.sh
