@@ -8,48 +8,21 @@ Files:
  ./XCode/*
  ./bundle/*
  ./src/smpackage/*
- ./extern/for_mingw/*
-Comment: removable if needed
-
-Files:
- ./extern/jsoncpp/*
-Comment: embedded jsoncpp lib
-
-Files:
- ./extern/pcre/*
-Comment: embedded pcre lib
-
-Files:
  ./src/libtomcrypt/*
-Comment: embedded libtomcrypt
-
-Files:
  ./src/libtommath/*
-Comment: embedded libtommath
-
-Files:
  ./src/libpng/*
-Comment: embedded libpng
-
-Files:
  ./extern/vorbis/*
-Comment: embedded vorbis
-
-Files:
  ./extern/zlib/*
-Comment: embedded zlib
-
-Files:
  ./extern/mad-0.15.1b/*
-Comment: embedded libmad
-
-Files:
  ./extern/glew-1.5.8/*
-Comment: embedded libglew
-
-Files:
  ./extern/libjpeg/*
-Comment: embedded libjpeg
+ ./extern/for_mingw/*
+ ./extern/jsoncpp/*
+ ./extern/pcre/*
+Comment: removable if needed
+Copyright: *No copyright*
+License: UNKNOWN
+ FIXME
 
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
