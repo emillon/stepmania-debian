@@ -8,6 +8,7 @@ Files:
  ./XCode/*
  ./bundle/*
  ./src/smpackage/*
+ ./extern/for_mingw/*
 Comment: removable if needed
 
 Files:
@@ -46,6 +47,10 @@ Files:
  ./extern/glew-1.5.8/*
 Comment: embedded libglew
 
+Files:
+ ./extern/libjpeg/*
+Comment: embedded libjpeg
+
 Files: ./Docs/Luadoc/Lua.xsl
  ./Themes/_fallback/Other/Profile Common.xsl
  ./Themes/_fallback/Other/Profile Stats.xsl
@@ -68,13 +73,6 @@ Files: ./Docs/Luadoc/Lua.xsl
  ./extern/crypto/CryptSH512.cpp
  ./extern/crypto/CryptSHA.cpp
  ./extern/ffmpeg/include/libavutil/avconfig.h
- ./extern/for_mingw/include/jconfig.h
- ./extern/for_mingw/include/ogg/config_types.h
- ./extern/libjpeg/example.c
- ./extern/libjpeg/jaricom.c
- ./extern/libjpeg/jcarith.c
- ./extern/libjpeg/jconfig.h
- ./extern/libjpeg/jdarith.c
  ./extern/lua-5.1/etc/all.c
  ./extern/lua-5.1/etc/lua.hpp
  ./extern/lua-5.1/etc/min.c
@@ -1085,85 +1083,6 @@ Copyright: 2001-2002, Chris Danford
 License: Expat
  FIXME
 
-Files:
- ./extern/for_mingw/include/jerror.h
- ./extern/for_mingw/include/jmorecfg.h
- ./extern/for_mingw/include/jpeglib.h
- ./extern/libjpeg/cderror.h
- ./extern/libjpeg/cdjpeg.c
- ./extern/libjpeg/cdjpeg.h
- ./extern/libjpeg/cjpeg.c
- ./extern/libjpeg/ckconfig.c
- ./extern/libjpeg/djpeg.c
- ./extern/libjpeg/jcapimin.c
- ./extern/libjpeg/jcapistd.c
- ./extern/libjpeg/jccoefct.c
- ./extern/libjpeg/jccolor.c
- ./extern/libjpeg/jcdctmgr.c
- ./extern/libjpeg/jchuff.c
- ./extern/libjpeg/jcinit.c
- ./extern/libjpeg/jcmainct.c
- ./extern/libjpeg/jcmarker.c
- ./extern/libjpeg/jcmaster.c
- ./extern/libjpeg/jcomapi.c
- ./extern/libjpeg/jcparam.c
- ./extern/libjpeg/jcprepct.c
- ./extern/libjpeg/jcsample.c
- ./extern/libjpeg/jctrans.c
- ./extern/libjpeg/jdapimin.c
- ./extern/libjpeg/jdapistd.c
- ./extern/libjpeg/jdatadst.c
- ./extern/libjpeg/jdatasrc.c
- ./extern/libjpeg/jdcoefct.c
- ./extern/libjpeg/jdcolor.c
- ./extern/libjpeg/jdct.h
- ./extern/libjpeg/jddctmgr.c
- ./extern/libjpeg/jdhuff.c
- ./extern/libjpeg/jdinput.c
- ./extern/libjpeg/jdmainct.c
- ./extern/libjpeg/jdmarker.c
- ./extern/libjpeg/jdmaster.c
- ./extern/libjpeg/jdmerge.c
- ./extern/libjpeg/jdpostct.c
- ./extern/libjpeg/jdsample.c
- ./extern/libjpeg/jdtrans.c
- ./extern/libjpeg/jerror.c
- ./extern/libjpeg/jerror.h
- ./extern/libjpeg/jfdctflt.c
- ./extern/libjpeg/jfdctfst.c
- ./extern/libjpeg/jfdctint.c
- ./extern/libjpeg/jidctflt.c
- ./extern/libjpeg/jidctfst.c
- ./extern/libjpeg/jidctint.c
- ./extern/libjpeg/jinclude.h
- ./extern/libjpeg/jmemansi.c
- ./extern/libjpeg/jmemdos.c
- ./extern/libjpeg/jmemmac.c
- ./extern/libjpeg/jmemmgr.c
- ./extern/libjpeg/jmemname.c
- ./extern/libjpeg/jmemnobs.c
- ./extern/libjpeg/jmemsys.h
- ./extern/libjpeg/jmorecfg.h
- ./extern/libjpeg/jpegint.h
- ./extern/libjpeg/jpeglib.h
- ./extern/libjpeg/jquant1.c
- ./extern/libjpeg/jquant2.c
- ./extern/libjpeg/jutils.c
-Copyright: 1991-1992, Thomas G. Lane
-  1991-1994, Thomas G. Lane
-  1991-1996, Thomas G. Lane
-  1991-1997, Thomas G. Lane
-  1991-1998, Thomas G. Lane
-  1992-1996, Thomas G. Lane
-  1992-1997, Thomas G. Lane
-  1994-1996, Thomas G. Lane
-  1994-1997, Thomas G. Lane
-  1994-1998, Thomas G. Lane
-  1995-1997, Thomas G. Lane
-  1995-1998, Thomas G. Lane
-License: UNKNOWN
- FIXME
-
 Files: ./src/BaseClasses/amextra.cpp
  ./src/BaseClasses/amextra.h
  ./src/BaseClasses/amfilter.cpp
@@ -1337,22 +1256,6 @@ Copyright: 2002, Michael Niedermayer
 License: LGPL-2.1+
  FIXME
 
-Files: ./extern/for_mingw/include/mad.h
-Copyright: 2000-2004, Underbit Technologies, Inc
-License: GPL-2+
- FIXME
-
-Files: ./extern/for_mingw/include/libpng15/png.h
- ./extern/for_mingw/include/libpng15/pngconf.h
- ./extern/for_mingw/include/png.h
- ./extern/for_mingw/include/pngconf.h
-Copyright: 1995-1996, Guy Eric Schalnat, Group 42, Inc.)
-  1996-1997, Andreas Dilger)
-  1998-2011, Glenn Randers-Pehrson
-  1998-2012, Glenn Randers-Pehrson
-License: libpng
- FIXME
-
 Files:
  ./src/ModsGroup.cpp
  ./src/ScoreKeeper.cpp
@@ -1463,17 +1366,6 @@ Files:
  ./extern/ffmpeg/include/libavcodec/vaapi.h
 Copyright: 2008-2009, Splitted-Desktop Systems
 License: LGPL-2.1+
- FIXME
-
-Files: ./extern/for_mingw/include/ogg/ogg.h
- ./extern/for_mingw/include/ogg/os_types.h
- ./extern/for_mingw/include/vorbis/codec.h
- ./extern/for_mingw/include/vorbis/vorbisenc.h
- ./extern/for_mingw/include/vorbis/vorbisfile.h
-Copyright: 1994-2001, *
-  1994-2002, *
-  1994-2007, *
-License: UNKNOWN
  FIXME
 
 Files:
@@ -1617,20 +1509,6 @@ Copyright: 1995-1999, Microsoft Corporation
 License: UNKNOWN
  FIXME
 
-Files: ./extern/for_mingw/include/libpng15/pnglibconf.h
- ./extern/for_mingw/include/pnglibconf.h
-Copyright: 1998-2011, Glenn Randers-Pehrson */
-  1998-2012, Glenn Randers-Pehrson */
-License: libpng
- FIXME
-
-Files: ./extern/for_mingw/include/GL/glew.h
- ./extern/for_mingw/include/GL/glxew.h
-Copyright: 2002-2008, Milan Ikits <milan ikits[
-  2007, The Khronos Group Inc
-License: BSD (2 clause) MIT/X11 (BSD like)
- FIXME
-
 Files: ./extern/ffmpeg/include/inttypes.h
  ./extern/ffmpeg/include/stdint.h
 Copyright: 2006, Alexander Chemeris
@@ -1674,20 +1552,6 @@ Files: ./src/InputQueue.h
 Copyright: 2001-2003, Chris Danford, Glenn Maynard
   2001-2007, Chris Danford, Glenn Maynard
 License: UNKNOWN
- FIXME
-
-Files: ./extern/libjpeg/jpegtran.c
- ./extern/libjpeg/jversion.h
-Copyright: 1991-2011, Thomas G. Lane, Guido Vollbeding
-  1995-2010, Thomas G. Lane, Guido Vollbeding
-License: UNKNOWN
- FIXME
-
-Files: ./extern/for_mingw/include/GL/wglew.h
-Copyright: 2002, Lev Povalahev
-  2002-2008, Milan Ikits <milan ikits[
-  2007, The Khronos Group Inc
-License: BSD (2 clause) MIT/X11 (BSD like)
  FIXME
 
 Files: ./src/RageSurfaceUtils_Zoom.h
@@ -1806,11 +1670,6 @@ Copyright:
 License: UNKNOWN
  FIXME
 
-Files: ./extern/libjpeg/ansi2knr.c
-Copyright: 1989, 2000 Aladdin Enterprises. */
-License: UNKNOWN
- FIXME
-
 Files: ./src/ScreenNetSelectBase.h
 Copyright: 2004, Charles Lohr
 License: UNKNOWN
@@ -1839,11 +1698,6 @@ License: UNKNOWN
 
 Files: ./src/RoomInfoDisplay.h
 Copyright: 2006, Josh Allen
-License: UNKNOWN
- FIXME
-
-Files: ./extern/for_mingw/include/bzlib.h
-Copyright: 1996-2010, Julian Seward <jseward@bzip.org>
 License: UNKNOWN
  FIXME
 
