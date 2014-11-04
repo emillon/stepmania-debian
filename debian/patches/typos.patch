@@ -1,3 +1,8 @@
+From: Etienne Millon <me@emillon.org>
+Subject: correct typos
+
+This patch corrects a few typos in the code.
+
 --- a/src/NotesLoaderSM.cpp
 +++ b/src/NotesLoaderSM.cpp
 @@ -1184,7 +1184,7 @@

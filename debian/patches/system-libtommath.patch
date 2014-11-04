@@ -1,3 +1,9 @@
+From: Etienne Millon <me@emillon.org>
+Subject: use system tommath library
+
+Upstream code embeds the tommath library.
+This patch makes it possible to use a system-wide one.
+
 --- a/configure.ac
 +++ b/configure.ac
 @@ -388,6 +388,8 @@

@@ -1,3 +1,8 @@
+From: Etienne Millon <me@emillon.org>
+Subject: install directory
+
+This makes it possible to install in /usr/games without a stepmania-5 prefix.
+
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -27,12 +27,12 @@

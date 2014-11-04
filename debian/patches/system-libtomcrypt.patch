@@ -1,3 +1,9 @@
+From: Etienne Millon <me@emillon.org>
+Subject: use system tomcrypt library
+
+Upstream code embeds the tomcrypt library.
+This patch makes it possible to use a system-wide one.
+
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -705,8 +705,6 @@

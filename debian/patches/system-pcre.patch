@@ -1,3 +1,9 @@
+From: Etienne Millon <me@emillon.org>
+Subject: use system pcre library
+
+Upstream code embeds the pcre library.
+This patch makes it possible to use a system-wide one.
+
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -476,7 +476,7 @@
