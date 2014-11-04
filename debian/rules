@@ -13,6 +13,7 @@ override_dh_auto_configure:
 	rm -rf extern/glew-1.5.8
 	rm -rf extern/libjpeg
 	rm -rf extern/for_mingw
+	rm -rf extern/ffmpeg
 	rm -rf src/libtomcrypt
 	rm -rf src/libtommath
 	sh autogen.sh
